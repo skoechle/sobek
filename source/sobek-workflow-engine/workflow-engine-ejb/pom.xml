@@ -3,7 +3,7 @@
 	<!-- project management section -->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>sobek</groupId>
-	<artifactId>workflow_engine_ejb</artifactId>
+	<artifactId>workflow-engine-ejb</artifactId>
 	<packaging>ejb</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<url>blah</url>
