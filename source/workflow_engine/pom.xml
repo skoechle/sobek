@@ -16,6 +16,7 @@
 
   <!-- Modules of the project -->
   <modules>
+    <module>pgraph-ejb</module>
     <module>workflow_engine_ejb</module>
     <module>workflow_engine_ear</module>
   </modules>
