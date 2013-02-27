@@ -1,0 +1,12 @@
+com\sobek\workflow\Workflow.class
+com\sobek\workflow\engine\WorkflowEngineDAOLocal.class
+com\sobek\workflow\engine\WorkflowEngineDAOBean.class
+com\sobek\workflow\engine\WorkflowEngine.class
+com\sobek\workflow\engine\WorkflowEngineBean.class
+com\sobek\workflow\WorkflowRemote.class
+com\sobek\workflow\engine\entity\WorkflowData.class
+com\sobek\workflow\WorkflowLocal.class
+com\sobek\workflow\engine\WorkflowStatus.class
+com\sobek\workflow\engine\WorkflowEngineLocal.class
+com\sobek\workflow\WorkflowBean.class
+com\sobek\workflow\engine\WorkflowEngineRemote.class
