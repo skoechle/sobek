@@ -3,11 +3,11 @@
 	<!-- project management section -->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>sobek</groupId>
-	<artifactId>workflow_engine_ear</artifactId>
-	<packaging>ear</packaging>
+	<artifactId>workflow-engine-ejb</artifactId>
+	<packaging>ejb</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<url>blah</url>
-	<description>Builds the Sobek Workflow Engine EAR</description>
+	<description>Builds the Sobek Workflow Engine EJB</description>
 
 	<parent>
 		<groupId>sobek</groupId>
@@ -22,27 +22,9 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>sobek</groupId>
-			<artifactId>workflow_engine_ejb</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<type>ejb</type>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-ear-plugin</artifactId>
-				<version>2.8</version>
-				<configuration>
-					<modules>
-						<ejbModule>
-							<groupId>sobek</groupId>
-							<artifactId>workflow_engine_ejb</artifactId>
-						</ejbModule>
-					</modules>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

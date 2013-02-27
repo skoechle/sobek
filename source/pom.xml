@@ -16,6 +16,6 @@
 
   <!-- Modules of the project -->
   <modules>
-    <module>workflow_engine</module>
+    <module>sobek-workflow-engine</module>
   </modules>
 </project>

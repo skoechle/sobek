@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-Instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<!-- project management section -->
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>sobek</groupId>
+	<artifactId>workflow-engine</artifactId>
+	<packaging>ear</packaging>
+	<version>1.0-SNAPSHOT</version>
+	<url>blah</url>
+	<description>Builds the Sobek Workflow Engine EAR</description>
+
+	<parent>
+		<groupId>sobek</groupId>
+		<artifactId>workflow_engine</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<dependencies>
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>6.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>sobek</groupId>
+			<artifactId>workflow-engine-ejb</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<type>ejb</type>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<modules>
+						<ejbModule>
+							<groupId>sobek</groupId>
+							<artifactId>workflow-engine-ejb</artifactId>
+						</ejbModule>
+					</modules>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
