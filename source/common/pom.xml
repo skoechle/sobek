@@ -2,11 +2,11 @@
   <!-- project management section -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>sobek</groupId>
-  <artifactId>sobek-workflow-engine</artifactId>
+  <artifactId>common</artifactId>
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
   <url>blah</url>
-  <description>Builds the Sobek Workflow Engine</description>
+  <description>Builds the Sobek Common Code</description>
   
   <parent>
     <groupId>sobek</groupId>
@@ -16,8 +16,6 @@
 
   <!-- Modules of the project -->
   <modules>
-    <module>pgraph-ejb</module>
-    <module>workflow-engine-ejb</module>
-    <module>workflow-engine</module>
+    <module>result-ejb</module>
   </modules>
 </project>

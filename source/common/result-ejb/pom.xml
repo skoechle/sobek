@@ -2,36 +2,29 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>sobek</groupId>
-        <artifactId>sobek-workflow-engine</artifactId>
+        <artifactId>common</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>sobek</groupId>
-    <artifactId>pgraph-ejb</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>result-ejb</artifactId>
+    <packaging>ejb</packaging>
     <version>1.0-SNAPSHOT</version>
-    <name>pgraph-ejb</name>
-    <description>The Sobek PGraph manager</description>
+    <name>result-ejb</name>
+    <description>Builds The Sobek Result manager</description>
 
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.4</version>
+            <version>1.6.4</version>
         </dependency>  
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
             <version>6.0</version>
             <scope>provided</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.0</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

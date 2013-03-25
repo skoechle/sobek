@@ -22,11 +22,22 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 	
 	@EJB
 	private WorkflowEngineDAOLocal dao;
+	
+	@Override
+	public long startWorkflow(String name) {
+		return this.startWorkflow(name, null);
+	}
 
 	@Override
 	public long startWorkflow(String name, Serializable parameters) {
 		logger.log(Level.FINEST, "Entering, name = [{0}], parameters = [{1}]", new Object[] {name, parameters});
 		long returnValue = 0;
+		if(name == null || name.isEmpty()) {
+			throw new IllegalArgumentException(
+					"A workflow cannot be started without the workflow name.  " +
+					"The given name was [" + name + "]" );
+		}
+
 		WorkflowData data =
 				this.dao.create(name, parameters);
 		
