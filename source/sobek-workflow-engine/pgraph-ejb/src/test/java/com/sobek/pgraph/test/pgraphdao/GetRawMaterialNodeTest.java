@@ -110,7 +110,7 @@ public class GetRawMaterialNodeTest{
     private PgraphDao createPgraphDao(EntityManager em) throws Exception{
    	PgraphDao dao = new PgraphDao();
    	
-   	Field emField = dao.getClass().getField("EntityManager");
+   	Field emField = PgraphDao.class.getDeclaredField("entityManager");
    	emField.setAccessible(true);
    	emField.set(dao, em);
    	
