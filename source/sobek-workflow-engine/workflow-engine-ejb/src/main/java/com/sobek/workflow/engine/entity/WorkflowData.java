@@ -1,10 +1,5 @@
 package com.sobek.workflow.engine.entity;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -20,12 +15,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import com.sobek.workflow.engine.WorkflowStatus;
-
-//import javax.annotation.Generated;
-//import javax.persistence.Column;
-//import javax.persistence.Entity;
-//import javax.persistence.Id;
-//import javax.persistence.Table;
 
 @Entity
 @Table(name="WORKFLOW")
@@ -52,9 +41,6 @@ public class WorkflowData implements Serializable {
 	
 	@Column(name="PARAMETERS")
 	@Lob
-//	private String serializedParameters = "";
-//	
-//	@Transient
 	private Serializable parameters;
 
 	@SuppressWarnings("unused")
@@ -94,36 +80,10 @@ public class WorkflowData implements Serializable {
 	@PrePersist
 	private void prePersist() {
 		this.statusString = status.name();
-
-//		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-//		try {
-//			ObjectOutputStream objectStream = new ObjectOutputStream(byteStream);
-//			objectStream.writeObject(this.parameters);
-//			objectStream.flush();
-//			objectStream.close();
-//			byteStream.close();
-//			this.serializedParameters = byteStream.toString();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 	
 	@PostLoad
 	private void postLoad() {
 		this.status = WorkflowStatus.valueOf(this.statusString);
-
-//		ByteArrayInputStream byteStream = new ByteArrayInputStream(this.serializedParameters.getBytes());
-//		try {
-//			ObjectInputStream objectStream = new ObjectInputStream(byteStream);
-//			this.parameters = (Serializable) objectStream.readObject();
-//			this.serializedParameters = "";
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (ClassNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 }

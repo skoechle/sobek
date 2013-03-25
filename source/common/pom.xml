@@ -2,21 +2,20 @@
   <!-- project management section -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>sobek</groupId>
-  <artifactId>source</artifactId>
+  <artifactId>common</artifactId>
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
   <url>blah</url>
-  <description>This is the source project for Sobek</description>
+  <description>Builds the Sobek Common Code</description>
   
   <parent>
     <groupId>sobek</groupId>
-    <artifactId>sobek</artifactId>
+    <artifactId>source</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
 
   <!-- Modules of the project -->
   <modules>
-	<module>common</module>
-    <module>sobek-workflow-engine</module>
+    <module>result-ejb</module>
   </modules>
 </project>

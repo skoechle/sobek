@@ -24,9 +24,9 @@ public class WorkflowEngineDAOBean implements WorkflowEngineDAOLocal {
 				"Creating a new workflow for name [{0}] and parameter type [{1}].",
 				new Object[] {name, parameters});
 		
-		WorkflowData workflow = new WorkflowData(name, parameters);
-		manager.persist(workflow);
-		return workflow;
+		WorkflowData workflowData = new WorkflowData(name, parameters);
+		manager.persist(workflowData);
+		return workflowData;
 	}
 
 	@Override
