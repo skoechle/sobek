@@ -52,7 +52,7 @@ public class GetPgraphTest{
     private PgraphDao createPgraphDao(EntityManager em) throws Exception{
 	PgraphDao dao = new PgraphDao();
 	
-	Field emField = dao.getClass().getField("entityManager");
+	Field emField = PgraphDao.class.getDeclaredField("entityManager");
 	emField.setAccessible(true);
 	emField.set(dao, em);
 	

@@ -54,7 +54,7 @@ public class NodeEntity{
     
     public NodeEntity(long pgraphId, NodeType nodeType, String jndiName){
 	this.pgraphId = pgraphId;
-	this.type = type.toString();
+	this.type = nodeType.toString();
 	this.nodeType = nodeType;
 	this.jndiName = jndiName;
     }
