@@ -17,9 +17,9 @@ import com.sobek.pgraph.NodeType;
 
 @NamedQueries({
     @NamedQuery(name = "NodeEntity.getChildNodes",
-	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.fromNodeId =: nodeId and n.id = e.toNodeId"),
+	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.headNodeId = :nodeId and n.id = e.tailNodeId"),
     @NamedQuery(name = "NodeEntity.getParentNodes",
-	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.toNodeId =: nodeId and n.id = e.fromNodeId")
+	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.tailNodeId = :nodeId and n.id = e.headNodeId")
 })
 @Entity
 @Table(schema = "SOBEK", name = "NODE")
@@ -47,11 +47,12 @@ public class NodeEntity{
     @Transient 
     private Node value;
     
+    @SuppressWarnings("unused")
     private NodeEntity(){
 	// Required by JPA
     }
     
-    private NodeEntity(long pgraphId, NodeType nodeType, String jndiName){
+    public NodeEntity(long pgraphId, NodeType nodeType, String jndiName){
 	this.pgraphId = pgraphId;
 	this.type = type.toString();
 	this.nodeType = nodeType;

@@ -10,9 +10,9 @@ import javax.persistence.Table;
 
 @NamedQueries({
     @NamedQuery(name = "PgraphEntity.countByPgraphId",
-  	        query = "SELECT count(PgraphEntity.id) FROM PgraphEntity p WHERE p.id =: pgraphId"),
+  	        query = "SELECT count(PgraphEntity.id) FROM PgraphEntity p WHERE p.id = :pgraphId"),
     @NamedQuery(name = "PgraphEntity.getRawMaterial",
-	    	query = "SELECT * FROM NodeEntity n WHERE n.pgraphId =: pgraphId and n.type = 'RAW_MATERIAL'")
+	    	query = "SELECT * FROM NodeEntity n WHERE n.pgraphId = :pgraphId and n.type = 'RAW_MATERIAL'")
 })
 @Entity
 @Table(schema = "SOBEK", name = "PGRAPH")
