@@ -6,13 +6,13 @@ public class TranslationServiceBean implements TranslationServiceLocal, Translat
 
 	@Override
 	public Result translateResult(Result result, Locale locale) {
-		result.translateErrors(locale);
+		result.translate(locale);
 		return result;
 	}
 
 	@Override
 	public Result retranslateResult(Result result, Locale locale) {
-		result.retranslateErrors(locale);
+		result.retranslate(locale);
 		return result;
 	}
 

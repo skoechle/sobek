@@ -1,10 +1,12 @@
 package com.sobek.workflow;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 
+import com.sobek.pgraph.operation.Operation;
 import com.sobek.workflow.engine.entity.WorkflowData;
 
 @Stateless
@@ -30,7 +32,7 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 	}
 
 	@Override
-	public boolean start(WorkflowData data) {
+	public List<Operation> start(WorkflowData data) {
 		logger.log(
 				Level.FINEST,
 				"Starting workflow for data [{0}].",
@@ -42,7 +44,7 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 					" cannot be called with null workflow data.");
 		}
 		
-		return false;
+		return null;
 	}
 
 }

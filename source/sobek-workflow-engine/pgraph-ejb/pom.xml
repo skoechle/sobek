@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>sobek</groupId>
     <artifactId>pgraph-ejb</artifactId>
-    <packaging>jar</packaging>
+    <packaging>ejb</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>pgraph-ejb</name>
     <description>The Sobek PGraph manager</description>

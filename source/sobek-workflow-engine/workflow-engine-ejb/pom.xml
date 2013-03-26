@@ -22,6 +22,12 @@
 			<type>ejb-client</type>
 		</dependency>
 		<dependency>
+			<groupId>sobek</groupId>
+			<artifactId>pgraph-ejb</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<type>ejb-client</type>
+		</dependency>
+		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
 			<version>6.0</version>

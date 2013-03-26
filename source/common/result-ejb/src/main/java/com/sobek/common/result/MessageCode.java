@@ -28,6 +28,12 @@ public abstract class MessageCode implements Serializable {
 			throw new IllegalArgumentException(
 					"The code [" + code + "] is not valid for range [" + range + "].");
 		}
+		
+		if(!this.range.registerCode(code)) {
+			throw new IllegalArgumentException(
+					"The code [" + code + "] has already been added for [" +
+					this.getClass() + "].  All codes must be unique.");
+		}
 	}
 
 	public long getValue() {
@@ -35,8 +41,6 @@ public abstract class MessageCode implements Serializable {
 	}
 	
 	
-	protected abstract MessageCodeRange getRangeForClass();
-
 	private boolean validForRange(long code) {
 		return this.range.inRange(code);
 	}

@@ -1,6 +1,7 @@
 package com.sobek.workflow.engine;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -8,6 +9,9 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.sobek.pgraph.operation.Operation;
+import com.sobek.workflow.engine.entity.OperationData;
+import com.sobek.workflow.engine.entity.OperationKey;
 import com.sobek.workflow.engine.entity.WorkflowData;
 
 @Stateless
@@ -25,15 +29,33 @@ public class WorkflowEngineDAOBean implements WorkflowEngineDAOLocal {
 				new Object[] {name, parameters});
 		
 		WorkflowData workflowData = new WorkflowData(name, parameters);
-		manager.persist(workflowData);
+		this.manager.persist(workflowData);
 		return workflowData;
 	}
 
 	@Override
 	public WorkflowData getWorkflow(long id) {
 		
-		WorkflowData data = manager.find(WorkflowData.class, id);
+		WorkflowData data = this.manager.find(WorkflowData.class, id);
 		return data;
+	}
+
+	@Override
+	public void update(WorkflowData data) {
+		this.manager.persist(data);
+	}
+
+	@Override
+	public void storeOperations(WorkflowData data, List<Operation> operations) {
+		for(Operation operation : operations) {
+			OperationKey key = new OperationKey(data.getId(), operation.getJndiName());
+			OperationData operationData = new OperationData(key, operation.getState());
+			
+			data.addOperation(operationData);
+			operationData.setWorkflow(data);
+			
+			this.manager.persist(operationData);
+		}
 	}
 
 }
