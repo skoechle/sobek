@@ -54,7 +54,7 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 					returnValue.failedToStart();
 					data.failed();
 				} else {
-					//this.dao.storeOperations(data, operations);
+					this.dao.storeOperations(data, operations);
 				}
 			} else {
 				data.failed();
