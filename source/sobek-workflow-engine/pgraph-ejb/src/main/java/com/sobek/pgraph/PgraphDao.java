@@ -59,7 +59,7 @@ public class PgraphDao{
     /**
      * Gets a list of child nodes or an empty list if none are found.
      * 
-     * @param nodeId The id of the node to get childs for.
+     * @param nodeId The id of the node to get child nodes for.
      * @return A list child nodes or empty list if none are found.
      */
     public List<NodeEntity> getChildNodes(long nodeId){

@@ -50,18 +50,18 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	List<Operation> readyOperations = new LinkedList<Operation>();
 	
 	// Keeps track of nodes that need to be visited.
-	Queue<NodeEntity> q = new LinkedList<NodeEntity>();	
+	Queue<NodeEntity> queuedNodes = new LinkedList<NodeEntity>();	
 	
 	// Keeps track of nodes that have been visited.
 	HashSet<NodeEntity> visitedNodes = new HashSet<NodeEntity>();
 
 	// Start the search from the root node (raw material).
 	NodeEntity root = pgraphDao.getRawMaterialNode(pgraphId);
-	q.add(root);
+	queuedNodes.add(root);
 	visitedNodes.add(root);
 	
-	while(!q.isEmpty()){
-	    NodeEntity nodeEntity = q.remove();
+	while(!queuedNodes.isEmpty()){
+	    NodeEntity nodeEntity = queuedNodes.remove();
 	    
 	    if(nodeEntity.getType().equals(NodeType.OPERATION)){
 		Operation operation = (Operation)nodeEntity.getValue();
@@ -75,7 +75,7 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 			
 			break;
 		    case COMPLETE: // If this operation is completed then search the child nodes.
-			addChildNodesToQueue(nodeEntity, q, visitedNodes);
+			addChildNodesToQueue(nodeEntity, queuedNodes, visitedNodes);
 			break;
 		}
 	    }else{ // The node is a material
@@ -83,7 +83,7 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 
 		// Only add Materials that are available
 		if(material.isAvailable()){
-		   addChildNodesToQueue(nodeEntity, q, visitedNodes);
+		   addChildNodesToQueue(nodeEntity, queuedNodes, visitedNodes);
 		}
 	    }
 	}
