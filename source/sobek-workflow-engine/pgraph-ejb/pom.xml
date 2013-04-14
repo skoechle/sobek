@@ -26,6 +26,7 @@
             <artifactId>logback-classic</artifactId>
             <version>1.0.3</version>
             <scope>test</scope>
+<<<<<<< HEAD
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -38,12 +39,20 @@
            <artifactId>glassfish-embedded-all</artifactId>
            <version>3.1.1</version>
            <scope>test</scope>
+=======
+>>>>>>> 27425a10f24d92f2c84002d3d32c42f05d50d5a4
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.0</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.0.3</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+           <groupId>org.glassfish.extras</groupId>
+           <artifactId>glassfish-embedded-all</artifactId>
+           <version>3.1.1</version>
+           <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

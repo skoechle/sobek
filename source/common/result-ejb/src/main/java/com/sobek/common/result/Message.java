@@ -4,9 +4,7 @@ import static java.lang.System.out;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +13,7 @@ import javax.ejb.EJB;
 
 import com.sobek.common.result.entity.TranslationDAOLocal;
 
-public class Message implements Serializable {
+public abstract class Message implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -27,7 +25,6 @@ public class Message implements Serializable {
 	private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{[^\\{\\}]*\\}\\}");
 
 	private MessageCode code = null;
-	private Map<String, String> values= new Hashtable<String, String>();
 	private String message = "";
 	boolean translated = false;
 	
@@ -35,19 +32,19 @@ public class Message implements Serializable {
 	@EJB
 	private TranslationDAOLocal translationDAO;
 	
-	public Message(MessageCode code, Map<String, String> values) {
-		if(code == null || values == null) {
+	protected Message(MessageCode code) {
+		if(code == null) {
 			throw new IllegalArgumentException(
 					"An instance of " + Message.class + " cannot be created with " +
 					"null values.  The given values were: " +
-					"ErrorCode [" + code + "], " +
-					"Values [" + values + "].");
+					"ErrorCode [" + code + "].");
 		}
 		
 		this.code = code;
-		this.values = values;
 	}
 	
+	protected abstract String getSubstitutionValue(String key);
+
 	public MessageCode getCode() {
 		return this.code;
 	}
@@ -80,8 +77,8 @@ public class Message implements Serializable {
 			// If we didn't get a translation for the local, try English (if English
 			// was not the attempted local).
 			if(translation == null || translation.isEmpty()) {
-				if(!locale.equals(Locale.ENGLISH)) {
-					translation = this.translationDAO.getTranslation(code, Locale.ENGLISH);
+				if(!locale.getLanguage().equals(Locale.ENGLISH.getLanguage())) {
+					translation = this.translationDAO.getTranslation(code, Locale.ENGLISH.getLanguage());
 				}
 			}
 			
@@ -111,11 +108,8 @@ public class Message implements Serializable {
 		}
 		
 		for(String key : valuesToReplace) {
-			if(values.containsKey(key)) {
-				String value = values.get(key);
-				this.message = this.message.replace(key, value);
-			}
+			String value = this.getSubstitutionValue(key);
+			this.message = this.message.replace(key, value);
 		}
-
 	}
 }

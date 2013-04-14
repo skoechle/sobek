@@ -3,9 +3,9 @@ package com.sobek.workflow.engine;
 import java.io.Serializable;
 
 public interface WorkflowEngine  extends Serializable {
-	long startWorkflow(String workflowName, Serializable parameters);
+	StartWorkflowResult startWorkflow(String workflowName, Serializable parameters);
 
-	long startWorkflow(String name);
+	StartWorkflowResult startWorkflow(String name);
 	
 	Serializable getParametersForWorkflow(long id);
 }

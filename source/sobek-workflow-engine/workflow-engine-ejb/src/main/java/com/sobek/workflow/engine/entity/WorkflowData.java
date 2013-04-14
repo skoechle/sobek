@@ -1,6 +1,8 @@
 package com.sobek.workflow.engine.entity;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
@@ -42,6 +45,9 @@ public class WorkflowData implements Serializable {
 	@Column(name="PARAMETERS")
 	@Lob
 	private Serializable parameters;
+	
+	@OneToMany(mappedBy="workflow")
+	private Set<OperationData> operations = new HashSet<OperationData>();
 
 	@SuppressWarnings("unused")
 	private WorkflowData() {
@@ -85,5 +91,9 @@ public class WorkflowData implements Serializable {
 	@PostLoad
 	private void postLoad() {
 		this.status = WorkflowStatus.valueOf(this.statusString);
+	}
+
+	public void addOperation(OperationData operationData) {
+		this.operations.add(operationData);
 	}
 }

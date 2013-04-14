@@ -1,12 +1,14 @@
 package com.sobek.workflow.engine;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import com.sobek.pgraph.operation.Operation;
 import com.sobek.workflow.WorkflowLocal;
 import com.sobek.workflow.engine.entity.WorkflowData;
 
@@ -24,14 +26,14 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 	private WorkflowEngineDAOLocal dao;
 	
 	@Override
-	public long startWorkflow(String name) {
+	public StartWorkflowResult startWorkflow(String name) {
 		return this.startWorkflow(name, null);
 	}
 
 	@Override
-	public long startWorkflow(String name, Serializable parameters) {
+	public StartWorkflowResult startWorkflow(String name, Serializable parameters) {
 		logger.log(Level.FINEST, "Entering, name = [{0}], parameters = [{1}]", new Object[] {name, parameters});
-		long returnValue = 0;
+		StartWorkflowResult returnValue = null;
 		if(name == null || name.isEmpty()) {
 			throw new IllegalArgumentException(
 					"A workflow cannot be started without the workflow name.  " +
@@ -42,14 +44,27 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 				this.dao.create(name, parameters);
 		
 		if(data != null) {
-			boolean created = this.workflow.create(data);
+			returnValue = new StartWorkflowResult(data);
 			
+			boolean created = this.workflow.create(data);
+
 			if(created) {
-				this.workflow.start(data);
-				returnValue = data.getId();
+				List<Operation> operations = this.workflow.start(data);
+				if(operations == null || operations.isEmpty()) {
+					returnValue.failedToStart();
+					data.failed();
+				} else {
+					this.dao.storeOperations(data, operations);
+				}
 			} else {
 				data.failed();
+				returnValue.failedToCreateWorkflow();
 			}
+			
+			this.dao.update(data);
+		} else {
+			returnValue = new StartWorkflowResult();
+			returnValue.failedToCreateWorkflowData();
 		}
 		
 		return returnValue;
