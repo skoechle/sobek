@@ -13,7 +13,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.sobek.pgraph.NodeType;
-import com.sobek.pgraph.PgraphDao;
+import com.sobek.pgraph.PgraphDaoBean;
+import com.sobek.pgraph.PgraphDaoLocal;
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
 import com.sobek.pgraph.exception.InvalidPgraphStructureException;
@@ -34,7 +35,7 @@ public class GetRawMaterialNodeTest{
 	EntityManager em = Mockito.mock(EntityManager.class);
 	Mockito.when(em.createNamedQuery(PgraphEntity.GET_RAW_MATERIAL_QUERY, NodeEntity.class)).thenReturn(query);
 	
-	PgraphDao dao = createPgraphDao(em);
+	PgraphDaoLocal dao = createPgraphDao(em);
 	
 	// Call the DAO
 	NodeEntity result = dao.getRawMaterialNode(pgraphId);
@@ -60,7 +61,7 @@ public class GetRawMaterialNodeTest{
 	Mockito.when(em.createNamedQuery(PgraphEntity.GET_RAW_MATERIAL_QUERY, NodeEntity.class)).thenReturn(query);
 	Mockito.when(em.createNamedQuery(PgraphEntity.COUNT_BY_ID_QUERY, Integer.class)).thenReturn(existsQuery);
 	
-	PgraphDao dao = createPgraphDao(em);
+	PgraphDaoLocal dao = createPgraphDao(em);
 
 	// Call the DAO. It should throw a NoSuchPgraphException
 	dao.getRawMaterialNode(pgraphId);
@@ -82,7 +83,7 @@ public class GetRawMaterialNodeTest{
 	Mockito.when(em.createNamedQuery(PgraphEntity.GET_RAW_MATERIAL_QUERY, NodeEntity.class)).thenReturn(query);
 	Mockito.when(em.createNamedQuery(PgraphEntity.COUNT_BY_ID_QUERY, Integer.class)).thenReturn(existsQuery);
 	
-	PgraphDao dao = createPgraphDao(em);
+	PgraphDaoLocal dao = createPgraphDao(em);
 
 	// Call the DAO. It should throw an InvalidPgraphStructureException.
 	dao.getRawMaterialNode(pgraphId);
@@ -100,17 +101,17 @@ public class GetRawMaterialNodeTest{
 	EntityManager em = Mockito.mock(EntityManager.class);
 	Mockito.when(em.createNamedQuery(PgraphEntity.GET_RAW_MATERIAL_QUERY, NodeEntity.class)).thenReturn(query);
 	
-	PgraphDao dao = createPgraphDao(em);
+	PgraphDaoLocal dao = createPgraphDao(em);
 
 	// Call the DAO. It should throw an InvalidPgraphStructureException.
 	dao.getRawMaterialNode(pgraphId);
     }
     
     
-    private PgraphDao createPgraphDao(EntityManager em) throws Exception{
-   	PgraphDao dao = new PgraphDao();
+    private PgraphDaoLocal createPgraphDao(EntityManager em) throws Exception{
+	PgraphDaoLocal dao = new PgraphDaoBean();
    	
-   	Field emField = PgraphDao.class.getDeclaredField("entityManager");
+   	Field emField = PgraphDaoBean.class.getDeclaredField("entityManager");
    	emField.setAccessible(true);
    	emField.set(dao, em);
    	

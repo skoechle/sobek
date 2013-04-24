@@ -9,7 +9,8 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.sobek.pgraph.PgraphDao;
+import com.sobek.pgraph.PgraphDaoBean;
+import com.sobek.pgraph.PgraphDaoLocal;
 import com.sobek.pgraph.entity.PgraphEntity;
 
 public class GetPgraphTest{
@@ -25,7 +26,7 @@ public class GetPgraphTest{
 	Mockito.when(entityManager.find(PgraphEntity.class, pgraphId)).thenReturn(pgraphEntity);
 	
 	// Call the dao
-	PgraphDao dao = createPgraphDao(entityManager);
+	PgraphDaoLocal dao = createPgraphDao(entityManager);
 	PgraphEntity result = dao.getPgraph(pgraphId);
 	
 	// Check result
@@ -42,17 +43,17 @@ public class GetPgraphTest{
 	Mockito.when(entityManager.find(PgraphEntity.class, pgraphId)).thenReturn(null);
 	
 	// Call the dao
-	PgraphDao dao = createPgraphDao(entityManager);
+	PgraphDaoLocal dao = createPgraphDao(entityManager);
 	PgraphEntity result = dao.getPgraph(pgraphId);
 	
 	// Result should be null
 	Assert.assertNull(result);
     }
     
-    private PgraphDao createPgraphDao(EntityManager em) throws Exception{
-	PgraphDao dao = new PgraphDao();
+    private PgraphDaoLocal createPgraphDao(EntityManager em) throws Exception{
+	PgraphDaoLocal dao = new PgraphDaoBean();
 	
-	Field emField = PgraphDao.class.getDeclaredField("entityManager");
+	Field emField = PgraphDaoBean.class.getDeclaredField("entityManager");
 	emField.setAccessible(true);
 	emField.set(dao, em);
 	

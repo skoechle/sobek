@@ -13,7 +13,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.sobek.pgraph.NodeType;
-import com.sobek.pgraph.PgraphDao;
+import com.sobek.pgraph.PgraphDaoBean;
+import com.sobek.pgraph.PgraphDaoLocal;
 import com.sobek.pgraph.entity.NodeEntity;
 
 public class GetChildNodesTest{
@@ -31,7 +32,7 @@ public class GetChildNodesTest{
         Mockito.when(query.getResultList()).thenReturn(resultList);
 	Mockito.when(em.createNamedQuery(NodeEntity.GET_CHILD_NODES_QUERY, NodeEntity.class)).thenReturn(query);
 	
-	PgraphDao dao = createPgraphDao(em);
+	PgraphDaoLocal dao = createPgraphDao(em);
 	
 	// Call the dao
 	List<NodeEntity> parentNodes = dao.getChildNodes(1L);
@@ -52,7 +53,7 @@ public class GetChildNodesTest{
         Mockito.when(query.getResultList()).thenReturn(resultList);
 	Mockito.when(em.createNamedQuery(NodeEntity.GET_CHILD_NODES_QUERY, NodeEntity.class)).thenReturn(query);
 	
-	PgraphDao dao = createPgraphDao(em);
+	PgraphDaoLocal dao = createPgraphDao(em);
 	
 	// Call the dao
 	List<NodeEntity> parentNodes = dao.getChildNodes(1L);
@@ -61,10 +62,10 @@ public class GetChildNodesTest{
 	Assert.assertTrue(parentNodes.isEmpty());
     }
     
-    private PgraphDao createPgraphDao(EntityManager em) throws Exception{
-	PgraphDao dao = new PgraphDao();
+    private PgraphDaoLocal createPgraphDao(EntityManager em) throws Exception{
+	PgraphDaoLocal dao = new PgraphDaoBean();
 	
-	Field emField = PgraphDao.class.getDeclaredField("entityManager");
+	Field emField = PgraphDaoBean.class.getDeclaredField("entityManager");
 	emField.setAccessible(true);
 	emField.set(dao, em);
 	

@@ -10,7 +10,8 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.sobek.pgraph.PgraphDao;
+import com.sobek.pgraph.PgraphDaoBean;
+import com.sobek.pgraph.PgraphDaoLocal;
 import com.sobek.pgraph.entity.PgraphEntity;
 
 public class PgraphExistsTest{
@@ -25,7 +26,7 @@ public class PgraphExistsTest{
 	EntityManager em = Mockito.mock(EntityManager.class);
 	Mockito.when(em.createNamedQuery(PgraphEntity.COUNT_BY_ID_QUERY, Integer.class)).thenReturn(query);
 	
-	PgraphDao dao = createPgraphDao(em);
+	PgraphDaoLocal dao = createPgraphDao(em);
 	
 	// Dao should return true.
 	Assert.assertTrue(dao.pgraphExists(1));
@@ -41,16 +42,16 @@ public class PgraphExistsTest{
 	EntityManager em = Mockito.mock(EntityManager.class);
 	Mockito.when(em.createNamedQuery(PgraphEntity.COUNT_BY_ID_QUERY, Integer.class)).thenReturn(query);
 	
-	PgraphDao dao = createPgraphDao(em);
+	PgraphDaoLocal dao = createPgraphDao(em);
 	
 	// Dao should return false.
 	Assert.assertFalse(dao.pgraphExists(1));
     }
     
-    private PgraphDao createPgraphDao(EntityManager em) throws Exception{
-   	PgraphDao dao = new PgraphDao();
+    private PgraphDaoLocal createPgraphDao(EntityManager em) throws Exception{
+	PgraphDaoLocal dao = new PgraphDaoBean();
    	
-   	Field emField = PgraphDao.class.getDeclaredField("entityManager");
+   	Field emField = PgraphDaoBean.class.getDeclaredField("entityManager");
    	emField.setAccessible(true);
    	emField.set(dao, em);
    	
