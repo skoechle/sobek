@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
     <parent>
         <groupId>sobek</groupId>
         <artifactId>sobek-workflow-engine</artifactId>
@@ -15,18 +16,22 @@
     <description>The Sobek PGraph manager</description>
 
     <dependencies>
+        
+        <!-- Compile -->
+    
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.4</version>
-        </dependency>  
+        </dependency>
+        
+        <!-- Test  -->
         
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.0.3</version>
             <scope>test</scope>
-<<<<<<< HEAD
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -35,12 +40,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-           <groupId>org.glassfish.extras</groupId>
-           <artifactId>glassfish-embedded-all</artifactId>
-           <version>3.1.1</version>
-           <scope>test</scope>
-=======
->>>>>>> 27425a10f24d92f2c84002d3d32c42f05d50d5a4
+            <groupId>org.glassfish.extras</groupId>
+            <artifactId>glassfish-embedded-all</artifactId>
+            <version>3.1.1</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -49,10 +52,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-           <groupId>org.glassfish.extras</groupId>
-           <artifactId>glassfish-embedded-all</artifactId>
-           <version>3.1.1</version>
-           <scope>test</scope>
+            <groupId>org.glassfish.extras</groupId>
+            <artifactId>glassfish-embedded-all</artifactId>
+            <version>3.1.1</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -61,6 +64,8 @@
             <scope>test</scope>
         </dependency>
         
+        <!-- Provided -->
+        
         <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
@@ -68,5 +73,5 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-    
+
 </project>
