@@ -1,7 +1,5 @@
 package com.sobek.common.result;
 
-import static java.lang.System.out;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Locale;
@@ -47,6 +45,10 @@ public abstract class Message implements Serializable {
 
 	public MessageCode getCode() {
 		return this.code;
+	}
+	
+	public String getText() {
+		return this.message;
 	}
 	
 	public boolean translated() {
@@ -101,7 +103,6 @@ public abstract class Message implements Serializable {
 		Set<String> valuesToReplace = new HashSet<String>();
 		while(matcher.find()) {
 			String finding = matcher.group();
-			out.println("Found: " + finding);
 			if(!valuesToReplace.contains(finding)) {
 				valuesToReplace.add(finding);
 			}
@@ -109,7 +110,9 @@ public abstract class Message implements Serializable {
 		
 		for(String key : valuesToReplace) {
 			String value = this.getSubstitutionValue(key);
-			this.message = this.message.replace(key, value);
+			if(value != null) {
+				this.message = this.message.replace(key, value);
+			}
 		}
 	}
 }
