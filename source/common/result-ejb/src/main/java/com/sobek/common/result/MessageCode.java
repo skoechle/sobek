@@ -24,30 +24,22 @@ public abstract class MessageCode implements Serializable {
 					"range.  The given range was [" + range + "].");
 		}
 		
-		if(!validForRange(code)) {
-			throw new IllegalArgumentException(
-					"The code [" + code + "] is not valid for range [" + range + "].");
-		}
-		
 		if(!this.range.registerCode(code)) {
 			throw new IllegalArgumentException(
 					"The code [" + code + "] has already been added for [" +
 					this.getClass() + "].  All codes must be unique.");
 		}
+		
+		this.code = code;
 	}
 
 	public long getValue() {
 		return this.code;
 	}
-	
-	
-	private boolean validForRange(long code) {
-		return this.range.inRange(code);
-	}
 
 	private static Set<MessageCodeRange> ranges = new HashSet<MessageCodeRange>();
 	
-	protected static void registerRange(MessageCodeRange range) {
+	private static void registerRange(MessageCodeRange range) {
 		if(range != null && !ranges.contains(range)) {
 			for(MessageCodeRange existingRange : ranges) {
 				if(existingRange.overlaps(range)) {

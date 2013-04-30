@@ -11,7 +11,7 @@ public abstract class Result implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private List<Message> errors = new ArrayList<Message>();
-	private List<Message> informationMessages = new ArrayList<Message>();
+	private List<Message> messages = new ArrayList<Message>();
 	
 	public boolean successful() {
 		return this.errors.size() == 0;
@@ -27,22 +27,30 @@ public abstract class Result implements Serializable {
 		}
 	}
 	
-	protected void removeError(Message error) {
-		if(error != null && this.errors.contains(error)) {
-			this.errors.remove(error);
+	protected boolean removeError(Message error) {
+		boolean returnValue = false;
+		if(this.errors.contains(error)) {
+			returnValue = this.errors.remove(error);
+		}
+		return returnValue;
+	}
+	
+	public Iterator<Message> getMessages() {
+		return this.messages.iterator();
+	}
+	
+	protected void addMessage(Message message) {
+		if(message != null && !this.messages.contains(message)) {
+			this.messages.add(message);
 		}
 	}
 	
-	protected void addInformation(Message information) {
-		if(!this.informationMessages.contains(information)) {
-			this.informationMessages.add(information);
+	protected boolean removeMessage(Message message) {
+		boolean returnValue = false;
+		if(this.messages.contains(message)) {
+			this.messages.remove(message);
 		}
-	}
-	
-	protected void removeInformation(Message information) {
-		if(!this.informationMessages.contains(information)) {
-			this.informationMessages.remove(information);
-		}
+		return returnValue;
 	}
 	
 	// package private
@@ -52,7 +60,7 @@ public abstract class Result implements Serializable {
 			error.translate(locale);
 		}
 
-		for(Message message : this.informationMessages) {
+		for(Message message : this.messages) {
 			message.resetTranslation();
 			message.translate(locale);
 		}
@@ -64,7 +72,7 @@ public abstract class Result implements Serializable {
 			error.translate(locale);
 		}
 
-		for(Message message : this.informationMessages) {
+		for(Message message : this.messages) {
 			message.translate(locale);
 		}
 	}
