@@ -1,5 +1,6 @@
 package com.sobek.workflow;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -7,6 +8,7 @@ import java.util.logging.Logger;
 import javax.ejb.Stateless;
 
 import com.sobek.pgraph.operation.Operation;
+import com.sobek.pgraph.operation.OperationState;
 import com.sobek.workflow.engine.entity.WorkflowData;
 
 @Stateless
@@ -44,7 +46,29 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 					" cannot be called with null workflow data.");
 		}
 		
-		return null;
+		Operation operation = new Operation() {
+			
+			@Override
+			public void persist() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public String getJndiName() {
+				// TODO Auto-generated method stub
+				return "Operation Name";
+			}
+			
+			@Override
+			public OperationState getState() {
+				// TODO Auto-generated method stub
+				return OperationState.WORKING;
+			}
+		};
+		List<Operation> list = new ArrayList<Operation>();
+		list.add(operation);
+		return list;
 	}
 
 }

@@ -48,6 +48,7 @@ public class WorkflowEngineDAOBean implements WorkflowEngineDAOLocal {
 	@Override
 	public void storeOperations(WorkflowData data, List<Operation> operations) {
 		for(Operation operation : operations) {
+			logger.log(Level.FINEST, "Storing operation with ID = {0} and Name = {1}", new Object[] {data.getId(), operation.getJndiName()});
 			OperationKey key = new OperationKey(data.getId(), operation.getJndiName());
 			OperationData operationData = new OperationData(key, operation.getState());
 			
