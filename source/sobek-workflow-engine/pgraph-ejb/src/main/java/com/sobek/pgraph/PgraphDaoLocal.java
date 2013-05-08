@@ -4,8 +4,6 @@ import java.util.List;
 
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
-import com.sobek.pgraph.exception.InvalidPgraphStructureException;
-import com.sobek.pgraph.exception.NoSuchPgraphException;
 
 public interface PgraphDaoLocal{
 

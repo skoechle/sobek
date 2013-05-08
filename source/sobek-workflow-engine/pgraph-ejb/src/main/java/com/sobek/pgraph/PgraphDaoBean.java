@@ -14,8 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
-import com.sobek.pgraph.exception.InvalidPgraphStructureException;
-import com.sobek.pgraph.exception.NoSuchPgraphException;
 
 @Stateless
 public class PgraphDaoBean implements PgraphDaoLocal{

@@ -8,14 +8,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sobek.pgraph.InvalidPgraphStructureException;
+import com.sobek.pgraph.NoSuchPgraphException;
 import com.sobek.pgraph.Node;
 import com.sobek.pgraph.NodeType;
 import com.sobek.pgraph.PgraphDaoLocal;
 import com.sobek.pgraph.entity.EdgeEntity;
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
-import com.sobek.pgraph.exception.InvalidPgraphStructureException;
-import com.sobek.pgraph.exception.NoSuchPgraphException;
 
 public class MockDao implements PgraphDaoLocal{
     private static Logger logger = LoggerFactory.getLogger(MockDao.class);
@@ -31,10 +31,7 @@ public class MockDao implements PgraphDaoLocal{
 	idField.set(pgraphEntity, pgraphId);
     }
     
-    public long addNode(NodeEntity node, Node nodeValue) throws Exception{
-	// So we can return a value for the node.
-	//NodeEntity mockNode = Mockito.mock(NodeEntity.class);
-	
+    public long addNode(NodeEntity node, Node nodeValue) throws Exception{	
 	long nodeId = nodes.size();
 	
 	// Set fields
@@ -69,8 +66,8 @@ public class MockDao implements PgraphDaoLocal{
 	List<NodeEntity> parentNodes = new ArrayList<NodeEntity>();
 	
 	for(EdgeEntity edge : edges){
-	    if(edge.getTailNodeId() == nodeId){
-		long parentId = edge.getHeadNodeId();
+	    if(edge.getToNodeId() == nodeId){
+		long parentId = edge.getFromNodeId();
 		
 		for(NodeEntity node : nodes){
 		    if(node.getId() == parentId){
@@ -91,9 +88,9 @@ public class MockDao implements PgraphDaoLocal{
 	for(EdgeEntity edge : edges){
 	    logger.trace("Checking if nodeId {} is the head of edge {}.", nodeId, edge);
 	    
-	    if(edge.getHeadNodeId() == nodeId){
+	    if(edge.getFromNodeId() == nodeId){
 		logger.trace("NodeId {} is head of edge {}.", nodeId, edge);
-		long childNodeId = edge.getTailNodeId();
+		long childNodeId = edge.getToNodeId();
 		logger.trace("Child nodeId is {} for nodeId {}.", childNodeId, nodeId);
 		
 		for(NodeEntity node : nodes){

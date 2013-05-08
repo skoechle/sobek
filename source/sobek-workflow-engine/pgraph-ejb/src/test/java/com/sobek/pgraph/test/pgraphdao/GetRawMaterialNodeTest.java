@@ -12,13 +12,13 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.sobek.pgraph.InvalidPgraphStructureException;
+import com.sobek.pgraph.NoSuchPgraphException;
 import com.sobek.pgraph.NodeType;
 import com.sobek.pgraph.PgraphDaoBean;
 import com.sobek.pgraph.PgraphDaoLocal;
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
-import com.sobek.pgraph.exception.InvalidPgraphStructureException;
-import com.sobek.pgraph.exception.NoSuchPgraphException;
 
 public class GetRawMaterialNodeTest{
     

@@ -24,11 +24,11 @@ public class EdgeEntity{
        return primaryKey.getPgraphId();
    }
 
-   public long getHeadNodeId(){
-       return primaryKey.getHeadNodeId();
+   public long getFromNodeId(){
+       return primaryKey.getFromNodeId();
    }
 
-   public long getTailNodeId(){
-       return primaryKey.getTailNodeId();
+   public long getToNodeId(){
+       return primaryKey.getToNodeId();
    }
 }

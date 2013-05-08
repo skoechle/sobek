@@ -9,32 +9,32 @@ public class EdgePrimaryKey{
     @Column(name = "PGRAPH_ID")
     private long pgraphId = -1L;
     
-    @Column(name = "HEAD_NODE_ID")
-    private long headNodeId = -1L;
+    @Column(name = "FROM_NODE_ID")
+    private long fromNodeId = -1L;
     
-    @Column(name = "TAIL_NODE_ID")
-    private long tailNodeId = -1L;
+    @Column(name = "TO_NODE_ID")
+    private long toNodeId = -1L;
     
     @SuppressWarnings("unused")
     private EdgePrimaryKey(){
 	// Required by JPA
     }
     
-    public EdgePrimaryKey(long pgraphId, long headNodeId, long tailNodeId){
+    public EdgePrimaryKey(long pgraphId, long fromNodeId, long toNodeId){
 	this.pgraphId = pgraphId;
-	this.headNodeId = headNodeId;
-	this.tailNodeId = tailNodeId;
+	this.fromNodeId = fromNodeId;
+	this.toNodeId = toNodeId;
     }
 
     public long getPgraphId(){
         return pgraphId;
     }
 
-    public long getHeadNodeId(){
-        return headNodeId;
+    public long getFromNodeId(){
+        return fromNodeId;
     }
 
-    public long getTailNodeId(){
-        return tailNodeId;
+    public long getToNodeId(){
+        return toNodeId;
     }
 }

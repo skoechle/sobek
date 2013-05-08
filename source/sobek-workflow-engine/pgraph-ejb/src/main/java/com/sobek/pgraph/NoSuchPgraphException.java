@@ -1,9 +1,9 @@
-package com.sobek.pgraph.exception;
+package com.sobek.pgraph;
 
 public class NoSuchPgraphException extends Exception{
     private static final long serialVersionUID = 1L;
     
-    public NoSuchPgraphException(String message){
+    NoSuchPgraphException(String message){
 	super(message);
     }
 }

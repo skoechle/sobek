@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.naming.NamingException;
 
-import com.sobek.pgraph.exception.NoSuchPgraphException;
 import com.sobek.pgraph.material.RawMaterial;
 import com.sobek.pgraph.operation.Operation;
 

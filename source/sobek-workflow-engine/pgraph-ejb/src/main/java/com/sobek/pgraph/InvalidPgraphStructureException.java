@@ -1,4 +1,4 @@
-package com.sobek.pgraph.exception;
+package com.sobek.pgraph;
 
 /**
  * 
@@ -11,7 +11,7 @@ public class InvalidPgraphStructureException extends RuntimeException{
 
     private static final long serialVersionUID = 1L;
     
-    public InvalidPgraphStructureException(String message){
+    InvalidPgraphStructureException(String message){
 	super(message);
     }
 }
