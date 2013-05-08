@@ -17,9 +17,9 @@ import com.sobek.pgraph.NodeType;
 
 @NamedQueries({
     @NamedQuery(name = "NodeEntity.getChildNodes",
-	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.headNodeId = :nodeId and n.id = e.tailNodeId"),
+	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.fromNodeId = :nodeId and n.id = e.toNodeId"),
     @NamedQuery(name = "NodeEntity.getParentNodes",
-	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.tailNodeId = :nodeId and n.id = e.headNodeId")
+	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.toNodeId = :nodeId and n.id = e.fromNodeId")
 })
 @Entity
 @Table(schema = "SOBEK", name = "NODE")
