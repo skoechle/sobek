@@ -24,6 +24,10 @@ public class TranslationKey implements Serializable{
 	@Column(name="MESSAGE_CODE")
 	private long messageCode;
 	
+	// Required by JPA
+	@SuppressWarnings("unused")
+	private TranslationKey() {}
+	
 	public TranslationKey(Locale locale, MessageCode messageCode) {
 		if(locale == null || messageCode == null) {
 			throw new IllegalArgumentException(

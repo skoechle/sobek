@@ -1,5 +1,7 @@
 package com.sobek.workflow.engine.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -15,7 +17,8 @@ import com.sobek.pgraph.operation.OperationState;
 
 @Entity
 @Table(name = "WORKFLOW_OPERATION_DATA")
-public class OperationData {
+public class OperationData implements Serializable {
+	private static final long serialVersionUID = 1L;
 	
 	@EmbeddedId
 	private OperationKey key;
@@ -28,7 +31,7 @@ public class OperationData {
 	
 	@ManyToOne
 	@JoinColumns(value = {
-			@JoinColumn(name="WORKFLOW_ID", referencedColumnName="ID")
+			@JoinColumn(name="WORKFLOW_ID", referencedColumnName="ID", insertable = false, updatable = false)
 			})
 	private WorkflowData workflow;
 	
