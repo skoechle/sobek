@@ -13,7 +13,6 @@ import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.material.Material;
 import com.sobek.pgraph.material.RawMaterial;
 import com.sobek.pgraph.operation.Operation;
@@ -24,13 +23,7 @@ public class PgraphManagerBean implements PgraphManagerLocal{
     
     @EJB
     private PgraphDaoLocal pgraphDao;
-    
-    @Override
-    public List<Operation> startGraph(Object config, RawMaterial rawMaterial){
-	// TODO Auto-generated method stub
-	return null;
-    }
-    
+      
     /*
      * Uses a Breadth First Search to find the ready Operations whose required resources are available.
      */

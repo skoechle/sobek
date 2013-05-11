@@ -1,8 +1,11 @@
 package com.sobek.pgraph.material;
 
-public abstract class RawMaterial implements Material{
-    
-    public final MaterialType getMaterialType(){
-	return MaterialType.RAW;
-    }
+import com.sobek.pgraph.NodeType;
+
+public abstract class RawMaterial extends Material{ 
+    private static final long serialVersionUID = 1L;
+
+    public final NodeType getNodeType(){
+       return NodeType.RAW_MATERIAL;
+   }
 }

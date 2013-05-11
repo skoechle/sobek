@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 
 import com.sobek.pgraph.PgraphDaoBean;
 import com.sobek.pgraph.PgraphDaoLocal;
-import com.sobek.pgraph.entity.PgraphEntity;
+import com.sobek.pgraph.PgraphEntity;
 
 public class PgraphExistsTest{
     

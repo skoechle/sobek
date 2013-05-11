@@ -12,10 +12,10 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.sobek.pgraph.NodeEntity;
 import com.sobek.pgraph.NodeType;
 import com.sobek.pgraph.PgraphDaoBean;
 import com.sobek.pgraph.PgraphDaoLocal;
-import com.sobek.pgraph.entity.NodeEntity;
 
 public class GetChildNodesTest{
     

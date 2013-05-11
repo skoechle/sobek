@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.naming.NamingException;
 
-import com.sobek.pgraph.material.RawMaterial;
 import com.sobek.pgraph.operation.Operation;
 
 
@@ -29,7 +28,10 @@ public interface PgraphManager{
      * 
      * @throws IllegalArgumentException If the config is invalid or if either parameter is null.
      */
-    public List<Operation> startGraph(Object config, RawMaterial rawMaterial);
+    //public List<Operation> startGraph(Object config, RawMaterial rawMaterial);
+    
+    public long createPgraph();
+    
     
     /**
      * Returns a list of operations for a P-Graph that have not started and are ready to be started. This

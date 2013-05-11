@@ -1,4 +1,4 @@
-package com.sobek.pgraph.entity;
+package com.sobek.pgraph;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -1,4 +1,4 @@
-package com.sobek.pgraph.entity;
+package com.sobek.pgraph;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;

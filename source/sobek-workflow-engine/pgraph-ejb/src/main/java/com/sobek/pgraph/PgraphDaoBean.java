@@ -12,8 +12,6 @@ import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sobek.pgraph.entity.NodeEntity;
-import com.sobek.pgraph.entity.PgraphEntity;
 
 @Stateless
 public class PgraphDaoBean implements PgraphDaoLocal{

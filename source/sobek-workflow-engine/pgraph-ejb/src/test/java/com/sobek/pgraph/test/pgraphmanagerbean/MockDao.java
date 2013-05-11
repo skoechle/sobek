@@ -8,14 +8,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sobek.pgraph.EdgeEntity;
 import com.sobek.pgraph.InvalidPgraphStructureException;
 import com.sobek.pgraph.NoSuchPgraphException;
 import com.sobek.pgraph.Node;
+import com.sobek.pgraph.NodeEntity;
 import com.sobek.pgraph.NodeType;
 import com.sobek.pgraph.PgraphDaoLocal;
-import com.sobek.pgraph.entity.EdgeEntity;
-import com.sobek.pgraph.entity.NodeEntity;
-import com.sobek.pgraph.entity.PgraphEntity;
+import com.sobek.pgraph.PgraphEntity;
 
 public class MockDao implements PgraphDaoLocal{
     private static Logger logger = LoggerFactory.getLogger(MockDao.class);

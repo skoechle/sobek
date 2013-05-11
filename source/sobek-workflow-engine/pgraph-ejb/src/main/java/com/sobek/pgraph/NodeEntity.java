@@ -1,4 +1,4 @@
-package com.sobek.pgraph.entity;
+package com.sobek.pgraph;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -12,8 +12,6 @@ import javax.persistence.PostLoad;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.sobek.pgraph.Node;
-import com.sobek.pgraph.NodeType;
 
 @NamedQueries({
     @NamedQuery(name = "NodeEntity.getChildNodes",
@@ -80,6 +78,7 @@ public class NodeEntity{
     public Node getValue() throws NamingException{
 	if(value == null){
 	    value = (Node)InitialContext.doLookup(jndiName);
+	    value.setId(id);
 	}
 	
 	return value;
