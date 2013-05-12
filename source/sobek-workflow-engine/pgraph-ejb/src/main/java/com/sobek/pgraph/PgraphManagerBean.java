@@ -1,5 +1,6 @@
 package com.sobek.pgraph;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sobek.pgraph.material.Material;
-import com.sobek.pgraph.material.RawMaterial;
 import com.sobek.pgraph.operation.Operation;
+
 
 @Stateless
 public class PgraphManagerBean implements PgraphManagerLocal{
@@ -23,12 +24,109 @@ public class PgraphManagerBean implements PgraphManagerLocal{
     
     @EJB
     private PgraphDaoLocal pgraphDao;
-      
+    
+    @Override
+    public long createPgraph(List<Edge> edges) throws InvalidPgraphStructureException{
+	//--------------------------------------------------
+	//              Validate parameters
+	//--------------------------------------------------
+	if(edges == null){
+	    String message = "A null paramters was passed. parameters were:\n" + 
+		    "edges: " + edges;
+	    
+	    logger.error(message);
+	    throw new IllegalArgumentException(message);
+	}
+	
+	if(edges.contains(null)){
+	    String message = "The edge list contained a null value.";
+	    
+	    logger.error(message);
+	    throw new IllegalArgumentException(message);
+	}
+	
+	//--------------------------------------------------
+	//              Persist the pgraph
+	//--------------------------------------------------
+	PgraphEntity pgraphEntity = new PgraphEntity();
+	pgraphDao.addPgraph(pgraphEntity);
+	
+	HashMap<Node, Long> persistedNodes = new HashMap<Node, Long>();
+	
+	// Add all the edges to the pgraph
+	for(Edge edge : edges){
+	    Node fromNode = edge.getFromNode();
+	    Node toNode = edge.getToNode();
+	    long fromNodeId = -1L;
+	    long toNodeId = -1L;
+	    
+	    // Persist unique nodes or get persisted node.
+	    if(persistedNodes.containsKey(fromNode)){
+		fromNodeId = persistedNodes.get(fromNode);
+	    }else{
+		NodeEntity nodeEntity = new NodeEntity(pgraphEntity.getId(), fromNode.getNodeType(), fromNode.getJndiName());
+		pgraphDao.addNode(nodeEntity);
+		
+		fromNodeId = nodeEntity.getId();
+		persistedNodes.put(fromNode, fromNodeId);
+	    }
+	    
+	    if(persistedNodes.containsKey(toNode)){
+		fromNodeId = persistedNodes.get(toNode);
+	    }else{
+		NodeEntity nodeEntity = new NodeEntity(pgraphEntity.getId(), toNode.getNodeType(), toNode.getJndiName());
+		pgraphDao.addNode(nodeEntity);
+		
+		toNodeId = nodeEntity.getId();
+		persistedNodes.put(toNode, toNodeId);
+	    }
+	    
+	    // Persist the edge
+	    EdgePrimaryKey edgePk = new EdgePrimaryKey(pgraphEntity.getId(), fromNodeId, toNodeId);
+	    EdgeEntity edgeEntity = new EdgeEntity(edgePk);
+	    pgraphDao.addEdge(edgeEntity);
+	}
+	
+	//--------------------------------------------------
+	//           validate pgraph structure.
+	//--------------------------------------------------
+//	boolean valid = true;
+//	StringBuilder validationErrors = new StringBuilder();
+//	
+//	if(!isConnected(pgraphEntity.getId())){
+//	    valid = false;
+//	}
+//
+//	if(isCyclic(pgraphEntity.getId())){
+//	    valid = false;
+//	}
+//	
+//	if(!hasOneRawMaterial(pgraphEntity.getId())){
+//	    valid = false;
+//	}
+//	
+//	if(!hasOneProduct(pgraphEntity.getId())){
+//	    valid = false;
+//	}
+//	
+//	if(!isInterleaved(pgraphEntity.getId())){
+//	    valid = false;
+//	}
+//	
+//	if(!valid){
+//	    String message = validationErrors.toString();
+//	    logger.error(message);
+//	    throw new InvalidPgraphStructureException(message);
+//	}
+	
+	return pgraphEntity.getId();
+    }
+    
     /*
      * Uses a Breadth First Search to find the ready Operations whose required resources are available.
      */
     @Override
-    public List<Operation> getReadyOperations(long pgraphId) throws NoSuchPgraphException, NamingException{
+    public List<Operation> getReadyOperations(long pgraphId) throws NoSuchPgraphException, InvalidPgraphStructureException, NamingException{
 	logger.debug("Getting ready operations for pgraphId {}.", pgraphId);
 	
 	// Make sure this graph exists.
@@ -119,7 +217,7 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	}
     }
     
-    private boolean checkRequiredMaterials(NodeEntity nodeEntity) throws NamingException{
+    private boolean checkRequiredMaterials(NodeEntity nodeEntity) throws NamingException, InvalidPgraphStructureException{
 	logger.trace("Checking for required materials for node {}.", nodeEntity);
 	
 	boolean materialsAvailable = true;
@@ -156,5 +254,30 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	
 	logger.trace("Returning materialsAvailable = {} for node {}.", materialsAvailable, nodeEntity);
 	return materialsAvailable;
+    }
+    
+    private boolean isConnected(long pgraphId){
+	//TODO
+	return false;
+    }
+    
+    private boolean isCyclic(long pgraphId){
+	//TODO
+	return false;
+    }
+    
+    private boolean hasOneRawMaterial(long pgraphId){
+	//TODO
+	return false;
+    }
+    
+    private boolean hasOneProduct(long pgraphId){
+	//TODO
+	return false;
+    }
+    
+    private boolean isInterleaved(long pgraphId){
+	//TODO
+	return false;
     }
 }

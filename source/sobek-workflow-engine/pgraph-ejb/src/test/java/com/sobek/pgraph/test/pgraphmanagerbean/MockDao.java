@@ -124,5 +124,15 @@ public class MockDao implements PgraphDaoLocal{
     public boolean pgraphExists(long pgraphId){
 	return pgraphEntity.getId() == pgraphId;
     }
+
+    @Override
+    public void addPgraph(PgraphEntity pgraphEntity){
+	
+    }
+
+    @Override
+    public void addNode(NodeEntity nodeEntity){
+	
+    }
    
 }

@@ -20,6 +20,22 @@ public class PgraphDaoBean implements PgraphDaoLocal{
    
     @PersistenceContext(unitName="sobek-pgraph")
     private EntityManager entityManager;
+
+
+    @Override
+    public void addPgraph(PgraphEntity pgraphEntity){
+	entityManager.persist(pgraphEntity);
+    }
+
+    @Override
+    public void addNode(NodeEntity nodeEntity){
+	entityManager.persist(nodeEntity);
+    }
+
+    @Override
+    public void addEdge(EdgeEntity edgeEntity){
+	entityManager.persist(edgeEntity);
+    }
     
     @Override
     public PgraphEntity getPgraph(long pgraphId){
@@ -66,16 +82,16 @@ public class PgraphDaoBean implements PgraphDaoLocal{
 	    return node;
 	}catch(NoResultException e){
 	    if(pgraphExists(pgraphId)){
-		String message = "No raw material node exists for pgraphId " + pgraphId + ". There must always be exactly one raw material in a P-Graph.";
+		String message = "No raw material node exists for pgraphId " + pgraphId + ". There must always be exactly one raw material in a pgraph.";
 		logger.error(message, e);
 		throw new InvalidPgraphStructureException(message);
 	    }else{
-		String message = "No p-graph exists for pgraphId " + pgraphId + ".";
+		String message = "No pgraph exists for pgraphId " + pgraphId + ".";
 		logger.error(message, e);
 		throw new NoSuchPgraphException(message);
 	    }
 	}catch(NonUniqueResultException e){
-	    String message = "Multiple raw materials were found for " + pgraphId + ". There must always be exactly one raw material in a P-Graph.";
+	    String message = "Multiple raw materials were found for " + pgraphId + ". There must always be exactly one raw material in a pgraph.";
 	    logger.error(message, e);
 	    throw new InvalidPgraphStructureException(message);
 	}

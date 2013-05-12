@@ -7,7 +7,7 @@ package com.sobek.pgraph;
  * This Exception indicates that an operation was attempted on an invalid
  * pgraph.
  */
-public class InvalidPgraphStructureException extends RuntimeException{
+public class InvalidPgraphStructureException extends Exception{
 
     private static final long serialVersionUID = 1L;
     

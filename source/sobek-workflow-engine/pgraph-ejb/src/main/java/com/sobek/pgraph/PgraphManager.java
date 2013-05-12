@@ -1,10 +1,12 @@
 package com.sobek.pgraph;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.NamingException;
 
 import com.sobek.pgraph.operation.Operation;
+
 
 
 /**
@@ -18,19 +20,8 @@ import com.sobek.pgraph.operation.Operation;
  */
 public interface PgraphManager{
     
-    /**
-     * Creates and starts a new p-graph. A list of started operations
-     * is returned.
-     * 
-     * @param config The configuration used to create the P-Graph.
-     * @param rawMaterial The RawMaterial used to start the P-Graph.
-     * @return A list of started operations.
-     * 
-     * @throws IllegalArgumentException If the config is invalid or if either parameter is null.
-     */
-    //public List<Operation> startGraph(Object config, RawMaterial rawMaterial);
     
-    public long createPgraph();
+    public long createPgraph(List<Edge> edges) throws InvalidPgraphStructureException, IllegalArgumentException;
     
     
     /**
@@ -41,7 +32,8 @@ public interface PgraphManager{
      * @return A list of ready operations.
      * 
      * @throws NoSuchPgraphException If there is no pgraph with pgraphId.
+     * @throws InvalidPgraphStructureException If the structure of the pgraph is invalid.
      * @throws NamingException If one of the node jndi names in the P-Graph failed to be looked up.
      */
-    public List<Operation> getReadyOperations(long pgraphId) throws NoSuchPgraphException, NamingException;
+    public List<Operation> getReadyOperations(long pgraphId) throws NoSuchPgraphException, InvalidPgraphStructureException, NamingException;
 }

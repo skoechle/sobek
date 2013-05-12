@@ -11,6 +11,10 @@ public abstract class Node implements Serializable{
     public abstract NodeType getNodeType();
     public abstract void persist();
 
+    /*
+     * Package protected since only the pgraph manager should be allowed
+     * to set this.
+     */
     void setId(long id){
 	this.id = id;
     }
