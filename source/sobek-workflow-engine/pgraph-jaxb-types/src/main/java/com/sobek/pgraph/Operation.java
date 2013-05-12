@@ -1,0 +1,32 @@
+package com.sobek.pgraph;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(namespace = "com.sobek.pgraph")
+public class Operation extends Node{
+    
+    @XmlTransient
+    private static final long serialVersionUID = 1L;
+    
+    @XmlElement(required = true)
+    private OperationState state = OperationState.NOT_STARTED;
+    
+    @SuppressWarnings("unused")
+    private Operation(){
+	// Required by JAXB.
+    }
+    
+    public Operation(long id, String messageQueueName){
+	super(id, messageQueueName);
+    }
+    
+    public final NodeType getNodeType(){
+	return NodeType.OPERATION;
+    }
+    
+    public OperationState getState(){
+	return state;
+    }
+}
