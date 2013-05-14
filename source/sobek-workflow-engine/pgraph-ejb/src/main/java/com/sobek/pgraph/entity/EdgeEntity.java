@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(schema = "SOBEK", name = "EDGE")
+@Table(name = "EDGE")
 public class EdgeEntity{
     
    @EmbeddedId

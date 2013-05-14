@@ -17,12 +17,12 @@ import com.sobek.pgraph.NodeType;
 
 @NamedQueries({
     @NamedQuery(name = "NodeEntity.getChildNodes",
-	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.fromNodeId = :nodeId and n.id = e.toNodeId"),
+	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.primaryKey.fromNodeId = :nodeId and n.id = e.primaryKey.toNodeId"),
     @NamedQuery(name = "NodeEntity.getParentNodes",
-	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.toNodeId = :nodeId and n.id = e.fromNodeId")
+	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.primaryKey.toNodeId = :nodeId and n.id = e.primaryKey.fromNodeId")
 })
 @Entity
-@Table(schema = "SOBEK", name = "NODE")
+@Table(name = "NODE")
 public class NodeEntity{
     public static final String GET_CHILD_NODES_QUERY = "NodeEntity.getChildNode";
     public static final String GET_PARENT_NODES_QUERY = "NodeEntity.getParentNodes";
@@ -60,7 +60,6 @@ public class NodeEntity{
     }
     
     @PostLoad
-    @SuppressWarnings("unused")
     private void setNodeType(){
 	nodeType = NodeType.valueOf(type);
     }

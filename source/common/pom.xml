@@ -17,5 +17,6 @@
   <!-- Modules of the project -->
   <modules>
     <module>result-ejb</module>
+    <module>utilities</module>
   </modules>
 </project>

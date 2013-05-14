@@ -1,4 +1,4 @@
-package com.sobek.pgraph;
+package com.sobek.pgraph.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(schema = "SOBEK", name = "NODE_TYPE")
+@Table(name = "NODE_TYPE")
 public class NodeTypeEntity{
 
     @Column(name = "ID")

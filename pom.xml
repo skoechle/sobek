@@ -28,6 +28,7 @@
   </organization>
   <!-- Modules of the project -->
   <modules>
+    <module>integration-test</module>
     <module>source</module>
   </modules>
   

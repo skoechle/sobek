@@ -10,14 +10,14 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sobek.pgraph.EdgeEntity;
-import com.sobek.pgraph.EdgePrimaryKey;
 import com.sobek.pgraph.NoSuchPgraphException;
-import com.sobek.pgraph.NodeEntity;
 import com.sobek.pgraph.NodeType;
 import com.sobek.pgraph.PgraphDaoBean;
 import com.sobek.pgraph.PgraphDaoLocal;
 import com.sobek.pgraph.PgraphManagerBean;
+import com.sobek.pgraph.entity.EdgeEntity;
+import com.sobek.pgraph.entity.EdgePrimaryKey;
+import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.material.Product;
 import com.sobek.pgraph.material.RawMaterial;
 import com.sobek.pgraph.operation.Operation;

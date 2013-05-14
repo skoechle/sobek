@@ -14,6 +14,10 @@ import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sobek.pgraph.entity.EdgeEntity;
+import com.sobek.pgraph.entity.EdgePrimaryKey;
+import com.sobek.pgraph.entity.NodeEntity;
+import com.sobek.pgraph.entity.PgraphEntity;
 import com.sobek.pgraph.material.Material;
 import com.sobek.pgraph.operation.Operation;
 

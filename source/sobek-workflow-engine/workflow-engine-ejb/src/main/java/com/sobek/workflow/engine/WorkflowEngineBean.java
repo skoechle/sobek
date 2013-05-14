@@ -7,7 +7,11 @@ import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.jms.Message;
 
+import com.sobek.client.operation.OperationMessage;
+import com.sobek.client.operation.status.OperationCompletionMessage;
+import com.sobek.client.operation.status.OperationStatusMessage;
 import com.sobek.pgraph.operation.Operation;
 import com.sobek.workflow.WorkflowLocal;
 import com.sobek.workflow.engine.entity.WorkflowData;
@@ -81,5 +85,35 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 		}
 		
 		return returnValue;
+	}
+
+	@Override
+	public void receiveStatus(OperationStatusMessage status) {
+		logger.log(Level.INFO, "Handling status message: [{0}]", status);
+		// TODO: handle
+	}
+
+	@Override
+	public void receiveCompletion(OperationCompletionMessage completion) {
+		logger.log(Level.INFO, "Handling completion message: [{0}]", completion);
+		// TODO: handle
+	}
+
+	@Override
+	public void handleUnsupportedOperationMessage(OperationMessage operationMessage) {
+		logger.log(Level.INFO, "Handling unsupported message: [{0}]", operationMessage);
+		// TODO: handle
+	}
+
+	@Override
+	public void handleUnsupportedObjectType(Serializable object) {
+		logger.log(Level.INFO, "Handling unsupported object type: [{0}]", object);
+		// TODO: handle
+	}
+
+	@Override
+	public void logMessageHandlingException(Message message, Exception e) {
+		logger.log(Level.SEVERE, "An exception was thrown while attempting to handle message : [" + message + "]", e);
+		// TODO: handle
 	}
 }

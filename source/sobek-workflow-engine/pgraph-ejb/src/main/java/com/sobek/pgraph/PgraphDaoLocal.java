@@ -2,6 +2,10 @@ package com.sobek.pgraph;
 
 import java.util.List;
 
+import com.sobek.pgraph.entity.EdgeEntity;
+import com.sobek.pgraph.entity.NodeEntity;
+import com.sobek.pgraph.entity.PgraphEntity;
+
 
 public interface PgraphDaoLocal{
     

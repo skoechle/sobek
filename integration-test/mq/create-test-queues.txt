@@ -1,0 +1,4 @@
+imqcmd.exe -b localhost:7677 -u admin -n ShortRunningOperationQueue -t q create dst
+
+
+asadmin create-jms-resource --restype javax.jms.Queue --property Name=ShortRunningOperationQueue jms/ShortRunningOperationQueueJNDIName
