@@ -1,9 +1,12 @@
-package com.sobek.pgraph;
+package com.sobek.pgraph.entity;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+
+import com.sobek.pgraph.NodeType;
+import com.sobek.pgraph.OperationState;
 
 
 @Entity

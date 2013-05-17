@@ -1,17 +1,18 @@
--- Table: nodeType
+-- Table: node_type
 
-CREATE TABLE nodeType
+CREATE TABLE node_type
 (
     id integer PRIMARY KEY,
     name character varying(64) NOT NULL
 )
 WITH(OIDS=FALSE);
 
-ALTER TABLE nodeType OWNER TO "sobek";
-ALTER TABLE nodeType ADD CONSTRAINT name UNIQUE (name);
+ALTER TABLE node_type OWNER TO "sobek";
 
-INSERT INTO nodeType VALUES (0, 'RAW_MATERIAL');
-INSERT INTO nodeType VALUES (1, 'INTERMEDIATE_PRODUCT');
-INSERT INTO nodeType VALUES (2, 'PRODUCT');
-INSERT INTO nodeType VALUES (3, 'OPERATION');
+ALTER TABLE node_type ADD CONSTRAINT name UNIQUE (name);
+
+INSERT INTO node_type VALUES (0, 'RAW_MATERIAL');
+INSERT INTO node_type VALUES (1, 'INTERMEDIATE_PRODUCT');
+INSERT INTO node_type VALUES (2, 'PRODUCT');
+INSERT INTO node_type VALUES (3, 'OPERATION');
 

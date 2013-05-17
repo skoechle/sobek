@@ -1,7 +1,10 @@
-package com.sobek.pgraph;
+package com.sobek.pgraph.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+
+import com.sobek.pgraph.MaterialState;
+import com.sobek.pgraph.NodeType;
 
 @Entity
 public class MaterialEntity extends NodeEntity{

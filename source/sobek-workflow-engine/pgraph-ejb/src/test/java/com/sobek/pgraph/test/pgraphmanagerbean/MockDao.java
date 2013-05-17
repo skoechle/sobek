@@ -1,34 +1,20 @@
 package com.sobek.pgraph.test.pgraphmanagerbean;
 
 import java.lang.reflect.Field;
-<<<<<<< HEAD
-=======
-import java.lang.reflect.Method;
->>>>>>> 9647ec62ba437be570e3c4cd29adbed6bd31e471
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-<<<<<<< HEAD
-import com.sobek.pgraph.EdgeEntity;
 import com.sobek.pgraph.InvalidPgraphStructureException;
 import com.sobek.pgraph.NoSuchPgraphException;
-import com.sobek.pgraph.NodeEntity;
-import com.sobek.pgraph.NodeType;
-import com.sobek.pgraph.PgraphDaoLocal;
-import com.sobek.pgraph.PgraphEntity;
-=======
-import com.sobek.pgraph.InvalidPgraphStructureException;
-import com.sobek.pgraph.NoSuchPgraphException;
-import com.sobek.pgraph.Node;
 import com.sobek.pgraph.NodeType;
 import com.sobek.pgraph.PgraphDaoLocal;
 import com.sobek.pgraph.entity.EdgeEntity;
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
->>>>>>> 9647ec62ba437be570e3c4cd29adbed6bd31e471
+
 
 public class MockDao implements PgraphDaoLocal{
     private static Logger logger = LoggerFactory.getLogger(MockDao.class);
@@ -134,17 +120,6 @@ public class MockDao implements PgraphDaoLocal{
 
     @Override
     public void addPgraph(PgraphEntity pgraphEntity){
-<<<<<<< HEAD
 
     } 
-=======
-
-    }
-
-    @Override
-    public void addNode(NodeEntity nodeEntity){
-
-    }
-   
->>>>>>> 9647ec62ba437be570e3c4cd29adbed6bd31e471
 }

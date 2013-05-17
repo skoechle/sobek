@@ -4,6 +4,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.sobek.pgraph.entity.MaterialEntity;
+
 @Entity
 @Table(name="MATERIAL")
 @DiscriminatorValue("INTERMEDIATE_PRODUCT")
