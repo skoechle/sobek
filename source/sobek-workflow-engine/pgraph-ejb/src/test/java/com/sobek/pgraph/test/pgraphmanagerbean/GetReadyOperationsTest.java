@@ -12,16 +12,16 @@ import org.slf4j.LoggerFactory;
 
 import com.sobek.pgraph.EdgeEntity;
 import com.sobek.pgraph.EdgePrimaryKey;
+import com.sobek.pgraph.MaterialState;
 import com.sobek.pgraph.NoSuchPgraphException;
-import com.sobek.pgraph.NodeEntity;
-import com.sobek.pgraph.NodeType;
+import com.sobek.pgraph.Operation;
+import com.sobek.pgraph.OperationEntity;
+import com.sobek.pgraph.OperationState;
 import com.sobek.pgraph.PgraphDaoBean;
 import com.sobek.pgraph.PgraphDaoLocal;
 import com.sobek.pgraph.PgraphManagerBean;
-import com.sobek.pgraph.material.Product;
-import com.sobek.pgraph.material.RawMaterial;
-import com.sobek.pgraph.operation.Operation;
-import com.sobek.pgraph.operation.OperationState;
+import com.sobek.pgraph.ProductEntity;
+import com.sobek.pgraph.RawMaterialEntity;
 
 public class GetReadyOperationsTest{
     private static Logger logger = LoggerFactory.getLogger(GetReadyOperationsTest.class);
@@ -49,20 +49,20 @@ public class GetReadyOperationsTest{
 	long pgraphId = 1L;
 	MockDao pgraphDao = new MockDao(pgraphId);
 	
-	NodeEntity rootNode = new NodeEntity(pgraphId, NodeType.RAW_MATERIAL, "JNDI_NAME");
-	RawMaterial rootNodeValue = Mockito.mock(RawMaterial.class);
-	Mockito.when(rootNodeValue.isAvailable()).thenReturn(true);
+	RawMaterialEntity rootNode = new RawMaterialEntity(pgraphId, "queueName", MaterialState.AVAILABLE);
+	OperationEntity operationNode = new OperationEntity(pgraphId, "OperQueueName", OperationState.NOT_STARTED);
+	ProductEntity productNode = new ProductEntity(pgraphId, "queueName", MaterialState.NOT_AVAILABLE);
 	
-	NodeEntity operationNode = new NodeEntity(pgraphId, NodeType.OPERATION, "JNDI_NAME");
-	Operation operationNodeValue = Mockito.mock(Operation.class);
-	Mockito.when(operationNodeValue.getState()).thenReturn(OperationState.NOT_STARTED);
+	pgraphDao.addNode(rootNode);
+	long rootNodeId = rootNode.getId();
 	
-	NodeEntity productNode = new NodeEntity(pgraphId, NodeType.PRODUCT, "JNDI_NAME");
-	Product productNodeValue = Mockito.mock(Product.class);
+	pgraphDao.addNode(operationNode);
+	long operationNodeId = operationNode.getId();
 	
-	long rootNodeId = pgraphDao.addNode(rootNode, rootNodeValue);
-	long operationNodeId = pgraphDao.addNode(operationNode, operationNodeValue);
-	long productNodeId = pgraphDao.addNode(productNode, productNodeValue);
+	pgraphDao.addNode(productNode);
+	long productNodeId = productNode.getId();
+	
+	Operation expectedResult = new Operation(operationNodeId, operationNode.getMessageQueueName(), operationNode.getState());
 	
 	EdgeEntity edge1 = new EdgeEntity(new EdgePrimaryKey(pgraphId, rootNodeId, operationNodeId));
 	EdgeEntity edge2 = new EdgeEntity(new EdgePrimaryKey(pgraphId, operationNodeId, productNodeId));
@@ -76,9 +76,13 @@ public class GetReadyOperationsTest{
 	List<Operation> readyOps = bean.getReadyOperations(pgraphId);
 	
 	// Verify that the operation is returned.
-	
 	Assert.assertEquals(1, readyOps.size());
-	Assert.assertEquals(operationNodeValue, readyOps.get(0));
+	
+	Operation result = readyOps.get(0);
+	Assert.assertEquals(expectedResult.getId(), result.getId());
+	Assert.assertEquals(expectedResult.getMessageQueueName(), result.getMessageQueueName());
+	Assert.assertEquals(expectedResult.getNodeType(), result.getNodeType());
+	Assert.assertEquals(expectedResult.getState(), result.getState());
     }
       
     private PgraphManagerBean createPgraphManagerBean(PgraphDaoLocal pgraphDao) throws Exception{

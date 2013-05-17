@@ -1,11 +1,13 @@
 package com.sobek.pgraph;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.PostLoad;
@@ -20,6 +22,8 @@ import javax.persistence.Transient;
 	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.toNodeId = :nodeId and n.id = e.fromNodeId")
 })
 @Entity
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name = "TYPE", discriminatorType=DiscriminatorType.STRING)
 @Table(schema = "SOBEK", name = "NODE")
 public class NodeEntity{
     public static final String GET_CHILD_NODES_QUERY = "NodeEntity.getChildNode";
@@ -37,50 +41,42 @@ public class NodeEntity{
     private String type;
     
     @Column(name = "JNDI_NAME")
-    private String jndiName;
+    private String messageQueueName;
         
     @Transient
     private NodeType nodeType;
-    
-    @Transient 
-    private Node value;
-    
-    @SuppressWarnings("unused")
-    private NodeEntity(){
+      
+    protected NodeEntity(){
 	// Required by JPA
     }
     
-    public NodeEntity(long pgraphId, NodeType nodeType, String jndiName){
+    public NodeEntity(long pgraphId, NodeType nodeType, String messageQueueName){
 	this.pgraphId = pgraphId;
 	this.type = nodeType.toString();
 	this.nodeType = nodeType;
-	this.jndiName = jndiName;
+	this.messageQueueName = messageQueueName;
     }
     
     @PostLoad
     @SuppressWarnings("unused")
     private void setNodeType(){
-	nodeType = NodeType.valueOf(type);
+	this.nodeType = NodeType.valueOf(this.type);
     }
 
     public long getId(){
-        return id;
+        return this.id;
     }
 
     public long getPgraphId(){
-        return pgraphId;
+        return this.pgraphId;
     }
 
     public NodeType getType(){
-        return nodeType;
+        return this.nodeType;
+    }
+    
+    public String getMessageQueueName(){
+	return this.messageQueueName;
     }
 
-    public Node getValue() throws NamingException{
-	if(value == null){
-	    value = (Node)InitialContext.doLookup(jndiName);
-	    value.setId(id);
-	}
-	
-	return value;
-    }
 }

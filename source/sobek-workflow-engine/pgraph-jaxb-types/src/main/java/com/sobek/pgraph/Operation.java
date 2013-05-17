@@ -11,15 +11,16 @@ public class Operation extends Node{
     private static final long serialVersionUID = 1L;
     
     @XmlElement(required = true)
-    private OperationState state = OperationState.NOT_STARTED;
+    private OperationState state;
     
     @SuppressWarnings("unused")
     private Operation(){
 	// Required by JAXB.
     }
     
-    public Operation(long id, String messageQueueName){
+    public Operation(long id, String messageQueueName, OperationState state){
 	super(id, messageQueueName);
+	this.state = state;
     }
     
     public final NodeType getNodeType(){

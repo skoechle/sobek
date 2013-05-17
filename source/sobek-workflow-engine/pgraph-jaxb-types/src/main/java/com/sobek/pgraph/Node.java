@@ -27,7 +27,12 @@ public abstract class Node implements Serializable{
     
     public Node(long id, String messageQueueName){
 	if(id < 0 || messageQueueName == null || messageQueueName.isEmpty()){
-	    String message = "An invalid parameter was passed. Id cannot be negative and messageQueueName cannot be null or empty";
+	    String message = "An invalid parameter was passed. " + 
+		    "Id cannot be negative and messageQueueName cannot be null or empty. " + 
+		    "Parameters were:\n" + 
+		    "id: " + id + "\n" +
+		    "messageQueueName: '" + messageQueueName + "'";
+	    			
 	    throw new IllegalArgumentException(message);
 	}
 	

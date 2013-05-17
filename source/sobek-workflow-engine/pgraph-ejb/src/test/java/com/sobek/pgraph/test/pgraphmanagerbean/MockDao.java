@@ -1,7 +1,6 @@
 package com.sobek.pgraph.test.pgraphmanagerbean;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.sobek.pgraph.EdgeEntity;
 import com.sobek.pgraph.InvalidPgraphStructureException;
 import com.sobek.pgraph.NoSuchPgraphException;
-import com.sobek.pgraph.Node;
 import com.sobek.pgraph.NodeEntity;
 import com.sobek.pgraph.NodeType;
 import com.sobek.pgraph.PgraphDaoLocal;
@@ -31,25 +29,19 @@ public class MockDao implements PgraphDaoLocal{
 	idField.set(pgraphEntity, pgraphId);
     }
     
-    public long addNode(NodeEntity node, Node nodeValue) throws Exception{	
+    public void addNode(NodeEntity node){	
 	long nodeId = nodes.size();
 	
-	// Set fields
-	Field idField = NodeEntity.class.getDeclaredField("id");
-	idField.setAccessible(true);
-	idField.setLong(node, nodeId);
-		
-	Field valueField = NodeEntity.class.getDeclaredField("value");
-	valueField.setAccessible(true);
-	valueField.set(node, nodeValue);
-	
-	// Call the PostLoad method
-	Method setNodeTypeMethod = NodeEntity.class.getDeclaredMethod("setNodeType", new Class<?>[]{});
-	setNodeTypeMethod.setAccessible(true);
-	setNodeTypeMethod.invoke(node, new Object[]{});
-	
+	try{
+	    // Set fields
+	    Field idField = NodeEntity.class.getDeclaredField("id");
+	    idField.setAccessible(true);
+	    idField.setLong(node, nodeId);
+	}catch(Exception e){
+	    e.printStackTrace();
+	}
+				
 	nodes.add(node);
-	return nodeId;
     }
     
     public void addEdge(EdgeEntity edge){
@@ -128,11 +120,5 @@ public class MockDao implements PgraphDaoLocal{
     @Override
     public void addPgraph(PgraphEntity pgraphEntity){
 
-    }
-
-    @Override
-    public void addNode(NodeEntity nodeEntity){
-
-    }
-   
+    } 
 }

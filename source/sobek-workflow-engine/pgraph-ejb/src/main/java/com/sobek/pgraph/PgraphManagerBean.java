@@ -1,6 +1,5 @@
 package com.sobek.pgraph;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,8 +13,6 @@ import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sobek.pgraph.material.Material;
-import com.sobek.pgraph.operation.Operation;
 
 
 @Stateless
@@ -51,73 +48,74 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	PgraphEntity pgraphEntity = new PgraphEntity();
 	pgraphDao.addPgraph(pgraphEntity);
 	
-	HashMap<Node, Long> persistedNodes = new HashMap<Node, Long>();
+	//HashMap<Node, Long> persistedNodes = new HashMap<Node, Long>();
 	
 	// Add all the edges to the pgraph
-	for(Edge edge : edges){
-	    Node fromNode = edge.getFromNode();
-	    Node toNode = edge.getToNode();
-	    long fromNodeId = -1L;
-	    long toNodeId = -1L;
-	    
-	    // Persist unique nodes or get persisted node.
-	    if(persistedNodes.containsKey(fromNode)){
-		fromNodeId = persistedNodes.get(fromNode);
-	    }else{
-		NodeEntity nodeEntity = new NodeEntity(pgraphEntity.getId(), fromNode.getNodeType(), fromNode.getJndiName());
-		pgraphDao.addNode(nodeEntity);
-		
-		fromNodeId = nodeEntity.getId();
-		persistedNodes.put(fromNode, fromNodeId);
-	    }
-	    
-	    if(persistedNodes.containsKey(toNode)){
-		fromNodeId = persistedNodes.get(toNode);
-	    }else{
-		NodeEntity nodeEntity = new NodeEntity(pgraphEntity.getId(), toNode.getNodeType(), toNode.getJndiName());
-		pgraphDao.addNode(nodeEntity);
-		
-		toNodeId = nodeEntity.getId();
-		persistedNodes.put(toNode, toNodeId);
-	    }
-	    
-	    // Persist the edge
-	    EdgePrimaryKey edgePk = new EdgePrimaryKey(pgraphEntity.getId(), fromNodeId, toNodeId);
-	    EdgeEntity edgeEntity = new EdgeEntity(edgePk);
-	    pgraphDao.addEdge(edgeEntity);
-	}
+//	for(Edge edge : edges){
+//	    Node fromNode = edge.getFromNode();
+//	    Node toNode = edge.getToNode();
+//	    long fromNodeId = -1L;
+//	    long toNodeId = -1L;
+//	    
+//	    // Persist unique nodes or get persisted node.
+//	    if(persistedNodes.containsKey(fromNode)){
+//		fromNodeId = persistedNodes.get(fromNode);
+//	    }else{
+//		NodeEntity nodeEntity = new NodeEntity(pgraphEntity.getId(), fromNode.getNodeType(), fromNode.getJndiName());
+//		pgraphDao.addNode(nodeEntity);
+//		
+//		fromNodeId = nodeEntity.getId();
+//		persistedNodes.put(fromNode, fromNodeId);
+//	    }
+//	    
+//	    if(persistedNodes.containsKey(toNode)){
+//		fromNodeId = persistedNodes.get(toNode);
+//	    }else{
+//		NodeEntity nodeEntity = new NodeEntity(pgraphEntity.getId(), toNode.getNodeType(), toNode.getJndiName());
+//		pgraphDao.addNode(nodeEntity);
+//		
+//		toNodeId = nodeEntity.getId();
+//		persistedNodes.put(toNode, toNodeId);
+//	    }
+//	    
+//	    // Persist the edge
+//	    EdgePrimaryKey edgePk = new EdgePrimaryKey(pgraphEntity.getId(), fromNodeId, toNodeId);
+//	    EdgeEntity edgeEntity = new EdgeEntity(edgePk);
+//	    pgraphDao.addEdge(edgeEntity);
+//	}
 	
 	//--------------------------------------------------
 	//           validate pgraph structure.
 	//--------------------------------------------------
-//	boolean valid = true;
-//	StringBuilder validationErrors = new StringBuilder();
-//	
-//	if(!isConnected(pgraphEntity.getId())){
-//	    valid = false;
-//	}
-//
-//	if(isCyclic(pgraphEntity.getId())){
-//	    valid = false;
-//	}
-//	
-//	if(!hasOneRawMaterial(pgraphEntity.getId())){
-//	    valid = false;
-//	}
-//	
-//	if(!hasOneProduct(pgraphEntity.getId())){
-//	    valid = false;
-//	}
-//	
-//	if(!isInterleaved(pgraphEntity.getId())){
-//	    valid = false;
-//	}
-//	
-//	if(!valid){
-//	    String message = validationErrors.toString();
-//	    logger.error(message);
-//	    throw new InvalidPgraphStructureException(message);
-//	}
+	//TODO
+	boolean valid = true;
+	StringBuilder validationErrors = new StringBuilder();
+	
+	if(!isConnected(pgraphEntity.getId())){
+	    //valid = false;
+	}
+
+	if(isCyclic(pgraphEntity.getId())){
+	    //valid = false;
+	}
+	
+	if(!hasOneRawMaterial(pgraphEntity.getId())){
+	    //valid = false;
+	}
+	
+	if(!hasOneProduct(pgraphEntity.getId())){
+	    //valid = false;
+	}
+	
+	if(!isInterleaved(pgraphEntity.getId())){
+	    //valid = false;
+	}
+	
+	if(!valid){
+	    String message = validationErrors.toString();
+	    logger.error(message);
+	    throw new InvalidPgraphStructureException(message);
+	}
 	
 	return pgraphEntity.getId();
     }
@@ -159,16 +157,19 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	    switch(nodeEntity.getType()){
 		case OPERATION:
         		logger.trace("Node {} in pgraphId {} is an operation.", nodeEntity, pgraphId);
-        		Operation operation = (Operation)nodeEntity.getValue();
-        		logger.trace("The node value is {} for node {} in pgraphId {}.", operation, nodeEntity, pgraphId);
-        		
-        		switch(operation.getState()){
+        		OperationEntity operationEntity = (OperationEntity)nodeEntity;
+        		switch(operationEntity.getState()){
         		    case NOT_STARTED: // If the operation is not yet started then check materials
         			logger.trace("Node {} in pgraphId {} is not started.", nodeEntity, pgraphId);
         			
         			if(checkRequiredMaterials(nodeEntity)){
         			    // We can start this operation if all required materials are available.
         			    logger.trace("All materials are available for node {} in pgraphId {}.", nodeEntity, pgraphId);
+        			    Operation operation = new Operation(
+        				   operationEntity.getId(), 
+        				   operationEntity.getMessageQueueName(), 
+        				   operationEntity.getState());
+        			   
         			    readyOperations.add(operation);
         			}
         			
@@ -184,12 +185,12 @@ public class PgraphManagerBean implements PgraphManagerLocal{
                 case INTERMEDIATE_PRODUCT:
                 case PRODUCT:
         		logger.trace("Node {} in pgraphId {} is a material.", nodeEntity, pgraphId);
-        		Material material = (Material)nodeEntity.getValue();
-        		logger.trace("The node value is {} for node {} in pgraphId {}.", material, nodeEntity, pgraphId);
+        		
+        		MaterialEntity materialEntity = (MaterialEntity)nodeEntity;
         		
         		// Only add Materials that are available
-        		if(material.isAvailable()){
-        		    logger.trace("Material {} is available for node {} in pgraphId {}.", material, nodeEntity, pgraphId);
+        		if(MaterialState.AVAILABLE.equals(materialEntity.getState())){
+        		   logger.trace("Material is available for node {} in pgraphId {}.", nodeEntity, pgraphId);
         		   addChildNodesToQueue(nodeEntity, queuedNodes, visitedNodes);
         		}
         		
@@ -239,11 +240,9 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	    switch(materialNodeEntity.getType()){
 		case INTERMEDIATE_PRODUCT:
 		case RAW_MATERIAL:
-		    Material material = (Material)materialNodeEntity.getValue();
-		    logger.trace("Material value is {} for node {}.", material, materialNodes);
-		    
-		    materialsAvailable = material.isAvailable();
-		    logger.trace("Available = {} for material {} and node {}.", materialsAvailable, material, nodeEntity);
+		    		    
+		    materialsAvailable = MaterialState.AVAILABLE.equals(((MaterialEntity)materialNodeEntity).getState());
+		    logger.trace("Available = {} for node {}.", materialsAvailable, nodeEntity);
 		    break;
 		default:
 		    String message = "Expected to find Material nodes while checking for required materials for nodeId " + nodeEntity.getId() + ".";
@@ -258,7 +257,7 @@ public class PgraphManagerBean implements PgraphManagerLocal{
     
     private boolean isConnected(long pgraphId){
 	//TODO
-	return false;
+	return true;
     }
     
     private boolean isCyclic(long pgraphId){
@@ -268,16 +267,16 @@ public class PgraphManagerBean implements PgraphManagerLocal{
     
     private boolean hasOneRawMaterial(long pgraphId){
 	//TODO
-	return false;
+	return true;
     }
     
     private boolean hasOneProduct(long pgraphId){
 	//TODO
-	return false;
+	return true;
     }
     
     private boolean isInterleaved(long pgraphId){
 	//TODO
-	return false;
+	return true;
     }
 }
