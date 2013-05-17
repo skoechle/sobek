@@ -17,7 +17,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.sobek.workflow.engine.WorkflowStatus;
+import com.sobek.client.operation.status.Status;
 
 @Entity
 @Table(name="WORKFLOW")
@@ -40,7 +40,7 @@ public class WorkflowData implements Serializable {
 	private String statusString;
 	
 	@Transient
-	private WorkflowStatus status;
+	private Status status;
 	
 	@Column(name="PARAMETERS")
 	@Lob
@@ -56,7 +56,7 @@ public class WorkflowData implements Serializable {
 	public WorkflowData(String name, Serializable parameters) {
 		this.name = name;
 		this.parameters = parameters;
-		this.status = WorkflowStatus.CREATED;
+		this.status = Status.CREATED;
 	}
 
 	public long getId() {
@@ -67,11 +67,11 @@ public class WorkflowData implements Serializable {
 		return this.name;
 	}
 
-	public WorkflowStatus getStatus() {
+	public Status getStatus() {
 		return this.status;
 	}
 	
-	public void setStatus(WorkflowStatus status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 
@@ -80,7 +80,7 @@ public class WorkflowData implements Serializable {
 	}
 
 	public void failed() {
-		this.status = WorkflowStatus.FAILED;
+		this.status = Status.FAILED;
 	}
 	
 	@PrePersist
@@ -90,7 +90,7 @@ public class WorkflowData implements Serializable {
 	
 	@PostLoad
 	private void postLoad() {
-		this.status = WorkflowStatus.valueOf(this.statusString);
+		this.status = Status.valueOf(this.statusString);
 	}
 
 	public void addOperation(OperationData operationData) {

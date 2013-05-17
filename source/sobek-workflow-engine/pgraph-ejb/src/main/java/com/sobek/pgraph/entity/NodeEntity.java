@@ -1,4 +1,4 @@
-package com.sobek.pgraph;
+package com.sobek.pgraph.entity;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -14,17 +14,23 @@ import javax.persistence.PostLoad;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.sobek.pgraph.Node;
+import com.sobek.pgraph.NodeType;
 
 @NamedQueries({
     @NamedQuery(name = "NodeEntity.getChildNodes",
-	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.fromNodeId = :nodeId and n.id = e.toNodeId"),
+	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.primaryKey.fromNodeId = :nodeId and n.id = e.primaryKey.toNodeId"),
     @NamedQuery(name = "NodeEntity.getParentNodes",
-	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.toNodeId = :nodeId and n.id = e.fromNodeId")
+	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.primaryKey.toNodeId = :nodeId and n.id = e.primaryKey.fromNodeId")
 })
 @Entity
+<<<<<<< HEAD:source/sobek-workflow-engine/pgraph-ejb/src/main/java/com/sobek/pgraph/NodeEntity.java
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name = "TYPE", discriminatorType=DiscriminatorType.STRING)
 @Table(schema = "SOBEK", name = "NODE")
+=======
+@Table(name = "NODE")
+>>>>>>> 9647ec62ba437be570e3c4cd29adbed6bd31e471:source/sobek-workflow-engine/pgraph-ejb/src/main/java/com/sobek/pgraph/entity/NodeEntity.java
 public class NodeEntity{
     public static final String GET_CHILD_NODES_QUERY = "NodeEntity.getChildNode";
     public static final String GET_PARENT_NODES_QUERY = "NodeEntity.getParentNodes";
@@ -58,7 +64,6 @@ public class NodeEntity{
     }
     
     @PostLoad
-    @SuppressWarnings("unused")
     private void setNodeType(){
 	this.nodeType = NodeType.valueOf(this.type);
     }
@@ -74,9 +79,19 @@ public class NodeEntity{
     public NodeType getType(){
         return this.nodeType;
     }
+<<<<<<< HEAD:source/sobek-workflow-engine/pgraph-ejb/src/main/java/com/sobek/pgraph/NodeEntity.java
     
     public String getMessageQueueName(){
 	return this.messageQueueName;
+=======
+
+    public Node getValue() throws NamingException{
+	if(value == null){
+	    value = (Node)InitialContext.doLookup(jndiName);
+	}
+	
+	return value;
+>>>>>>> 9647ec62ba437be570e3c4cd29adbed6bd31e471:source/sobek-workflow-engine/pgraph-ejb/src/main/java/com/sobek/pgraph/entity/NodeEntity.java
     }
 
 }

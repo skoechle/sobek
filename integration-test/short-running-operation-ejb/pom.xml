@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-Instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!-- project management section -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>sobek</groupId>
+  <artifactId>short-running-operation-ejb</artifactId>
+  <packaging>ejb</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <url>blah</url>
+  <description>This is the source project for Sobek</description>
+  
+  <parent>
+    <groupId>sobek</groupId>
+    <artifactId>integration-test</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+	<dependencies>
+		<dependency>
+			<groupId>sobek</groupId>
+			<artifactId>client-operation</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>sobek</groupId>
+			<artifactId>utilities</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<type>jar</type>
+		</dependency>
+
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>6.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

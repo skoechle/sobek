@@ -1,0 +1,21 @@
+Create the Open MQ queues
+
+cd to Open MQ bin directory (below example assumes an installation directory of C:\Sun\openMQ)
+
+> cd \Sun\openMQ\mq\bin
+
+Start the sobek broker if it is not already started (this will create the broker if it does not exist)
+
+> imqbrokerd.exe -name sobekbroker -port 7677
+
+In a different window (the command above does not run in background) create the queues.
+
+> imqcmd.exe -b localhost:7677 -u admin -n SobekStatusQueue -t q create dst
+
+
+Create the Glassfish Objects to connect to the queues
+
+asadmin create-jms-host --mqhost localhost --mquser admin --mqpassword admin --mqport 7677 SobekHost
+
+asadmin create-jms-resource --restype javax.jms.Queue --property Name=SobekStatusQueue jms/SobekStatusQueueJNDIName
+

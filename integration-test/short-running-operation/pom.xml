@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-Instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!-- project management section -->
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>sobek</groupId>
+  <artifactId>short-running-operation</artifactId>
+  <packaging>ear</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <url>blah</url>
+  <description>Builds the short running operation test ear.</description>
+  
+  <parent>
+    <groupId>sobek</groupId>
+    <artifactId>integration-test</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+	<dependencies>
+		<dependency>
+			<groupId>sobek</groupId>
+			<artifactId>short-running-operation-ejb</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<type>ejb</type>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<modules>
+						<ejbModule>
+							<groupId>sobek</groupId>
+							<artifactId>short-running-operation-ejb</artifactId>
+						</ejbModule>
+					</modules>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
