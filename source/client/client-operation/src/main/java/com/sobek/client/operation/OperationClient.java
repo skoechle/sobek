@@ -14,9 +14,10 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import com.sobek.client.operation.status.CompletionState;
 import com.sobek.client.operation.status.OperationCompletionMessage;
 import com.sobek.client.operation.status.OperationStatusMessage;
-import com.sobek.client.operation.status.Status;
+import com.sobek.client.operation.status.OperationStatus;
 import com.sobek.common.util.SystemProperties;
 
 // TODO: Write this class properly.  It is just hacked for testing
@@ -79,7 +80,7 @@ public class OperationClient {
 	
 	public void sendStatusMessage(
 		float percentComplete,
-		Status status,
+		OperationStatus status,
 		String details)
 	{
 		OperationStatusMessage messageToSend =
@@ -100,17 +101,37 @@ public class OperationClient {
 	}
 	
 	public void sendCompletionMessage(
-		Status status,
-		String details,
 		Serializable material)
+	{
+		this.sendCompletionMessage(material, CompletionState.COMPLETE, null);
+	}
+	
+	public void sendCompletionMessage(
+		Serializable material,
+		String details)
+	{
+		this.sendCompletionMessage(material, CompletionState.COMPLETE, details);
+	}
+	
+	public void sendCompletionMessage(
+		Serializable material,
+		CompletionState status)
+	{
+		this.sendCompletionMessage(material, status, null);
+	}
+
+	public void sendCompletionMessage(
+		Serializable material,
+		CompletionState status,
+		String details)
 	{
 		OperationCompletionMessage messageToSend =
 				new OperationCompletionMessage(
 						this.message.getWorkflowId(),
 						this.message.getOperationId(),
+						material,
 						status,
-						details,
-						material);
+						details);
 		
         try {
 			ObjectMessage objectMessage = session.createObjectMessage(messageToSend);

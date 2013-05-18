@@ -4,8 +4,4 @@ import java.io.Serializable;
 
 public interface WorkflowEngine  extends Serializable {
 	StartWorkflowResult startWorkflow(String workflowName, Serializable parameters);
-
-	StartWorkflowResult startWorkflow(String name);
-	
-	Serializable getParametersForWorkflow(long id);
 }

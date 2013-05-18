@@ -10,30 +10,47 @@ public class OperationMessage implements Serializable{
 	
 	private long workflowId = 0;
 	private long operationId = 0;
-
-	public OperationMessage(
+	private String details = "";
+	protected OperationMessage(
 			long workflowId,
 			long operationId)
 	{
-		if(workflowId < 1 || operationId < 1)
+		this(workflowId, operationId, null);
+	}
+
+	protected OperationMessage(
+			long workflowId,
+			long operationId,
+			String details)
+	{
+		if(workflowId < 1 || operationId < 1
+				|| (details != null && details.length() > 1024))
 		{
 			throw new IllegalArgumentException(
 					"One or more invalid values was passed to the " +
 					this.getClass().getName() + " constructor.  The given values " +
 					"were:" + SystemProperties.NEW_LINE +
 					"Workflow Id (must be > 0): " + workflowId + SystemProperties.NEW_LINE +
-					"Operation Id (must be > 0): " + operationId + SystemProperties.NEW_LINE);
+					"Operation Id (must be > 0): " + operationId + SystemProperties.NEW_LINE +
+					"Details (length must be < 1024) :" + (details != null ? details.length() : details) + SystemProperties.NEW_LINE);
 		}
 
+		if(details != null) {
+			this.details = details;
+		}
 		this.workflowId = workflowId;
 		this.operationId = operationId;
 	}
 	
 	public long getWorkflowId() {
-		return workflowId;
+		return this.workflowId;
 	}
 	
 	public long getOperationId() {
-		return operationId;
+		return this.operationId;
+	}
+	
+	public String getDetails() {
+		return this.details;
 	}
 }

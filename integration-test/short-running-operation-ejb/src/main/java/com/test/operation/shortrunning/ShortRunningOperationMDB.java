@@ -11,7 +11,8 @@ import javax.jms.TextMessage;
 
 import com.sobek.client.operation.OperationClient;
 import com.sobek.client.operation.request.OperationRequestMessage;
-import com.sobek.client.operation.status.Status;
+import com.sobek.client.operation.status.CompletionState;
+import com.sobek.client.operation.status.OperationStatus;
 import com.sobek.common.util.SystemProperties;
 
 @MessageDriven(mappedName="jms/ShortRunningOperationQueueJNDIName")
@@ -53,7 +54,7 @@ public class ShortRunningOperationMDB implements MessageListener {
 		
 		OperationClient client = new OperationClient(request);
 		
-		client.sendStatusMessage(.25F, Status.PROCESSING, "Some randome details for 25% complete.");
+		client.sendStatusMessage(.25F, OperationStatus.WORKING, "Some randome details for 25% complete.");
 		
 		try {
 			Thread.sleep(5000);
@@ -61,7 +62,7 @@ public class ShortRunningOperationMDB implements MessageListener {
 			e.printStackTrace();
 		}
 		
-		client.sendStatusMessage(.5F, Status.PROCESSING, "Some randome details for 50% complete.");
+		client.sendStatusMessage(.5F, OperationStatus.WORKING, "Some randome details for 50% complete.");
 		
 		try {
 			Thread.sleep(5000);
@@ -69,7 +70,7 @@ public class ShortRunningOperationMDB implements MessageListener {
 			e.printStackTrace();
 		}
 		
-		client.sendStatusMessage(.75F, Status.PROCESSING, "Some randome details for 75% complete.");
+		client.sendStatusMessage(.75F, OperationStatus.WORKING, "Some randome details for 75% complete.");
 		
 		try {
 			Thread.sleep(5000);
@@ -77,7 +78,7 @@ public class ShortRunningOperationMDB implements MessageListener {
 			e.printStackTrace();
 		}
 		
-		client.sendCompletionMessage(Status.COMPLETED, "Some randome details for 75% complete.", "Returned material... for now just using a string.  Later we will do something cool.");
+		client.sendCompletionMessage("Returned material... for now just using a string.  Later we will do something cool.", CompletionState.COMPLETE, "Some randome details for 75% complete.");
 	}
 
 }

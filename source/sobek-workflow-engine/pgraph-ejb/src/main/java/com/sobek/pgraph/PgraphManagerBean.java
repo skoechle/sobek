@@ -163,7 +163,7 @@ public class PgraphManagerBean implements PgraphManagerLocal{
         		logger.trace("Node {} in pgraphId {} is an operation.", nodeEntity, pgraphId);
         		OperationEntity operationEntity = (OperationEntity)nodeEntity;
         		switch(operationEntity.getState()){
-        		    case NOT_STARTED: // If the operation is not yet started then check materials
+        		    case UNEVALUATED: // If the operation is not yet started then check materials
         			logger.trace("Node {} in pgraphId {} is not started.", nodeEntity, pgraphId);
         			
         			if(checkRequiredMaterials(nodeEntity)){
@@ -182,6 +182,18 @@ public class PgraphManagerBean implements PgraphManagerLocal{
         			logger.trace("Node {} in pgraphId {} is complete.", nodeEntity, pgraphId);
         			addChildNodesToQueue(nodeEntity, queuedNodes, visitedNodes);
         			break;
+				case CANCELED:
+					break;
+				case FAILED:
+					break;
+				case SUSPENDED:
+					break;
+				case UNEXECUTED:
+					break;
+				case WORKING:
+					break;
+				default:
+					break;
         		}
         		
         		break;     		
@@ -283,4 +295,11 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	//TODO
 	return true;
     }
+
+	@Override
+	public void updateOperation(long pGraphId, long operationId,
+			float percentComplete, String status) {
+		// TODO Auto-generated method stub
+		
+	}
 }

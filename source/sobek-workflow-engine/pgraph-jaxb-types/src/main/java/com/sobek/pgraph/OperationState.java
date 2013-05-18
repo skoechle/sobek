@@ -6,7 +6,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 @XmlType(namespace = "com.sobek.pgraph")
 public enum OperationState{
-    NOT_STARTED,
+	UNEVALUATED, 
+    UNEXECUTED, 
     WORKING,
-    COMPLETE
+    SUSPENDED,
+	CANCELED,
+	COMPLETE,
+	FAILED
 }

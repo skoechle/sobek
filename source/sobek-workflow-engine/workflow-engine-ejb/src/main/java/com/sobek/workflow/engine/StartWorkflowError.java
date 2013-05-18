@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sobek.common.result.Message;
-import com.sobek.workflow.engine.entity.WorkflowData;
+import com.sobek.workflow.entity.WorkflowEntity;
 
 public class StartWorkflowError extends Message {
 
@@ -13,7 +13,7 @@ public class StartWorkflowError extends Message {
 	
 	private Map<String, String> substitutionValues = new HashMap<String, String>();
 
-	protected StartWorkflowError(StartWorkflowErrorCode code, WorkflowData data) {
+	protected StartWorkflowError(StartWorkflowErrorCode code, WorkflowEntity data) {
 		super(code);
 		
 		if(data == null) {

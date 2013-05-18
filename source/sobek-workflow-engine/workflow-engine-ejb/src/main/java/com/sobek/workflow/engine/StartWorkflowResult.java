@@ -1,17 +1,17 @@
 package com.sobek.workflow.engine;
 
 import com.sobek.common.result.Result;
-import com.sobek.workflow.engine.entity.WorkflowData;
+import com.sobek.workflow.entity.WorkflowEntity;
 
 public class StartWorkflowResult extends Result{
 	
 	private static final long serialVersionUID = 1L;
-	private WorkflowData data = null;
+	private WorkflowEntity data = null;
 
 	public StartWorkflowResult() {
 	}
 
-	public StartWorkflowResult(WorkflowData data) {
+	public StartWorkflowResult(WorkflowEntity data) {
 		this.data = data;
 	}
 	
@@ -23,16 +23,12 @@ public class StartWorkflowResult extends Result{
 		return returnValue;
 	}
 
-	public void failedToCreateWorkflow() {
+	public void failedToCreate() {
 		this.addErrorCode(StartWorkflowErrorCode.FAILED_TO_CREATE);
 	}
 
 	public void failedToStart() {
 		this.addErrorCode(StartWorkflowErrorCode.FAILED_TO_START);
-	}
-
-	public void failedToCreateWorkflowData() {
-		this.addErrorCode(StartWorkflowErrorCode.FAILED_TO_CREATE_DATA);
 	}
 
 	private void addErrorCode(StartWorkflowErrorCode code) {

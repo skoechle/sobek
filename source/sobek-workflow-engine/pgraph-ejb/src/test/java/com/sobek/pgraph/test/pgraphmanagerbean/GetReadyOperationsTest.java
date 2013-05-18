@@ -50,7 +50,7 @@ public class GetReadyOperationsTest{
 	MockDao pgraphDao = new MockDao(pgraphId);
 	
 	RawMaterialEntity rootNode = new RawMaterialEntity(pgraphId, "queueName", MaterialState.AVAILABLE);
-	OperationEntity operationNode = new OperationEntity(pgraphId, "OperQueueName", OperationState.NOT_STARTED);
+	OperationEntity operationNode = new OperationEntity(pgraphId, "OperQueueName", OperationState.UNEVALUATED);
 	ProductEntity productNode = new ProductEntity(pgraphId, "queueName", MaterialState.NOT_AVAILABLE);
 	
 	pgraphDao.addNode(rootNode);

@@ -11,7 +11,6 @@ public class StartWorkflowErrorCode extends MessageCode {
 		super(range, code);
 	}
 
-	public static final StartWorkflowErrorCode FAILED_TO_CREATE_DATA = new StartWorkflowErrorCode(10001);
 	public static final StartWorkflowErrorCode FAILED_TO_CREATE = new StartWorkflowErrorCode(10002);
 	public static final StartWorkflowErrorCode FAILED_TO_START = new StartWorkflowErrorCode(10003);
 }

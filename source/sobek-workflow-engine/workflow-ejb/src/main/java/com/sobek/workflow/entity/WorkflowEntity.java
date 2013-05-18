@@ -1,8 +1,6 @@
-package com.sobek.workflow.engine.entity;
+package com.sobek.workflow.entity;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,18 +8,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.OneToMany;
 import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.sobek.client.operation.status.Status;
+import com.sobek.workflow.WorkflowState;
 
 @Entity
 @Table(name="WORKFLOW")
-public class WorkflowData implements Serializable {
+public class WorkflowEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
     @SequenceGenerator(name="idGenerator",
@@ -35,28 +32,28 @@ public class WorkflowData implements Serializable {
 	
 	@Column(name="NAME")
 	private String name;
+    
+    @Column(name="PGRAPH_ID")
+    private long pgraphId;
 	
 	@Column(name="STATUS")
-	private String statusString;
+	private String stateString;
 	
 	@Transient
-	private Status status;
+	private WorkflowState state;
 	
 	@Column(name="PARAMETERS")
 	@Lob
 	private Serializable parameters;
-	
-	@OneToMany(mappedBy="workflow")
-	private Set<OperationData> operations = new HashSet<OperationData>();
 
 	@SuppressWarnings("unused")
-	private WorkflowData() {
+	private WorkflowEntity() {
 	}
 	
-	public WorkflowData(String name, Serializable parameters) {
+	public WorkflowEntity(String name, Serializable parameters) {
 		this.name = name;
 		this.parameters = parameters;
-		this.status = Status.CREATED;
+		this.state = WorkflowState.NOT_STARTED;
 	}
 
 	public long getId() {
@@ -66,13 +63,17 @@ public class WorkflowData implements Serializable {
 	public String getName() {
 		return this.name;
 	}
+	
+	public long getPGraphId() {
+		return this.pgraphId;
+	}
 
-	public Status getStatus() {
-		return this.status;
+	public WorkflowState getStatus() {
+		return this.state;
 	}
 	
-	public void setStatus(Status status) {
-		this.status = status;
+	public void setStatus(WorkflowState status) {
+		this.state = status;
 	}
 
 	public Serializable getParameters() {
@@ -80,20 +81,16 @@ public class WorkflowData implements Serializable {
 	}
 
 	public void failed() {
-		this.status = Status.FAILED;
+		this.state = WorkflowState.FAILED;
 	}
 	
 	@PrePersist
 	private void prePersist() {
-		this.statusString = status.name();
+		this.stateString = state.name();
 	}
 	
 	@PostLoad
 	private void postLoad() {
-		this.status = Status.valueOf(this.statusString);
-	}
-
-	public void addOperation(OperationData operationData) {
-		this.operations.add(operationData);
+		this.state = WorkflowState.valueOf(this.stateString);
 	}
 }

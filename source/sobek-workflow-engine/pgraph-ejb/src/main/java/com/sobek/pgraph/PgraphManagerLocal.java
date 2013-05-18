@@ -11,4 +11,7 @@ import javax.ejb.Local;
 @Local
 public interface PgraphManagerLocal extends PgraphManager{
 
+	void updateOperation(long pGraphId, long operationId,
+			float percentComplete, String status);
+
 }

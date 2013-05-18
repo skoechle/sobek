@@ -1,20 +1,32 @@
 package com.sobek.workflow.engine;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.EJBContext;
 import javax.ejb.Stateless;
+import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.MessageProducer;
+import javax.jms.ObjectMessage;
+import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.Session;
 
 import com.sobek.client.operation.OperationMessage;
 import com.sobek.client.operation.status.OperationCompletionMessage;
 import com.sobek.client.operation.status.OperationStatusMessage;
-import com.sobek.pgraph.operation.Operation;
+import com.sobek.common.util.SystemProperties;
+import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.workflow.WorkflowLocal;
-import com.sobek.workflow.engine.entity.WorkflowData;
+import com.sobek.workflow.entity.WorkflowEntity;
 
 @Stateless
 public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRemote {
@@ -23,80 +35,85 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 
 	private static Logger logger = Logger.getLogger(WorkflowEngineBean.class.getPackage().getName());
 
+	@Resource
+	private EJBContext context;
+	
 	@EJB
 	private WorkflowLocal workflow;
 	
-	@EJB
-	private WorkflowEngineDAOLocal dao;
+	@Resource(mappedName="jms/SobekConnectionFactoryJNDIName")
+	private QueueConnectionFactory queueConnectionFactory;
 	
-	@Override
-	public StartWorkflowResult startWorkflow(String name) {
-		return this.startWorkflow(name, null);
+	private QueueConnection queueConnection;
+	private Session session;
+	
+	@PostConstruct
+	private void createJMSObjects() {
+		try {
+			this.queueConnection = this.queueConnectionFactory.createQueueConnection();
+			this.session = this.queueConnection.createQueueSession(true, Session.AUTO_ACKNOWLEDGE);
+		} catch (JMSException e) {
+			logger.log(Level.SEVERE, "Unable to create the JMS resources, an exception was thrown.", e);
+		}
 	}
 
 	@Override
 	public StartWorkflowResult startWorkflow(String name, Serializable parameters) {
 		logger.log(Level.FINEST, "Entering, name = [{0}], parameters = [{1}]", new Object[] {name, parameters});
-		StartWorkflowResult returnValue = null;
-		if(name == null || name.isEmpty()) {
+		StartWorkflowResult returnValue = new StartWorkflowResult();
+		if(name == null || name.isEmpty() || parameters == null) {
 			throw new IllegalArgumentException(
-					"A workflow cannot be started without the workflow name.  " +
-					"The given name was [" + name + "]" );
+					"A workflow cannot be started without null or empty values.  The given values were:" + SystemProperties.NEW_LINE +
+					"Name: [" + name + "]" + SystemProperties.NEW_LINE +
+					"Parameters: [" + parameters + "]" + SystemProperties.NEW_LINE);
 		}
 
-		WorkflowData data =
-				this.dao.create(name, parameters);
-		
-		if(data != null) {
-			returnValue = new StartWorkflowResult(data);
-			
-			boolean created = this.workflow.create(data);
+		WorkflowEntity data = null;
 
-			if(created) {
-				List<Operation> operations = this.workflow.start(data);
-				if(operations == null || operations.isEmpty()) {
-					returnValue.failedToStart();
-					data.failed();
-				} else {
-					this.dao.storeOperations(data, operations);
-				}
-			} else {
-				data.failed();
-				returnValue.failedToCreateWorkflow();
+		try {
+			data = this.workflow.create(name, parameters);
+		} catch (Exception e) {
+			returnValue.failedToCreate();
+		}
+		
+		List<OperationEntity> operations = new ArrayList<OperationEntity>();
+		try {
+			operations = this.workflow.start(data);
+		} catch (Exception e) {
+			returnValue.failedToStart();
+			this.context.setRollbackOnly();
+		}
+		
+		try {
+			for(OperationEntity operation : operations) {
+				this.sendOperationMessage(operation, parameters);
 			}
-			
-			this.dao.update(data);
-		} else {
-			returnValue = new StartWorkflowResult();
-			returnValue.failedToCreateWorkflowData();
+		} catch (JMSException e) {
+			returnValue.failedToStart();
+			this.context.setRollbackOnly();
 		}
-		
+
 		return returnValue;
 	}
 
-	@Override
-	public Serializable getParametersForWorkflow(long id) {
-		Serializable returnValue = null;
-		WorkflowData data =
-				this.dao.getWorkflow(id);
-		
-		if(data != null) {
-			returnValue = data.getParameters();
-		}
-		
-		return returnValue;
+	private void sendOperationMessage(OperationEntity operation, Serializable parameters) throws JMSException {
+		Queue queue = this.session.createQueue(operation.getMessageQueueName());
+		ObjectMessage message = this.session.createObjectMessage(parameters);
+		MessageProducer producer = this.session.createProducer(queue);
+		producer.send(message);
 	}
 
 	@Override
 	public void receiveStatus(OperationStatusMessage status) {
 		logger.log(Level.INFO, "Handling status message: [{0}]", status);
-		// TODO: handle
+		
+		this.workflow.update(status);
 	}
 
 	@Override
 	public void receiveCompletion(OperationCompletionMessage completion) {
 		logger.log(Level.INFO, "Handling completion message: [{0}]", completion);
-		// TODO: handle
+		this.workflow.complete(completion);
 	}
 
 	@Override
