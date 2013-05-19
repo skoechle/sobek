@@ -12,9 +12,9 @@ import com.sobek.client.operation.status.OperationStatusMessage;
 @Local
 public interface WorkflowEngineLocal extends WorkflowEngine {
 
-	void receiveStatus(OperationStatusMessage status);
+	void receiveOperationStatus(OperationStatusMessage status);
 
-	void receiveCompletion(OperationCompletionMessage status);
+	void receiveOperationCompletion(OperationCompletionMessage status);
 
 	void handleUnsupportedOperationMessage(OperationMessage operationMessage);
 

@@ -8,18 +8,27 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.sobek.common.util.SystemProperties;
 import com.sobek.workflow.WorkflowState;
 
 @Entity
 @Table(name="WORKFLOW")
+@NamedQueries({
+		@NamedQuery(name = WorkflowEntity.GET_WORKFLOW_BY_NAME, query = "SELECT wf FROM WorkflowEntity wf WHERE wf.name = :" + WorkflowEntity.NAME_PARAMETER)
+	})
 public class WorkflowEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	public static final String GET_WORKFLOW_BY_NAME = "WorkflowEntity.getWorkflowByName";
+	public static final String NAME_PARAMETER = "name";
 
     @SequenceGenerator(name="idGenerator",
             sequenceName="WORKFLOW_ID_GENERATOR",
@@ -51,6 +60,16 @@ public class WorkflowEntity implements Serializable {
 	}
 	
 	public WorkflowEntity(String name, Serializable parameters) {
+		if(name == null || name.isEmpty()
+				|| parameters == null)
+		{
+			throw new IllegalArgumentException(
+					"One or more invalid values were passed to the " +
+					this.getClass().getName() + " constructor.  The given values " +
+					"were:" + SystemProperties.NEW_LINE +
+					"Name (cannot be null or empty) : " + name + SystemProperties.NEW_LINE +
+					"Parameters (cannot be null) : " + parameters + SystemProperties.NEW_LINE);
+		}
 		this.name = name;
 		this.parameters = parameters;
 		this.state = WorkflowState.NOT_STARTED;

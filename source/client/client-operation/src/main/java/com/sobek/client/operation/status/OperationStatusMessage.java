@@ -50,7 +50,7 @@ public class OperationStatusMessage extends OperationMessage {
 				|| status == null)
 		{
 			throw new IllegalArgumentException(
-					"One or more invalid values was passed to the " +
+					"One or more invalid values were passed to the " +
 					this.getClass().getName() + " constructor.  The given values " +
 					"were:" + SystemProperties.NEW_LINE +
 					"Percent Complete (must be >= 0 and <= 1) :" + percentComplete + SystemProperties.NEW_LINE +

@@ -43,7 +43,7 @@ public class OperationClient {
 		if(message == null)
 		{
 			throw new IllegalArgumentException(
-					"One or more invalid values was passed to the " +
+					"One or more invalid values were passed to the " +
 					this.getClass().getName() + " constructor.  The given values " +
 					"were:" + SystemProperties.NEW_LINE +
 					"Message (cannot be null): " + message + SystemProperties.NEW_LINE);

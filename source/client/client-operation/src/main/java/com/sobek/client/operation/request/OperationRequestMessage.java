@@ -15,7 +15,7 @@ public class OperationRequestMessage extends OperationMessage {
 		if(material == null)
 		{
 			throw new IllegalArgumentException(
-					"One or more invalid values was passed to the " +
+					"One or more invalid values were passed to the " +
 					this.getClass().getName() + " constructor.  The given values " +
 					"were:" + SystemProperties.NEW_LINE +
 					"material (cannot be null) :" + material + SystemProperties.NEW_LINE);

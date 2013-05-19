@@ -1,5 +1,6 @@
 package com.sobek.pgraph;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -301,5 +302,24 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 			float percentComplete, String status) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public List<OperationEntity> start(long pGraphId, Serializable parameters) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<OperationEntity> completeOperation(long pGraphId,
+			long operationId, Serializable material, String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PgraphState getState(long pGraphId) {
+		// TODO Auto-generated method stub
+		return PgraphState.COMPLETE;
 	}
 }

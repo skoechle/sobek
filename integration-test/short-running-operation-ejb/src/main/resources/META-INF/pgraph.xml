@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:pgraph>
+  <nodes>
+    <id>1</id>
+    <messageQueueName></messageQueueName>
+  </nodes>
+  <nodes>
+    <id>2</id>
+    <messageQueueName>jms/ShortRunningOperationQueueJNDIName</messageQueueName>
+  </nodes>
+  <nodes>
+    <id>3</id>
+    <messageQueueName></messageQueueName>
+  </nodes>
+  <edges>
+    <fromNodeId>1</fromNodeId>
+    <toNodeId>2</toNodeId>
+  </edges>
+  <edges>
+    <fromNodeId>2</fromNodeId>
+    <toNodeId>3</toNodeId>
+  </edges>
+</tns:pgraph>

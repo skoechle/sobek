@@ -34,4 +34,9 @@ public class OperationEntity extends NodeEntity{
     public void setState(OperationState state){
 	this.state = state.toString();
     }
+
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

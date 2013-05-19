@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.EJBContext;
@@ -23,10 +24,14 @@ import javax.jms.Session;
 import com.sobek.client.operation.OperationMessage;
 import com.sobek.client.operation.status.OperationCompletionMessage;
 import com.sobek.client.operation.status.OperationStatusMessage;
+import com.sobek.common.result.Result;
 import com.sobek.common.util.SystemProperties;
 import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.workflow.WorkflowLocal;
 import com.sobek.workflow.entity.WorkflowEntity;
+import com.sobek.workflow.error.CreateWorkflowResult;
+import com.sobek.workflow.error.StartOperationResult;
+import com.sobek.workflow.error.StartWorkflowResult;
 
 @Stateless
 public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRemote {
@@ -56,44 +61,100 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 			logger.log(Level.SEVERE, "Unable to create the JMS resources, an exception was thrown.", e);
 		}
 	}
+	
+	@PreDestroy
+	private void closeJMSObjects() {
+		if(this.session != null) {
+			try {
+				this.session.close();
+			} catch(Exception e) {
+				logger.log(Level.WARNING, "An exception was thrown while attempting to close the session.", e);
+			}
+		}
+
+		if(this.queueConnection != null) {
+			try {
+				this.queueConnection.close();
+			} catch(Exception e) {
+				logger.log(Level.WARNING, "An exception was thrown while attempting to close the queue connection.", e);
+			}
+		}
+	}
 
 	@Override
-	public StartWorkflowResult startWorkflow(String name, Serializable parameters) {
+	public Result startWorkflow(String name, Serializable parameters) {
 		logger.log(Level.FINEST, "Entering, name = [{0}], parameters = [{1}]", new Object[] {name, parameters});
-		StartWorkflowResult returnValue = new StartWorkflowResult();
+
+
 		if(name == null || name.isEmpty() || parameters == null) {
 			throw new IllegalArgumentException(
-					"A workflow cannot be started without null or empty values.  The given values were:" + SystemProperties.NEW_LINE +
+					"A workflow cannot be started without null or empty values.  " +
+					"The given values were:" + SystemProperties.NEW_LINE +
 					"Name: [" + name + "]" + SystemProperties.NEW_LINE +
 					"Parameters: [" + parameters + "]" + SystemProperties.NEW_LINE);
 		}
 
-		WorkflowEntity data = null;
+		CreateWorkflowResult createResult = this.workflow.create(name, parameters);
+		Result returnValue = createResult;
 
-		try {
-			data = this.workflow.create(name, parameters);
-		} catch (Exception e) {
-			returnValue.failedToCreate();
-		}
-		
-		List<OperationEntity> operations = new ArrayList<OperationEntity>();
-		try {
-			operations = this.workflow.start(data);
-		} catch (Exception e) {
-			returnValue.failedToStart();
-			this.context.setRollbackOnly();
-		}
-		
-		try {
-			for(OperationEntity operation : operations) {
-				this.sendOperationMessage(operation, parameters);
+		if(createResult.successful()) {
+			StartWorkflowResult startResult = new StartWorkflowResult(createResult.getEntity());
+			returnValue = startResult;
+			WorkflowEntity entity = createResult.getEntity();
+
+			List<OperationEntity> operations = new ArrayList<OperationEntity>();
+			try {
+				operations = this.workflow.start(createResult.getEntity());
+			} catch (Exception e) {
+				startResult.exceptionOccurred();
+				logger.log(
+						Level.SEVERE,
+						"An exception was throw while attempting to start the " +
+						"workflow for name [" + name + "] with parameters [" + 
+						parameters + "].",
+						e);
 			}
-		} catch (JMSException e) {
-			returnValue.failedToStart();
-			this.context.setRollbackOnly();
+			
+			if(startResult.successful()) {
+				returnValue = startOperations(entity, parameters, operations);
+			}
+			
 		}
 
 		return returnValue;
+	}
+
+	private StartOperationResult startOperations(
+			WorkflowEntity workflow,
+			Serializable material,
+			List<OperationEntity> operations) {
+		StartOperationResult result = new StartOperationResult(workflow, material);
+		for(OperationEntity operation : operations) {
+			try {
+				this.sendOperationMessage(operation, material);
+			} catch (JMSException e) {
+				result.exceptionOccurred(operation);
+				String details =
+						"An exception was throw while attempting to send " +
+						"the start message for operation [" + operation +
+						"] for workflow [" + workflow.getName() + "] with " +
+						"parameters [" + material + "].";
+				logger.log(Level.SEVERE, details, e);
+				try {
+					this.workflow.failOperation(workflow, operation, details);
+				} catch (Exception failException) {
+					logger.log(
+							Level.SEVERE,
+							"An exception was throw while attempting to fail " +
+							"operation [" + operation + "] for workflow [" + 
+							workflow.getName() + "] with parameters [" + 
+							material + "].",
+							failException);
+				}
+			}
+		}
+		
+		return result;
 	}
 
 	private void sendOperationMessage(OperationEntity operation, Serializable parameters) throws JMSException {
@@ -104,16 +165,16 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 	}
 
 	@Override
-	public void receiveStatus(OperationStatusMessage status) {
+	public void receiveOperationStatus(OperationStatusMessage status) {
 		logger.log(Level.INFO, "Handling status message: [{0}]", status);
 		
-		this.workflow.update(status);
+		this.workflow.updateOperation(status);
 	}
 
 	@Override
-	public void receiveCompletion(OperationCompletionMessage completion) {
+	public void receiveOperationCompletion(OperationCompletionMessage completion) {
 		logger.log(Level.INFO, "Handling completion message: [{0}]", completion);
-		this.workflow.complete(completion);
+		this.workflow.completeOperation(completion);
 	}
 
 	@Override

@@ -48,10 +48,10 @@ public class OperationStatusMDB implements MessageListener {
 				builder.append("].").append(SystemProperties.NEW_LINE);
 				if(object instanceof OperationStatusMessage) {
 					OperationStatusMessage status = (OperationStatusMessage)object;
-					this.workflowEngine.receiveStatus(status);
+					this.workflowEngine.receiveOperationStatus(status);
 				} else if(object instanceof OperationCompletionMessage) {
 					OperationCompletionMessage completion = (OperationCompletionMessage)object;
-					this.workflowEngine.receiveCompletion(completion);
+					this.workflowEngine.receiveOperationCompletion(completion);
 				} else if(object instanceof OperationMessage) {
 					OperationMessage operationMessage = (OperationMessage)object;
 					this.workflowEngine.handleUnsupportedOperationMessage(operationMessage);

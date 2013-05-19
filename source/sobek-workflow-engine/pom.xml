@@ -21,5 +21,6 @@
     <module>workflow-ejb</module>
     <module>workflow-engine</module>
     <module>workflow-engine-ejb</module>
+    <module>workflow-jaxb-types</module>
   </modules>
 </project>
