@@ -322,4 +322,10 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 		// TODO Auto-generated method stub
 		return PgraphState.COMPLETE;
 	}
+
+	@Override
+	public void failOperation(long pgraphId, long operationId, String state) {
+		// TODO Auto-generated method stub
+		
+	}
 }

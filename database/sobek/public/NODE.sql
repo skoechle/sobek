@@ -1,11 +1,12 @@
- -- Table: node
+﻿ -- Table: node
  
 CREATE TABLE node
  (
-    id bigserial PRIMARY KEY,
-    pgraph_id bigint NOT NULL,
+    id numeric(18,0) NOT NULL,
+    pgraph_id numeric(18,0) NOT NULL,
     type character varying(64) NOT NULL,
-    message_queue_name character varying NOT NULL
+    message_queue_name character varying NOT NULL,
+    CONSTRAINT node_pk PRIMARY KEY (id)
 ) 
 WITH(OIDS=FALSE);
 

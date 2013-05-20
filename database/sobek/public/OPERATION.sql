@@ -1,9 +1,10 @@
--- Table: operation
+﻿-- Table: operation
 
 CREATE TABLE operation
 (
-    nodeId bigint PRIMARY KEY,
-    state character varying(64) NOT NULL
+    nodeId numeric(18,0) NOT NULL,
+    state character varying(64) NOT NULL,
+    CONSTRAINT operation_pk PRIMARY KEY (nodeId)
 )
 WITH(OIDS=FALSE);
 

@@ -83,7 +83,7 @@ public class WorkflowEntity implements Serializable {
 		return this.name;
 	}
 	
-	public long getPGraphId() {
+	public long getPgraphId() {
 		return this.pgraphId;
 	}
 

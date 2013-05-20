@@ -1,8 +1,9 @@
--- Table: pgraph
+﻿-- Table: pgraph
 
 CREATE TABLE pgraph
 (
-    id bigserial PRIMARY KEY
+    id numeric(18,0) NOT NULL,
+    CONSTRAINT pgraph_pk PRIMARY KEY (id)
 )
 WITH(OIDS=FALSE);
  

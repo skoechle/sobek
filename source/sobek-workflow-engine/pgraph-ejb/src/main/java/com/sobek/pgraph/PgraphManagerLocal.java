@@ -23,4 +23,6 @@ public interface PgraphManagerLocal extends PgraphManager{
 	List<OperationEntity> completeOperation(long pGraphId, long operationId, Serializable material, String name);
 
 	PgraphState getState(long pGraphId);
+
+	void failOperation(long pgraphId, long operationId, String state);
 }

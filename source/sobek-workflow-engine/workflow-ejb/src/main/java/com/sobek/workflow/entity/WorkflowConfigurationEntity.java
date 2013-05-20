@@ -12,7 +12,7 @@ import com.sobek.pgraph.Pgraph;
 
 @Entity(name="WORKFLOW_CONFIGURATION")
 @NamedQueries({
-		@NamedQuery(name=WorkflowConfigurationEntity.GET_CONFIG_BY_NAME, query="SELECT wfe FROM WorkflowConfigurationEntity wfe WHERE wfe.name = :" + WorkflowConfigurationEntity.NAME_PARAMETER)
+		@NamedQuery(name=WorkflowConfigurationEntity.GET_CONFIG_BY_NAME, query="SELECT wfe FROM WorkflowConfigurationEntity wfe WHERE wfe.name = :name")
 	})
 public class WorkflowConfigurationEntity {
 	

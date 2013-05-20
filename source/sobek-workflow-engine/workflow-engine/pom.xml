@@ -35,6 +35,12 @@
 		</dependency>
 		<dependency>
 			<groupId>sobek</groupId>
+			<artifactId>workflow-ejb</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>sobek</groupId>
 			<artifactId>workflow-engine-ejb</artifactId>
 			<version>1.0-SNAPSHOT</version>
 			<type>ejb</type>
@@ -52,6 +58,7 @@
 							<groupId>sobek</groupId>
 							<artifactId>pgraph-ejb</artifactId>
 							<artifactId>result-ejb</artifactId>
+							<artifactId>workflow-ejb</artifactId>
 							<artifactId>workflow-engine-ejb</artifactId>
 						</ejbModule>
 					</modules>
