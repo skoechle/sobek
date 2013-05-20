@@ -1,10 +1,11 @@
- -- Table: edge
+﻿ -- Table: edge
  
 CREATE TABLE edge
 (
-    pgraph_id bigint PRIMARY KEY,
-    from_node_id bigint PRIMARY KEY,
-    to_node_id bigint PRIMARY KEY
+    pgraph_id numeric(18,0) NOT NULL,
+    from_node_id numeric(18,0) NOT NULL,
+    to_node_id numeric(18,0) NOT NULL,
+    CONSTRAINT edge_pk PRIMARY KEY (pgraph_id, from_node_id, to_node_id)
 )
 WITH(OIDS=FALSE);
  

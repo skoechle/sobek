@@ -1,13 +1,16 @@
--- Table: operation_state
+﻿-- Table: operation_state
 
 CREATE TABLE operation_state
 (
-    id integer PRIMARY KEY,
-    name character varying(64) NOT NULL
+    id integer NOT NULL,
+    name character varying(64)  NOT NULL,
+    CONSTRAINT operation_state_pk PRIMARY KEY (id),
+    CONSTRAINT operation_state_name_uk UNIQUE (name)
 )
 WITH(OIDS=FALSE);
 
 ALTER TABLE operation_state OWNER TO "sobek";
+
 
 INSERT INTO operation_state VALUES (0, 'UNEVALUATED');
 INSERT INTO operation_state VALUES (1, 'UNEXECUTED');

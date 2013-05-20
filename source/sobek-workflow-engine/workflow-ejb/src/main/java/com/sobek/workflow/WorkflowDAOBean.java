@@ -77,4 +77,10 @@ public class WorkflowDAOBean implements WorkflowDAOLocal {
 	public void update(WorkflowConfigurationEntity entity) {
 		this.manager.persist(entity);
 	}
+
+	@Override
+	public void create(WorkflowConfiguration config) {
+		WorkflowConfigurationEntity entity = new WorkflowConfigurationEntity(config.getName(), config.getPgraph());
+		this.manager.persist(entity);
+	}
 }

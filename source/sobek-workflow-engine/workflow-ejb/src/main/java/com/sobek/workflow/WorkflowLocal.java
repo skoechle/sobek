@@ -19,4 +19,5 @@ public interface WorkflowLocal extends Workflow {
 	void updateOperation(OperationStatusMessage status);
 	List<OperationEntity> completeOperation(OperationCompletionMessage completion);
 	void failOperation(WorkflowEntity entity, OperationEntity operation, String details);
+	WorkflowEntity find(long workflowId);
 }

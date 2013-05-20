@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
+import com.sobek.client.operation.status.CompletionState;
 import com.sobek.client.operation.status.OperationCompletionMessage;
 import com.sobek.client.operation.status.OperationStatusMessage;
 import com.sobek.pgraph.InvalidPgraphStructureException;
@@ -54,9 +55,13 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 					result.invlidConfiguration();
 				}
 	
-				WorkflowEntity data = this.dao.create(name, parameters);
-				if(data == null) {
+				WorkflowEntity entity = this.dao.create(name, parameters);
+				if(entity == null) {
 					result.creationFailed();
+				} else {
+					// Create a result with the entity so that the entity
+					// is returned with the result.
+					result = new CreateWorkflowResult(entity);
 				}
 			} else {
 				result.configurationDoesNotExist();
@@ -78,7 +83,7 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 				entity);
 
 		List<OperationEntity> list =
-				this.pgraph.start(entity.getPGraphId(), entity.getParameters());
+				this.pgraph.start(entity.getPgraphId(), entity.getParameters());
 		
 		logger.log(
 				Level.FINEST,
@@ -90,50 +95,110 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 
 	@Override
 	public void updateOperation(OperationStatusMessage status) {
-		WorkflowEntity entity = this.dao.getWorkflow(status.getWorkflowId());
-		
-		this.pgraph.updateOperation(entity.getPGraphId(), status.getOperationId(), status.getPercentComplete(), status.getStatus().name());
+		if(status != null) {
+			WorkflowEntity entity = this.dao.getWorkflow(status.getWorkflowId());
+			if(entity != null) {
+				this.pgraph.updateOperation(entity.getPgraphId(), status.getOperationId(), status.getPercentComplete(), status.getStatus().name());
+			} else {
+				logger.log(
+						Level.WARNING,
+						"No workflow was found for the workflow ID [{0}] that " +
+						"was specified in the status message, ignoring the call.  " +
+						"No status update will be made.",
+						status.getWorkflowId());
+			}
+		} else {
+			logger.log(
+					Level.WARNING,
+					"A null message was passed in, ignoring the call.  No " +
+					"status update will be made.");
+		}
 	}
 
 	@Override
 	public List<OperationEntity> completeOperation(OperationCompletionMessage completion) {
-		WorkflowEntity entity = this.dao.getWorkflow(completion.getWorkflowId());
+		if(completion == null) {
+			throw new IllegalArgumentException(
+					"The given operation competion message was null, no " +
+					"operation will be completed.");
+		}
+
 		List<OperationEntity> returnValue = new ArrayList<OperationEntity>();
+		
+		WorkflowEntity entity = this.dao.getWorkflow(completion.getWorkflowId());
+		
+		if(entity != null) {
+			List<OperationEntity> operationList =
+					this.pgraph.completeOperation(
+							entity.getPgraphId(),
+							completion.getOperationId(),
+							completion.getMaterial(),
+							completion.getState().name());
 
-		List<OperationEntity> operationList =
-				this.pgraph.completeOperation(
-						entity.getPGraphId(),
-						completion.getOperationId(),
-						completion.getMaterial(),
-						completion.getState().name());
-
-		if(operationList == null || operationList.isEmpty()) {
-			PgraphState pgraphState = this.pgraph.getState(entity.getPGraphId());
-			switch(pgraphState) {
-			case CANCELED:
-				entity.setStatus(WorkflowState.CANCELED);
-				this.dao.update(entity);
-				break;
-			case COMPLETE:
-				entity.setStatus(WorkflowState.COMPLETE);
-				this.dao.update(entity);
-				break;
-			case FAILED:
-				entity.setStatus(WorkflowState.FAILED);
-				this.dao.update(entity);
-				break;
-			default:
-				// Do nothing, the pgraph is not complete.
-				break;
+			if(operationList == null || operationList.isEmpty()) {
+				PgraphState pgraphState = this.pgraph.getState(entity.getPgraphId());
+				switch(pgraphState) {
+				case CANCELED:
+					entity.setStatus(WorkflowState.CANCELED);
+					this.dao.update(entity);
+					break;
+				case COMPLETE:
+					entity.setStatus(WorkflowState.COMPLETE);
+					this.dao.update(entity);
+					break;
+				case FAILED:
+					entity.setStatus(WorkflowState.FAILED);
+					this.dao.update(entity);
+					break;
+				default:
+					// Do nothing, the pgraph is not complete.
+					break;
+				}
+			} else {
+				returnValue = operationList;
 			}
 		} else {
-			returnValue = operationList;
+			logger.log(
+					Level.WARNING,
+					"No workflow was found for the workflow ID [{0}] that " +
+					"was specified in the completion message, ignoring the call.  " +
+					"No operation will be completed.",
+					completion.getWorkflowId());
 		}
 		return returnValue;
 	}
 
 	@Override
-	public boolean registrerWorkflowConfiguration(WorkflowConfiguration config) {
+	public boolean registrerWorkflow(WorkflowConfiguration config) {
+		boolean returnValue = false;
+		if(config != null) {
+			WorkflowConfigurationEntity entity = this.dao.findConfiguration(config.getName());
+			if(entity == null) {
+				logger.log(
+						Level.FINEST,
+						"Replacing pgraph for workflow [{0}].",
+						config.getName());
+				this.dao.create(config);
+			} else {
+				logger.log(
+						Level.WARNING,
+						"An attempt was made to register a configuration " +
+						"object [{0}] that already exists.  The registration " +
+						"request will be ignored.",
+						config);
+			}
+		} else {
+			logger.log(
+					Level.WARNING,
+					"An attempt was made to register a null configuration " +
+					"object [{0}].  The registration request will be ignored.",
+					config);
+		}
+		return returnValue;
+	}
+
+	@Override
+	public boolean updateWorkflow(WorkflowConfiguration config) {
 		boolean returnValue = false;
 		if(config != null) {
 			WorkflowConfigurationEntity entity = this.dao.findConfiguration(config.getName());
@@ -146,29 +211,33 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 				this.dao.update(entity);
 			} else {
 				logger.log(
-						Level.FINEST,
-						"Creating new workflow with name = [{0}].",
-						config.getName());
+						Level.WARNING,
+						"An attempt was made to update a configuration object " +
+						"[{0}] that does not exist.  The update request will " +
+						"be ignored.",
+						config);
 			}
 		} else {
 			logger.log(
 					Level.WARNING,
-					"An attempt was made to register a null configuration " +
-					"object : [{0}].  The registration request will be ignored.",
+					"An attempt was made to update a null configuration " +
+					"object [{0}].  The registration request will be ignored.",
 					config);
 		}
 		return returnValue;
 	}
 
 	@Override
-	public void failOperation(WorkflowEntity entity, OperationEntity operation,
-			String details) {
-		// TODO Auto-generated method stub
-		
+	public void failOperation(
+			WorkflowEntity entity,
+			OperationEntity operation,
+			String details)
+	{
+		this.pgraph.failOperation(entity.getPgraphId(), operation.getId(), CompletionState.FAILED.name());
 	}
 
-//	@Override
-//	public void failOperation(WorkflowEntity entity, OperationEntity operation, String details) {
-//	}
-
+	@Override
+	public WorkflowEntity find(long workflowId) {
+		return this.dao.getWorkflow(workflowId);
+	}
 }

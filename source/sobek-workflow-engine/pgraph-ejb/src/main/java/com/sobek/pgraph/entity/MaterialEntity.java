@@ -2,6 +2,7 @@ package com.sobek.pgraph.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 
 import com.sobek.pgraph.MaterialState;
 import com.sobek.pgraph.NodeType;
@@ -11,6 +12,10 @@ public class MaterialEntity extends NodeEntity{
     
     @Column(name = "STATE")
     private String state;
+    
+    @Column(name = "value")
+    @Lob
+    private String value = null;
     
     protected MaterialEntity(){
 	
@@ -27,5 +32,13 @@ public class MaterialEntity extends NodeEntity{
     
     public void setState(MaterialState state){
 	this.state = state.toString();
+    }
+    
+    public void setValue(String value){
+	this.value = value;
+    }
+    
+    public String getValue(){
+	return this.value;
     }
 }

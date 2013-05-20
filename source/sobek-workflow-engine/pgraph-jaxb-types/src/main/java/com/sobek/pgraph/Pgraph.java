@@ -1,18 +1,23 @@
 package com.sobek.pgraph;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(namespace = "com.sobek.pgraph")
 @XmlRootElement(namespace = "com.sobek.pgraph")
-public class Pgraph{
+public class Pgraph implements Serializable{
     
-    @XmlElement(required = true)
+    @XmlTransient
+	private static final long serialVersionUID = 1L;
+
+	@XmlElement(required = true)
     private final List<Node> nodes = new ArrayList<Node>();
     
     @XmlElement(required = true)

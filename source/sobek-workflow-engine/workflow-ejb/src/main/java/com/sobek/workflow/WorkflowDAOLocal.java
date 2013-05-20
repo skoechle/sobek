@@ -20,4 +20,6 @@ public interface WorkflowDAOLocal {
 	WorkflowConfigurationEntity findConfiguration(String name);
 
 	void update(WorkflowConfigurationEntity entity);
+
+	void create(WorkflowConfiguration config);
 }

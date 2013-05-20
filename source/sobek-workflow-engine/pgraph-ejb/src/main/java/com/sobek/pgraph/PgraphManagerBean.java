@@ -272,6 +272,38 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	return materialsAvailable;
     }
     
+    @Override
+    public void updateOperation(long pGraphId, long operationId,
+	    float percentComplete, String status){
+	// TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public List<OperationEntity> start(long pGraphId, Serializable parameters){
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public List<OperationEntity> completeOperation(long pGraphId,
+	    long operationId, Serializable material, String name){
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public PgraphState getState(long pGraphId){
+	// TODO Auto-generated method stub
+	return PgraphState.COMPLETE;
+    }
+
+    @Override
+    public void failOperation(long pgraphId, long operationId, String state){
+	// TODO Auto-generated method stub
+
+    }
+    
     private boolean isConnected(long pgraphId){
 	//TODO
 	return true;
@@ -296,30 +328,4 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	//TODO
 	return true;
     }
-
-	@Override
-	public void updateOperation(long pGraphId, long operationId,
-			float percentComplete, String status) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public List<OperationEntity> start(long pGraphId, Serializable parameters) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<OperationEntity> completeOperation(long pGraphId,
-			long operationId, Serializable material, String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PgraphState getState(long pGraphId) {
-		// TODO Auto-generated method stub
-		return PgraphState.COMPLETE;
-	}
 }

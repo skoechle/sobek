@@ -1,9 +1,11 @@
--- Table: material
+﻿-- Table: material
 
 CREATE TABLE material
 (
-    id bigint PRIMARY KEY,
-    state character varying(64) NOT NULL
+    id numeric(18,0) NOT NULL,
+    state character varying(64) NOT NULL,
+    value text,
+    CONSTRAINT material_pk PRIMARY KEY (id)
 )
 WITH(OIDS=FALSE);
 

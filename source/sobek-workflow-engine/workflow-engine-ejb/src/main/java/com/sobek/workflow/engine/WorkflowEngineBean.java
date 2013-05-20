@@ -38,7 +38,8 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(WorkflowEngineBean.class.getPackage().getName());
+	private static final String LOGGER_NAME = WorkflowEngineBean.class.getPackage().getName();
+	private static Logger logger = Logger.getLogger(LOGGER_NAME);
 
 	@Resource
 	private EJBContext context;
@@ -98,9 +99,9 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 		Result returnValue = createResult;
 
 		if(createResult.successful()) {
-			StartWorkflowResult startResult = new StartWorkflowResult(createResult.getEntity());
-			returnValue = startResult;
 			WorkflowEntity entity = createResult.getEntity();
+			StartWorkflowResult startResult = new StartWorkflowResult(entity);
+			returnValue = startResult;
 
 			List<OperationEntity> operations = new ArrayList<OperationEntity>();
 			try {
@@ -118,10 +119,44 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 			if(startResult.successful()) {
 				returnValue = startOperations(entity, parameters, operations);
 			}
-			
 		}
 
 		return returnValue;
+	}
+
+	@Override
+	public void receiveOperationStatus(OperationStatusMessage status) {
+		logger.log(Level.INFO, "Handling status message: [{0}]", status);
+		this.workflow.updateOperation(status);
+	}
+
+	@Override
+	public void receiveOperationCompletion(OperationCompletionMessage completion) {
+		logger.log(Level.INFO, "Handling completion message: [{0}]", completion);
+		List<OperationEntity> operations = this.workflow.completeOperation(completion);
+		if(operations != null && !operations.isEmpty()) {
+			logger.log(Level.FINEST, "Ther are new operations to start: [{0}]", operations);
+			WorkflowEntity entity = this.workflow.find(completion.getWorkflowId());
+			this.startOperations(entity, completion.getMaterial(), operations);
+		}
+	}
+
+	@Override
+	public void handleUnsupportedOperationMessage(OperationMessage operationMessage) {
+		logger.log(Level.INFO, "Handling unsupported message: [{0}]", operationMessage);
+		// TODO: handle
+	}
+
+	@Override
+	public void handleUnsupportedObjectType(Serializable object) {
+		logger.log(Level.INFO, "Handling unsupported object type: [{0}]", object);
+		// TODO: handle
+	}
+
+	@Override
+	public void logMessageHandlingException(Message message, Exception e) {
+		logger.log(Level.SEVERE, "An exception was thrown while attempting to handle message : [" + message + "]", e);
+		// TODO: handle
 	}
 
 	private StartOperationResult startOperations(
@@ -158,40 +193,21 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 	}
 
 	private void sendOperationMessage(OperationEntity operation, Serializable parameters) throws JMSException {
+		if(this.session == null) {
+			// Try to create the JMS objects.
+			this.createJMSObjects();
+			// If the session is still null throw an exception.  There is
+			// something seriously wrong with the system.
+			if(this.session == null) {
+				throw new IllegalStateException(
+						"Unable to initialize the JMS session.  There should be " +
+						"an exception, in this log, related to the initialization failure.");
+			}
+		}
+
 		Queue queue = this.session.createQueue(operation.getMessageQueueName());
 		ObjectMessage message = this.session.createObjectMessage(parameters);
 		MessageProducer producer = this.session.createProducer(queue);
 		producer.send(message);
-	}
-
-	@Override
-	public void receiveOperationStatus(OperationStatusMessage status) {
-		logger.log(Level.INFO, "Handling status message: [{0}]", status);
-		
-		this.workflow.updateOperation(status);
-	}
-
-	@Override
-	public void receiveOperationCompletion(OperationCompletionMessage completion) {
-		logger.log(Level.INFO, "Handling completion message: [{0}]", completion);
-		this.workflow.completeOperation(completion);
-	}
-
-	@Override
-	public void handleUnsupportedOperationMessage(OperationMessage operationMessage) {
-		logger.log(Level.INFO, "Handling unsupported message: [{0}]", operationMessage);
-		// TODO: handle
-	}
-
-	@Override
-	public void handleUnsupportedObjectType(Serializable object) {
-		logger.log(Level.INFO, "Handling unsupported object type: [{0}]", object);
-		// TODO: handle
-	}
-
-	@Override
-	public void logMessageHandlingException(Message message, Exception e) {
-		logger.log(Level.SEVERE, "An exception was thrown while attempting to handle message : [" + message + "]", e);
-		// TODO: handle
 	}
 }
