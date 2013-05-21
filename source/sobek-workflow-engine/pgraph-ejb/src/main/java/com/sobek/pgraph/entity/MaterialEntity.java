@@ -1,5 +1,7 @@
 package com.sobek.pgraph.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
@@ -21,8 +23,8 @@ public class MaterialEntity extends NodeEntity{
 	
     }
     
-    public MaterialEntity(long pgraphId, NodeType type, String messageQueueName, MaterialState state){
-	super(pgraphId, type, messageQueueName);
+    public MaterialEntity(long pgraphId, NodeType type, String messageQueueName, String name, MaterialState state){
+	super(pgraphId, type, messageQueueName, name);
 	this.state = state.toString();
     }
     
@@ -34,11 +36,11 @@ public class MaterialEntity extends NodeEntity{
 	this.state = state.toString();
     }
     
-    public void setValue(String value){
-	this.value = value;
+    public void setValue(Serializable value){
+	this.value = value.toString();
     }
     
-    public String getValue(){
+    public Serializable getValue(){
 	return this.value;
     }
 }

@@ -6,11 +6,13 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 import com.sobek.common.util.SystemProperties;
 import com.sobek.pgraph.Pgraph;
 
-@Entity(name="WORKFLOW_CONFIGURATION")
+@Entity
+@Table(name="WORKFLOW_CONFIGURATION")
 @NamedQueries({
 		@NamedQuery(name=WorkflowConfigurationEntity.GET_CONFIG_BY_NAME, query="SELECT wfe FROM WorkflowConfigurationEntity wfe WHERE wfe.name = :name")
 	})

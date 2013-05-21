@@ -17,8 +17,7 @@ import com.sobek.pgraph.entity.MaterialEntity;
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
-
-
+import com.sobek.pgraph.entity.RawMaterialEntity;
 
 @Stateless
 public class PgraphManagerBean implements PgraphManagerLocal{
@@ -273,20 +272,74 @@ public class PgraphManagerBean implements PgraphManagerLocal{
     }
     
     @Override
-    public void updateOperation(long pGraphId, long operationId,
-	    float percentComplete, String status){
-	// TODO Auto-generated method stub
-
+    public void updateOperation(long operationId, float percentComplete, OperationState state){
+	logger.debug("Operation ID {}, Percent complete {}, Operation state {} - Entering.", operationId, percentComplete, state);
+	
+	StringBuilder validationErrors = new StringBuilder();
+	boolean parametersValid = true;
+	
+	if(percentComplete < 0f || percentComplete > 1f){
+	    validationErrors.append("Percent complete must be between 0 and 1 inclusive.\n");
+	    parametersValid = false;
+	}
+	
+	if(state == null){
+	    validationErrors.append("State cannot be null.\n");
+	    parametersValid = false;
+	}
+	
+	if(!parametersValid){
+	    validationErrors.append("Parameters were:\n");
+	    validationErrors.append("Operation ID: ").append(operationId).append("\n");
+	    validationErrors.append("Percent complete: ").append(percentComplete).append("\n");
+	    validationErrors.append("State: ").append(state);
+	    
+	    String message = validationErrors.toString();
+	    logger.error(message);
+	    throw new IllegalArgumentException(message);
+	}
+	
+	logger.debug("Operation ID {} - Retrieving operation entity.", operationId);
+	OperationEntity operationEntity = pgraphDao.getOperation(operationId);
+	
+	if(operationEntity == null){
+	    String message = "No Operation exists with ID " + operationId + ".\n";
+	    logger.error(message);
+	    throw new NoSuchOperationException(message);
+	}
+	
+	logger.debug("Operation ID {} - Updating operation entity.", operationId);
+	
+	operationEntity.setPercentComplete(percentComplete);
+	operationEntity.setState(state);
+	
+	logger.debug("Operation ID {}, Percent complete {}, Operation state {} - Returning.", operationId, percentComplete, state);
     }
 
     @Override
-    public List<OperationEntity> start(long pGraphId, Serializable parameters){
-	// TODO Auto-generated method stub
-	return null;
+    public List<Operation> start(long pgraphId, Serializable parameters){
+	logger.debug("Pgraph ID {} - Entering.", pgraphId);
+	
+	if(parameters == null){
+	    String message = "Parameters cannot be null.";
+	    logger.error(message);    
+	    throw new IllegalArgumentException(message);
+	}
+		
+	logger.debug("Pgraph ID {} - Updating Raw Material.", pgraphId);
+	RawMaterialEntity rawMaterialEntity = pgraphDao.getRawMaterialNode(pgraphId);
+	rawMaterialEntity.setState(MaterialState.AVAILABLE);
+	rawMaterialEntity.setValue(parameters);
+	
+	logger.debug("Pgraph ID {} - Searching for ready operations.", pgraphId);
+	List<Operation> readyOperations = this.getReadyOperations(pgraphId);
+	logger.debug("Pgraph ID {} - Found {} ready operations.", pgraphId, readyOperations.size());
+	
+	return readyOperations;
     }
 
     @Override
-    public List<OperationEntity> completeOperation(long pGraphId,
+    public List<Operation> completeOperation(long pGraphId,
 	    long operationId, Serializable material, String name){
 	// TODO Auto-generated method stub
 	return null;
@@ -327,5 +380,5 @@ public class PgraphManagerBean implements PgraphManagerLocal{
     private boolean isInterleaved(long pgraphId){
 	//TODO
 	return true;
-    }
+    }	
 }

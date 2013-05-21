@@ -17,13 +17,16 @@ public class OperationEntity extends NodeEntity{
     @Column(name = "STATE")
     private String state;
     
+    @Column(name = "PERCENT_COMPLETE")
+    private float percentComplete = 0f;
+    
     @SuppressWarnings("unused")
     private OperationEntity(){
 	// Required by JPA.
     }
     
-    public OperationEntity(long pgraphId, String messageQueueName, OperationState state){
-	super(pgraphId, NodeType.OPERATION, messageQueueName);
+    public OperationEntity(long pgraphId, String messageQueueName, String name, OperationState state){
+	super(pgraphId, NodeType.OPERATION, messageQueueName, name);
 	this.state = state.toString();
     }
 
@@ -35,8 +38,11 @@ public class OperationEntity extends NodeEntity{
 	this.state = state.toString();
     }
 
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public float getPercentComplete(){
+        return percentComplete;
+    }
+
+    public void setPercentComplete(float percentComplete){
+        this.percentComplete = percentComplete;
+    }
 }

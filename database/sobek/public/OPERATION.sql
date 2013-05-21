@@ -4,6 +4,7 @@ CREATE TABLE operation
 (
     nodeId numeric(18,0) NOT NULL,
     state character varying(64) NOT NULL,
+    percent_complete numeric(18,0) NOT NULL,
     CONSTRAINT operation_pk PRIMARY KEY (nodeId)
 )
 WITH(OIDS=FALSE);

@@ -42,15 +42,19 @@ public class NodeEntity{
     
     @Column(name = "MESSAGE_QUEUE_NAME")
     private String messageQueueName;
+    
+    @Column(name = "NAME")
+    private String name;
             
     protected NodeEntity(){
 	// Required by JPA
     }
     
-    public NodeEntity(long pgraphId, NodeType type, String messageQueueName){
+    public NodeEntity(long pgraphId, NodeType type, String messageQueueName, String name){
 	this.pgraphId = pgraphId;
 	this.type = type.toString();
 	this.messageQueueName = messageQueueName;
+	this.name = name;
     }
    
     public long getId(){
@@ -67,6 +71,9 @@ public class NodeEntity{
 
     public String getMessageQueueName(){
 	return this.messageQueueName;
-
+    }
+    
+    public String getName(){
+	return this.name;
     }
 }

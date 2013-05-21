@@ -1,4 +1,4 @@
-﻿-- Table: material
+-- Table: material
 
 CREATE TABLE material
 (

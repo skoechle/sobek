@@ -16,13 +16,28 @@ import com.sobek.pgraph.entity.OperationEntity;
 @Local
 public interface PgraphManagerLocal extends PgraphManager{
 
-	List<OperationEntity> start(long pGraphId, Serializable parameters);
+    long createPgraph(List<Edge> edges) throws InvalidPgraphStructureException, IllegalArgumentException;
+    
+    /**
+     * Returns a list of operations for a P-Graph that have not started and are ready to be started. This
+     * implies that all resource required to start any given operation are available.
+     * 
+     * @param pgraphId The id of the P-Graph
+     * @return A list of ready operations.
+     * 
+     * @throws NoSuchPgraphException If there is no pgraph with pgraphId.
+     * @throws InvalidPgraphStructureException If the structure of the pgraph is invalid.
+     * @throws NamingException If one of the node jndi names in the P-Graph failed to be looked up.
+     */
+    List<Operation> getReadyOperations(long pgraphId) throws NoSuchPgraphException, InvalidPgraphStructureException;
 
-	void updateOperation(long pGraphId, long operationId, float percentComplete, String status);
+    List<Operation> start(long pGraphId, Serializable parameters);
 
-	List<OperationEntity> completeOperation(long pGraphId, long operationId, Serializable material, String name);
+    void updateOperation(long operationId, float percentComplete, OperationState state);
 
-	PgraphState getState(long pGraphId);
+    List<Operation> completeOperation(long pgraphId, long operationId, Serializable material, String name);
 
-	void failOperation(long pgraphId, long operationId, String state);
+    PgraphState getState(long pgraphId);
+
+    void failOperation(long pgraphId, long operationId, String state);
 }

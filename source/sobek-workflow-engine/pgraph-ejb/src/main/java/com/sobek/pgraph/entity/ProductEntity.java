@@ -17,7 +17,7 @@ public class ProductEntity extends MaterialEntity{
 	// Required by JPA
     }
     
-    public ProductEntity(long pgraphId, String messageQueueName, MaterialState state){
-	super(pgraphId, NodeType.PRODUCT, messageQueueName, state);
+    public ProductEntity(long pgraphId, String messageQueueName, String name, MaterialState state){
+	super(pgraphId, NodeType.PRODUCT, messageQueueName, name, state);
     }
 }

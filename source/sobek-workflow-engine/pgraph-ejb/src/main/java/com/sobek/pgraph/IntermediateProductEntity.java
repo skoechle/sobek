@@ -16,7 +16,7 @@ public class IntermediateProductEntity extends MaterialEntity{
 	// Required by JPA
     }
     
-    public IntermediateProductEntity(long pgraphId, String messageQueueName, MaterialState state){
-	super(pgraphId, NodeType.INTERMEDIATE_PRODUCT, messageQueueName, state);
+    public IntermediateProductEntity(long pgraphId, String messageQueueName, String name, MaterialState state){
+	super(pgraphId, NodeType.INTERMEDIATE_PRODUCT, messageQueueName, name, state);
     }
 }

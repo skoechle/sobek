@@ -14,7 +14,9 @@ import org.slf4j.LoggerFactory;
 
 import com.sobek.pgraph.entity.EdgeEntity;
 import com.sobek.pgraph.entity.NodeEntity;
+import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
+import com.sobek.pgraph.entity.RawMaterialEntity;
 
 
 @Stateless
@@ -73,15 +75,19 @@ public class PgraphDaoBean implements PgraphDaoLocal{
     }
     
     @Override
-    public NodeEntity getRawMaterialNode(long pgraphId) throws InvalidPgraphStructureException, NoSuchPgraphException{
+    public OperationEntity getOperation(long nodeId){
+	return entityManager.find(OperationEntity.class, nodeId);
+    }
+    
+    @Override
+    public RawMaterialEntity getRawMaterialNode(long pgraphId) throws InvalidPgraphStructureException, NoSuchPgraphException{
 	logger.trace("Getting raw material for pgraphId {}.", pgraphId);
 
-	TypedQuery<NodeEntity> query = entityManager.createNamedQuery(PgraphEntity.GET_RAW_MATERIAL_QUERY, NodeEntity.class);
+	TypedQuery<RawMaterialEntity> query = entityManager.createNamedQuery(PgraphEntity.GET_RAW_MATERIAL_QUERY, RawMaterialEntity.class);
 	query.setParameter("pgraphId", pgraphId);
 
 	try{
-	    NodeEntity node = query.getSingleResult();
-	    
+	    RawMaterialEntity node = query.getSingleResult();	    
 	    logger.trace("Returning node with nodeId {} for pgraphId {}.", node.getId(), pgraphId);
 	    return node;
 	}catch(NoResultException e){
