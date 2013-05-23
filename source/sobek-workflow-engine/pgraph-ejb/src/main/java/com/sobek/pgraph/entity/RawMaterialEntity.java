@@ -4,7 +4,6 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.sobek.pgraph.MaterialState;
 import com.sobek.pgraph.NodeType;
 
 @Entity
@@ -17,8 +16,8 @@ public class RawMaterialEntity extends MaterialEntity{
 	// Required by JPA
     }
     
-    public RawMaterialEntity(long pgraphId, String messageQueueName, String name, MaterialState state){
-	super(pgraphId, NodeType.RAW_MATERIAL, messageQueueName, name, state);
+    public RawMaterialEntity(long pgraphId, String name){
+	super(pgraphId, NodeType.RAW_MATERIAL, name);
     }
 }
 

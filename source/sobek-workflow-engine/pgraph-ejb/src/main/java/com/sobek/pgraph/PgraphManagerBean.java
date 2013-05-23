@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -99,10 +100,6 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	    //valid = false;
 	}
 
-	if(isCyclic(pgraphEntity.getId())){
-	    //valid = false;
-	}
-	
 	if(!hasOneRawMaterial(pgraphEntity.getId())){
 	    //valid = false;
 	}
@@ -122,6 +119,26 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	}
 	
 	return pgraphEntity.getId();
+    }
+    
+    private boolean isConnected(long pgraphId){
+	//TODO
+	return true;
+    }
+        
+    private boolean hasOneRawMaterial(long pgraphId){
+	//TODO
+	return true;
+    }
+    
+    private boolean hasOneProduct(long pgraphId){
+	//TODO
+	return true;
+    }
+    
+    private boolean isInterleaved(long pgraphId){
+	//TODO
+	return true;
     }
     
     /*
@@ -166,7 +183,7 @@ public class PgraphManagerBean implements PgraphManagerLocal{
         		    case UNEVALUATED: // If the operation is not yet started then check materials
         			logger.trace("Node {} in pgraphId {} is not started.", nodeEntity, pgraphId);
         			
-        			if(checkRequiredMaterials(nodeEntity)){
+        			if(checkRequiredMaterials(operationEntity)){
         			    // We can start this operation if all required materials are available.
         			    logger.trace("All materials are available for node {} in pgraphId {}.", nodeEntity, pgraphId);
         			    Operation operation = new Operation(
@@ -182,16 +199,6 @@ public class PgraphManagerBean implements PgraphManagerLocal{
         			logger.trace("Node {} in pgraphId {} is complete.", nodeEntity, pgraphId);
         			addChildNodesToQueue(nodeEntity, queuedNodes, visitedNodes);
         			break;
-				case CANCELED:
-					break;
-				case FAILED:
-					break;
-				case SUSPENDED:
-					break;
-				case UNEXECUTED:
-					break;
-				case WORKING:
-					break;
 				default:
 					break;
         		}
@@ -234,45 +241,45 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	}
     }
     
-    private boolean checkRequiredMaterials(NodeEntity nodeEntity) throws InvalidPgraphStructureException{
-	logger.trace("Checking for required materials for node {}.", nodeEntity);
+    private boolean checkRequiredMaterials(OperationEntity operationEntity){
+	logger.trace("Checking for required materials for node {}.", operationEntity);
 	
 	boolean materialsAvailable = true;
-	List<NodeEntity> materialNodes = pgraphDao.getParentNodes(nodeEntity.getId());
+	Set<MaterialEntity> inputMaterials = operationEntity.getInputMaterials();
 	
-	if(materialNodes.isEmpty()){
-	    String message = "Expected to find at least one material that is required for nodeId " + nodeEntity.getId() + ".";
+	if(inputMaterials.isEmpty()){
+	    String message = "Expected to find at least one material that is required for nodeId " + operationEntity.getId() + ".";
 	    logger.error(message);
 	    throw new InvalidPgraphStructureException(message);
 	}
 	
-	Iterator<NodeEntity> materialNodeIterator = materialNodes.iterator();
+	Iterator<MaterialEntity> materialNodeIterator = inputMaterials.iterator();
 	
-	logger.trace("Checking materials {} for node {}.", materialNodes, nodeEntity);
+	logger.trace("Checking materials {} for node {}.", inputMaterials, operationEntity);
 	while(materialNodeIterator.hasNext() && materialsAvailable){
 	    NodeEntity materialNodeEntity = materialNodeIterator.next();
-	    logger.trace("Checking material {} for node {}.", materialNodeEntity, nodeEntity);
+	    logger.trace("Checking material {} for node {}.", materialNodeEntity, operationEntity);
 	    
 	    switch(materialNodeEntity.getType()){
 		case INTERMEDIATE_PRODUCT:
 		case RAW_MATERIAL:
 		    		    
 		    materialsAvailable = MaterialState.AVAILABLE.equals(((MaterialEntity)materialNodeEntity).getState());
-		    logger.trace("Available = {} for node {}.", materialsAvailable, nodeEntity);
+		    logger.trace("Available = {} for node {}.", materialsAvailable, operationEntity);
 		    break;
 		default:
-		    String message = "Expected to find Material nodes while checking for required materials for nodeId " + nodeEntity.getId() + ".";
+		    String message = "Expected to find Material nodes while checking for required materials for nodeId " + operationEntity.getId() + ".";
 		    logger.error(message);
 		    throw new InvalidPgraphStructureException(message);
 	    }
 	}
 	
-	logger.trace("Returning materialsAvailable = {} for node {}.", materialsAvailable, nodeEntity);
+	logger.trace("Returning materialsAvailable = {} for node {}.", materialsAvailable, operationEntity);
 	return materialsAvailable;
     }
     
     @Override
-    public void updateOperation(long operationId, float percentComplete, OperationState state){
+    public void updateOperation(long operationId, float percentComplete, OperationState state) throws NoSuchOperationException{
 	logger.debug("Operation ID {}, Percent complete {}, Operation state {} - Entering.", operationId, percentComplete, state);
 	
 	StringBuilder validationErrors = new StringBuilder();
@@ -317,11 +324,11 @@ public class PgraphManagerBean implements PgraphManagerLocal{
     }
 
     @Override
-    public List<Operation> start(long pgraphId, Serializable parameters){
+    public List<Operation> start(long pgraphId, Serializable rawMaterial) throws InvalidPgraphStructureException, NoSuchPgraphException{
 	logger.debug("Pgraph ID {} - Entering.", pgraphId);
 	
-	if(parameters == null){
-	    String message = "Parameters cannot be null.";
+	if(rawMaterial == null){
+	    String message = "Raw Material cannot be null.";
 	    logger.error(message);    
 	    throw new IllegalArgumentException(message);
 	}
@@ -329,7 +336,7 @@ public class PgraphManagerBean implements PgraphManagerLocal{
 	logger.debug("Pgraph ID {} - Updating Raw Material.", pgraphId);
 	RawMaterialEntity rawMaterialEntity = pgraphDao.getRawMaterialNode(pgraphId);
 	rawMaterialEntity.setState(MaterialState.AVAILABLE);
-	rawMaterialEntity.setValue(parameters);
+	rawMaterialEntity.setValue(rawMaterial);
 	
 	logger.debug("Pgraph ID {} - Searching for ready operations.", pgraphId);
 	List<Operation> readyOperations = this.getReadyOperations(pgraphId);
@@ -339,10 +346,61 @@ public class PgraphManagerBean implements PgraphManagerLocal{
     }
 
     @Override
-    public List<Operation> completeOperation(long pGraphId,
-	    long operationId, Serializable material, String name){
-	// TODO Auto-generated method stub
-	return null;
+    public List<Operation> completeOperation(long operationId, long materialId, Serializable materialValue) throws NoSuchOperationException, NoSuchMaterialException{
+	logger.debug("Operation ID {}, Material ID {} - Entering.", operationId, materialId);
+	
+	if(materialValue == null){
+	    String message = "Material value cannot be null.";
+	    logger.error(message);
+	    throw new IllegalArgumentException(message);
+	}
+	
+	logger.debug("Operation ID {}, Material ID {} - Retrieving Operation entity.", operationId, materialId);
+	OperationEntity operationEntity = pgraphDao.getOperation(operationId);
+	
+	if(operationEntity == null){
+	    String message = "No Operation exists with Operation ID " + operationId + ".";
+	    logger.error(message);
+	    throw new NoSuchOperationException(message);
+	}
+	
+	logger.debug("Operation ID {}, Material ID {} - Retrieving Material entity.", operationId, materialId);
+	MaterialEntity materialEntity =  pgraphDao.getMaterialEntity(materialId);
+	
+	if(materialEntity == null){
+	    String message = "No Material exists with Material ID " + materialId + ".";
+	    logger.error(message);
+	    throw new NoSuchMaterialException(message);
+	}
+	
+	if(!operationEntity.getOutputMaterials().contains(materialEntity)){
+	    String message = "The Material with ID " + materialId + " is not an output material of Operation ID " + operationId;
+	    logger.error(message);
+	    throw new IllegalArgumentException(message);
+	}
+	
+	logger.debug("Operation ID {}, Material ID {} - Updating Operation entity.", operationId, materialId);
+	operationEntity.setPercentComplete(1.0f);
+	operationEntity.setState(OperationState.COMPLETE);
+	
+	logger.debug("Operation ID {}, Material ID {} - Updating material entity.", operationId, materialId);
+	materialEntity.setValue(materialValue);
+	materialEntity.setState(MaterialState.AVAILABLE);
+	
+	logger.debug("Operation ID {}, Material ID {} - Checking for ready operations.", operationId, materialId);
+	List<Operation> readyOperations;
+	
+	try{
+	    readyOperations = getReadyOperations(operationEntity.getPgraphId());
+	}catch(NoSuchPgraphException e){
+	    String message = "The Operation with ID " + operationEntity.getId() + " belongs to Pgraph ID "
+		    + operationEntity.getPgraphId() + ", however, that pgraph does not exist.";
+	    logger.error(message);
+	    throw new InvalidPgraphStructureException(message);
+	}
+	
+	logger.debug("Operation ID {}, Material ID {} - Found {} ready operations.", operationId, materialId, readyOperations.size());
+	return readyOperations;
     }
 
     @Override
@@ -352,33 +410,8 @@ public class PgraphManagerBean implements PgraphManagerLocal{
     }
 
     @Override
-    public void failOperation(long pgraphId, long operationId, String state){
+    public void failOperation(long operationId) throws NoSuchOperationException{
 	// TODO Auto-generated method stub
 
     }
-    
-    private boolean isConnected(long pgraphId){
-	//TODO
-	return true;
-    }
-    
-    private boolean isCyclic(long pgraphId){
-	//TODO
-	return false;
-    }
-    
-    private boolean hasOneRawMaterial(long pgraphId){
-	//TODO
-	return true;
-    }
-    
-    private boolean hasOneProduct(long pgraphId){
-	//TODO
-	return true;
-    }
-    
-    private boolean isInterleaved(long pgraphId){
-	//TODO
-	return true;
-    }	
 }

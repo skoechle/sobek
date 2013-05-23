@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import com.sobek.pgraph.entity.OperationEntity;
-
 /**
  * 
  * @author Matt
@@ -27,17 +25,16 @@ public interface PgraphManagerLocal extends PgraphManager{
      * 
      * @throws NoSuchPgraphException If there is no pgraph with pgraphId.
      * @throws InvalidPgraphStructureException If the structure of the pgraph is invalid.
-     * @throws NamingException If one of the node jndi names in the P-Graph failed to be looked up.
      */
     List<Operation> getReadyOperations(long pgraphId) throws NoSuchPgraphException, InvalidPgraphStructureException;
 
-    List<Operation> start(long pGraphId, Serializable parameters);
+    List<Operation> start(long pGraphId, Serializable rawMaterial) throws InvalidPgraphStructureException, NoSuchPgraphException;
 
-    void updateOperation(long operationId, float percentComplete, OperationState state);
+    void updateOperation(long operationId, float percentComplete, OperationState state) throws NoSuchOperationException;
 
-    List<Operation> completeOperation(long pgraphId, long operationId, Serializable material, String name);
+    List<Operation> completeOperation(long operationId, long materialId, Serializable materialValue) throws NoSuchOperationException, NoSuchMaterialException;
 
     PgraphState getState(long pgraphId);
 
-    void failOperation(long pgraphId, long operationId, String state);
+    void failOperation(long operationId) throws NoSuchOperationException;
 }

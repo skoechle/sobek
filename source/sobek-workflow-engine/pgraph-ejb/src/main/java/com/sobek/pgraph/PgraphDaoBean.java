@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sobek.pgraph.entity.EdgeEntity;
+import com.sobek.pgraph.entity.MaterialEntity;
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
@@ -77,6 +78,12 @@ public class PgraphDaoBean implements PgraphDaoLocal{
     @Override
     public OperationEntity getOperation(long nodeId){
 	return entityManager.find(OperationEntity.class, nodeId);
+    }
+    
+
+    @Override
+    public MaterialEntity getMaterialEntity(long nodeId){
+	return entityManager.find(MaterialEntity.class, nodeId);
     }
     
     @Override

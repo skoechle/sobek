@@ -1,13 +1,20 @@
 package com.sobek.pgraph.entity;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.sobek.pgraph.NodeType;
 import com.sobek.pgraph.OperationState;
-
 
 @Entity
 @Table(name="OPERATION")
@@ -20,14 +27,40 @@ public class OperationEntity extends NodeEntity{
     @Column(name = "PERCENT_COMPLETE")
     private float percentComplete = 0f;
     
+    @Column(name = "MESSAGE_QUEUE_NAME")
+    private String messageQueueName;
+    
     @SuppressWarnings("unused")
     private OperationEntity(){
 	// Required by JPA.
     }
     
-    public OperationEntity(long pgraphId, String messageQueueName, String name, OperationState state){
-	super(pgraphId, NodeType.OPERATION, messageQueueName, name);
-	this.state = state.toString();
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "EDGE", 
+    	joinColumns = {
+	    @JoinColumn(name = "PGRAPH_ID", referencedColumnName = "PGRAPH_ID"),
+	    @JoinColumn(name = "TO_NODE_ID", referencedColumnName = "ID"),
+	    },
+	inverseJoinColumns = {
+	    @JoinColumn(name = "PGRAPH_ID", referencedColumnName = "PGRAPH_ID"),
+	    @JoinColumn(name = "FROM_NODE_ID", referencedColumnName = "ID"),})
+    private Set<MaterialEntity> inputMaterials = new HashSet<MaterialEntity>();
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "EDGE", 
+    	joinColumns = {
+	    @JoinColumn(name = "PGRAPH_ID", referencedColumnName = "PGRAPH_ID"),
+	    @JoinColumn(name = "FROM_NODE_ID", referencedColumnName = "ID"),
+	    },
+	inverseJoinColumns = {
+	    @JoinColumn(name = "PGRAPH_ID", referencedColumnName = "PGRAPH_ID"),
+	    @JoinColumn(name = "TO_NODE_ID", referencedColumnName = "ID"),})
+    private Set<MaterialEntity> outputMaterials = new HashSet<MaterialEntity>();
+    
+    public OperationEntity(long pgraphId, String messageQueueName, String name){
+	super(pgraphId, NodeType.OPERATION, name);
+	this.messageQueueName = messageQueueName;
+	this.state = OperationState.UNEVALUATED.toString();
     }
 
     public OperationState getState(){
@@ -39,10 +72,22 @@ public class OperationEntity extends NodeEntity{
     }
 
     public float getPercentComplete(){
-        return percentComplete;
+        return this.percentComplete;
+    }
+    
+    public String getMessageQueueName(){
+	return this.messageQueueName;
     }
 
     public void setPercentComplete(float percentComplete){
         this.percentComplete = percentComplete;
+    }
+    
+    public Set<MaterialEntity> getInputMaterials(){
+	return Collections.unmodifiableSet(this.inputMaterials);
+    }
+    
+    public Set<MaterialEntity> getOutputMaterials(){
+	return Collections.unmodifiableSet(this.outputMaterials);
     }
 }

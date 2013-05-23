@@ -3,6 +3,7 @@ package com.sobek.pgraph;
 import java.util.List;
 
 import com.sobek.pgraph.entity.EdgeEntity;
+import com.sobek.pgraph.entity.MaterialEntity;
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
@@ -60,13 +61,22 @@ public interface PgraphDaoLocal{
     List<NodeEntity> getChildNodes(long nodeId);
     
     /**
-     * Gets an operation with nodeId.
+     * Gets the Operation with a Node ID.
      * 
-     * @param nodeId - The nodeId of the operation.
+     * @param nodeId - The Node ID of the Operation.
      * 
      * @return The operation or null if not found.
      */
     OperationEntity getOperation(long nodeId);
+    
+    /**
+     * Gets the Material with a Node ID.
+     *  
+     * @param nodeId - The Node ID of the Material
+     * 
+     * @return - The Material or null if none is found.
+     */
+    MaterialEntity getMaterialEntity(long nodeId);
 
     /**
      * Gets the raw material for a P-Graph.

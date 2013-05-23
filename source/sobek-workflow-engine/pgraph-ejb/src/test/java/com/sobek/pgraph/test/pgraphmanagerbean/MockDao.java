@@ -12,8 +12,11 @@ import com.sobek.pgraph.NoSuchPgraphException;
 import com.sobek.pgraph.NodeType;
 import com.sobek.pgraph.PgraphDaoLocal;
 import com.sobek.pgraph.entity.EdgeEntity;
+import com.sobek.pgraph.entity.MaterialEntity;
 import com.sobek.pgraph.entity.NodeEntity;
+import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
+import com.sobek.pgraph.entity.RawMaterialEntity;
 
 
 public class MockDao implements PgraphDaoLocal{
@@ -101,12 +104,12 @@ public class MockDao implements PgraphDaoLocal{
     }
 
     @Override
-    public NodeEntity getRawMaterialNode(long pgraphId) throws InvalidPgraphStructureException, NoSuchPgraphException{
-	NodeEntity rawMaterialNode = null;
+    public RawMaterialEntity getRawMaterialNode(long pgraphId) throws InvalidPgraphStructureException, NoSuchPgraphException{
+	RawMaterialEntity rawMaterialNode = null;
 	
 	for(NodeEntity node : nodes){
 	    if(node.getType().equals(NodeType.RAW_MATERIAL)){
-		rawMaterialNode = node;
+		rawMaterialNode = (RawMaterialEntity)node;
 	    }
 	}
 	
@@ -121,5 +124,17 @@ public class MockDao implements PgraphDaoLocal{
     @Override
     public void addPgraph(PgraphEntity pgraphEntity){
 
+    }
+
+    @Override
+    public OperationEntity getOperation(long nodeId){
+	// TODO Auto-generated method stub
+	return null;
+    }
+
+    @Override
+    public MaterialEntity getMaterialEntity(long nodeId){
+	// TODO Auto-generated method stub
+	return null;
     } 
 }

@@ -15,13 +15,12 @@ import javax.persistence.Table;
 import com.sobek.pgraph.NodeType;
 
 @NamedQueries({
-    @NamedQuery(name = "NodeEntity.getChildNodes",
+    @NamedQuery(name = NodeEntity.GET_CHILD_NODES_QUERY,
 	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.primaryKey.fromNodeId = :nodeId and n.id = e.primaryKey.toNodeId"),
-    @NamedQuery(name = "NodeEntity.getParentNodes",
+    @NamedQuery(name = NodeEntity.GET_PARENT_NODES_QUERY,
 	    	query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.primaryKey.toNodeId = :nodeId and n.id = e.primaryKey.fromNodeId")
 })
 @Entity
-
 @Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name = "TYPE", discriminatorType=DiscriminatorType.STRING)
 @Table(name = "NODE")
@@ -40,9 +39,6 @@ public class NodeEntity{
     @Column(name = "TYPE")
     private String type;
     
-    @Column(name = "MESSAGE_QUEUE_NAME")
-    private String messageQueueName;
-    
     @Column(name = "NAME")
     private String name;
             
@@ -50,10 +46,9 @@ public class NodeEntity{
 	// Required by JPA
     }
     
-    public NodeEntity(long pgraphId, NodeType type, String messageQueueName, String name){
+    public NodeEntity(long pgraphId, NodeType type, String name){
 	this.pgraphId = pgraphId;
 	this.type = type.toString();
-	this.messageQueueName = messageQueueName;
 	this.name = name;
     }
    
@@ -68,11 +63,7 @@ public class NodeEntity{
     public NodeType getType(){
         return NodeType.valueOf(type);
     }
-
-    public String getMessageQueueName(){
-	return this.messageQueueName;
-    }
-    
+  
     public String getName(){
 	return this.name;
     }

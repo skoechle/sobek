@@ -1,6 +1,7 @@
 package com.sobek.pgraph.test.pgraphmanagerbean;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -13,12 +14,12 @@ import org.slf4j.LoggerFactory;
 import com.sobek.pgraph.MaterialState;
 import com.sobek.pgraph.NoSuchPgraphException;
 import com.sobek.pgraph.Operation;
-import com.sobek.pgraph.OperationState;
 import com.sobek.pgraph.PgraphDaoBean;
 import com.sobek.pgraph.PgraphDaoLocal;
 import com.sobek.pgraph.PgraphManagerBean;
 import com.sobek.pgraph.entity.EdgeEntity;
 import com.sobek.pgraph.entity.EdgePrimaryKey;
+import com.sobek.pgraph.entity.MaterialEntity;
 import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.pgraph.entity.ProductEntity;
 import com.sobek.pgraph.entity.RawMaterialEntity;
@@ -49,9 +50,23 @@ public class GetReadyOperationsTest{
 	long pgraphId = 1L;
 	MockDao pgraphDao = new MockDao(pgraphId);
 	
-	RawMaterialEntity rootNode = new RawMaterialEntity(pgraphId, "queueName", MaterialState.AVAILABLE);
-	OperationEntity operationNode = new OperationEntity(pgraphId, "OperQueueName", OperationState.UNEVALUATED);
-	ProductEntity productNode = new ProductEntity(pgraphId, "queueName", MaterialState.NOT_AVAILABLE);
+	RawMaterialEntity rootNode = new RawMaterialEntity(pgraphId, "nodeName");
+	rootNode.setState(MaterialState.AVAILABLE);
+	
+	OperationEntity operationNode = new OperationEntity(pgraphId, "OperQueueName", "nodeName");
+	ProductEntity productNode = new ProductEntity(pgraphId, "nodeName");
+	
+	Field inputMaterailsField = OperationEntity.class.getDeclaredField("inputMaterials");
+	inputMaterailsField.setAccessible(true);
+	HashSet<MaterialEntity> inputMaterials = new HashSet<MaterialEntity>();
+	inputMaterials.add(rootNode);
+	inputMaterailsField.set(operationNode, inputMaterials);
+	
+	Field outputMaterialsField = OperationEntity.class.getDeclaredField("outputMaterials");
+	outputMaterialsField.setAccessible(true);
+	HashSet<MaterialEntity> outputMaterials = new HashSet<MaterialEntity>();
+	outputMaterials.add(productNode);
+	outputMaterialsField.set(operationNode, outputMaterials);
 	
 	pgraphDao.addNode(rootNode);
 	long rootNodeId = rootNode.getId();

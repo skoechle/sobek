@@ -1,10 +1,10 @@
-package com.sobek.pgraph;
+package com.sobek.pgraph.entity;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.sobek.pgraph.entity.MaterialEntity;
+import com.sobek.pgraph.NodeType;
 
 @Entity
 @Table(name="MATERIAL")
@@ -16,7 +16,7 @@ public class IntermediateProductEntity extends MaterialEntity{
 	// Required by JPA
     }
     
-    public IntermediateProductEntity(long pgraphId, String messageQueueName, String name, MaterialState state){
-	super(pgraphId, NodeType.INTERMEDIATE_PRODUCT, messageQueueName, name, state);
+    public IntermediateProductEntity(long pgraphId, String name){
+	super(pgraphId, NodeType.INTERMEDIATE_PRODUCT, name);
     }
 }
