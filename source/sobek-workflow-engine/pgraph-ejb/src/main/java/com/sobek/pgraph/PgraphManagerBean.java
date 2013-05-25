@@ -199,6 +199,16 @@ public class PgraphManagerBean implements PgraphManagerLocal{
         			logger.trace("Node {} in pgraphId {} is complete.", nodeEntity, pgraphId);
         			addChildNodesToQueue(nodeEntity, queuedNodes, visitedNodes);
         			break;
+				case CANCELED:
+					break;
+				case FAILED:
+					break;
+				case SUSPENDED:
+					break;
+				case UNEXECUTED:
+					break;
+				case WORKING:
+					break;
 				default:
 					break;
         		}

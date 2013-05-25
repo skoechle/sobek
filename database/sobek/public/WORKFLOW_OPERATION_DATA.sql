@@ -1,6 +1,6 @@
--- Table: workflow
+-- Table: workflow_operation_data
 
--- DROP TABLE workflow;
+-- DROP TABLE workflow_operation_data;
 
 CREATE TABLE workflow_operation_data
 (
@@ -12,5 +12,5 @@ CREATE TABLE workflow_operation_data
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE workflow
+ALTER TABLE workflow_operation_data
   OWNER TO "sobek";

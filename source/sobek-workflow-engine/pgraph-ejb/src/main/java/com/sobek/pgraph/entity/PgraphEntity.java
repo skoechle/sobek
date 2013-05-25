@@ -3,9 +3,11 @@ package com.sobek.pgraph.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @NamedQueries({
@@ -21,10 +23,14 @@ public class PgraphEntity{
     public static final String COUNT_BY_ID_QUERY = "PgraphEntity.countByPgraphId";
     public static final String GET_RAW_MATERIAL_QUERY = "PgraphEntity.getRawMaterial";
     
-    @GeneratedValue
+    @SequenceGenerator(name="PgraphIdGenerator",
+            sequenceName="PGRAPH_ID_GENERATOR",
+            allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+         generator="PgraphIdGenerator")
     @Id
     @Column(name = "ID")
-    private long id = -1L;
+    private long id;
     
     public long getId(){
 	return id;

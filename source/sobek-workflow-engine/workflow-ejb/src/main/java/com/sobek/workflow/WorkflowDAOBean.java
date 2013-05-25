@@ -21,13 +21,13 @@ public class WorkflowDAOBean implements WorkflowDAOLocal {
 	private EntityManager manager;
 	
 	@Override
-	public WorkflowEntity create(String name, Serializable parameters) {
+	public WorkflowEntity create(String name, Serializable parameters, long pgraphId) {
 		logger.log(
 				Level.FINEST,
 				"Creating a new workflow for name [{0}] and parameter type [{1}].",
 				new Object[] {name, parameters});
 		
-		WorkflowEntity workflowData = new WorkflowEntity(name, parameters);
+		WorkflowEntity workflowData = new WorkflowEntity(name, parameters, pgraphId);
 		this.manager.persist(workflowData);
 		return workflowData;
 	}

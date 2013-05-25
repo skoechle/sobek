@@ -6,6 +6,7 @@ CREATE TABLE workflow
 (
   id numeric(18,0) NOT NULL,
   name character varying(256),
+  pgraph_id numeric(18,0) NOT NULL,
   status character varying(64),
   parameters text,
   CONSTRAINT workflow_pk PRIMARY KEY (id)

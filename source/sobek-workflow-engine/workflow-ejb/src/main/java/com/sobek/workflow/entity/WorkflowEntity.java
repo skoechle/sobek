@@ -30,11 +30,11 @@ public class WorkflowEntity implements Serializable {
 	public static final String GET_WORKFLOW_BY_NAME = "WorkflowEntity.getWorkflowByName";
 	public static final String NAME_PARAMETER = "name";
 
-    @SequenceGenerator(name="idGenerator",
+    @SequenceGenerator(name="workflowIdGenerator",
             sequenceName="WORKFLOW_ID_GENERATOR",
             allocationSize=1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-         generator="idGenerator")
+         generator="workflowIdGenerator")
     @Id
 	@Column(name="ID")
 	private long id;
@@ -59,19 +59,22 @@ public class WorkflowEntity implements Serializable {
 	private WorkflowEntity() {
 	}
 	
-	public WorkflowEntity(String name, Serializable parameters) {
+	public WorkflowEntity(String name, Serializable parameters, long pgraphId) {
 		if(name == null || name.isEmpty()
-				|| parameters == null)
+				|| parameters == null
+				|| pgraphId <= 0)
 		{
 			throw new IllegalArgumentException(
 					"One or more invalid values were passed to the " +
 					this.getClass().getName() + " constructor.  The given values " +
 					"were:" + SystemProperties.NEW_LINE +
 					"Name (cannot be null or empty) : " + name + SystemProperties.NEW_LINE +
-					"Parameters (cannot be null) : " + parameters + SystemProperties.NEW_LINE);
+					"Parameters (cannot be null) : " + parameters + SystemProperties.NEW_LINE +
+					"Pgraph ID (cannot be <= 0) : " + pgraphId + SystemProperties.NEW_LINE);
 		}
 		this.name = name;
 		this.parameters = parameters;
+		this.pgraphId = pgraphId;
 		this.state = WorkflowState.NOT_STARTED;
 	}
 

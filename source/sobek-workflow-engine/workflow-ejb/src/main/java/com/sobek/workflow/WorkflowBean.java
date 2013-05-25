@@ -48,20 +48,25 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 		{
 			WorkflowConfigurationEntity configEntity = this.dao.findConfiguration(name);
 	
-			if(configEntity != null) {
+			if(configEntity != null)
+			{
+				long pgraphId = 0;
 				try {
-					this.pgraph.createPgraph(configEntity.getPgraph().getEdges());
+					pgraphId = this.pgraph.createPgraph(configEntity.getPgraph().getEdges());
 				} catch (InvalidPgraphStructureException e) {
+					logger.log(Level.SEVERE, "An exception was thrown while creating the pgraph.", e);
 					result.invlidConfiguration();
 				}
 	
-				WorkflowEntity entity = this.dao.create(name, parameters);
-				if(entity == null) {
-					result.creationFailed();
-				} else {
-					// Create a result with the entity so that the entity
-					// is returned with the result.
-					result = new CreateWorkflowResult(entity);
+				if(result.successful()) {
+					WorkflowEntity entity = this.dao.create(name, parameters, pgraphId);
+					if(entity == null) {
+						result.creationFailed();
+					} else {
+						// Create a result with the entity so that the entity
+						// is returned with the result.
+						result = new CreateWorkflowResult(entity);
+					}
 				}
 			} else {
 				result.configurationDoesNotExist();
@@ -179,6 +184,7 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 						"Replacing pgraph for workflow [{0}].",
 						config.getName());
 				this.dao.create(config);
+				returnValue = true;
 			} else {
 				logger.log(
 						Level.WARNING,

@@ -1,12 +1,25 @@
 package com.sobek.workflow.entity;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.sobek.common.util.SystemProperties;
 import com.sobek.pgraph.Pgraph;
@@ -14,10 +27,11 @@ import com.sobek.pgraph.Pgraph;
 @Entity
 @Table(name="WORKFLOW_CONFIGURATION")
 @NamedQueries({
-		@NamedQuery(name=WorkflowConfigurationEntity.GET_CONFIG_BY_NAME, query="SELECT wfe FROM WorkflowConfigurationEntity wfe WHERE wfe.name = :name")
+		@NamedQuery(name=WorkflowConfigurationEntity.GET_CONFIG_BY_NAME, query="SELECT wfe FROM WorkflowConfigurationEntity wfe WHERE wfe.name = :" + WorkflowConfigurationEntity.NAME_PARAMETER)
 	})
 public class WorkflowConfigurationEntity {
 	
+	public static final Logger logger = Logger.getLogger(WorkflowConfigurationEntity.class.getPackage().getName());
 	public static final String GET_CONFIG_BY_NAME = "WorkflowConfigurationEntity.getConfigByName";
 	public static final String NAME_PARAMETER = "name";
 
@@ -27,7 +41,10 @@ public class WorkflowConfigurationEntity {
 	
 	@Lob
 	@Column(name="PGRAPH")
-	private Pgraph pgraph;
+	private byte[] pgraphByteArray;
+	
+	@Transient
+	private Serializable pgraph;
 
 	@SuppressWarnings("unused")
 	private WorkflowConfigurationEntity() {
@@ -57,7 +74,7 @@ public class WorkflowConfigurationEntity {
 	}
 
 	public Pgraph getPgraph() {
-		return this.pgraph;
+		return (Pgraph)this.pgraph;
 	}
 
 	public void setPgraph(Pgraph pgraph) {
@@ -66,5 +83,27 @@ public class WorkflowConfigurationEntity {
 		}
 	}
 
+	@PrePersist
+	private void convertPgraphToByteArray()
+	{
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			ObjectOutputStream stream = new ObjectOutputStream(out );
+			stream.writeObject(this.pgraph);
+			this.pgraphByteArray = out.toByteArray();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Unable to store the pgraph.", e);
+		}
+	}
 	
+	@PostLoad
+	private void convertByteArrayToPgraph() {
+		try {
+			ByteArrayInputStream out = new ByteArrayInputStream(this.pgraphByteArray);
+			ObjectInputStream stream = new ObjectInputStream(out );
+			this.pgraph = (Pgraph)stream.readObject();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Unable to read the pgraph byte array from the database.", e);
+		}
+	}
 }
