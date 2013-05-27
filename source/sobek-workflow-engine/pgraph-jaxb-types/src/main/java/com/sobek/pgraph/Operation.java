@@ -12,6 +12,9 @@ public class Operation extends Node{
     
     @XmlElement(required = true)
     private OperationState state;
+
+    @XmlElement(required = true)
+	private String name;
     
     @SuppressWarnings("unused")
     private Operation(){
@@ -30,4 +33,9 @@ public class Operation extends Node{
     public OperationState getState(){
 	return state;
     }
+
+	public String getName() {
+		// TODO Auto-generated method stub
+		return this.name;
+	}
 }

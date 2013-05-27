@@ -20,11 +20,11 @@ public class PgraphExistsTest{
     @Test
     public void graphExistsTest() throws Exception{
 	// Setup
-	TypedQuery<Integer> query = Mockito.mock(TypedQuery.class);
-	Mockito.when(query.getSingleResult()).thenReturn(1);
+	TypedQuery<Long> query = Mockito.mock(TypedQuery.class);
+	Mockito.when(query.getSingleResult()).thenReturn(1L);
 	
 	EntityManager em = Mockito.mock(EntityManager.class);
-	Mockito.when(em.createNamedQuery(PgraphEntity.COUNT_BY_ID_QUERY, Integer.class)).thenReturn(query);
+	Mockito.when(em.createNamedQuery(PgraphEntity.COUNT_BY_ID_QUERY, Long.class)).thenReturn(query);
 	
 	PgraphDaoLocal dao = createPgraphDao(em);
 	
@@ -36,11 +36,11 @@ public class PgraphExistsTest{
     @Test
     public void graphDoesNotExistTest() throws Exception{
 	// Setup
-	TypedQuery<Integer> query = Mockito.mock(TypedQuery.class);
-	Mockito.when(query.getSingleResult()).thenReturn(0);
+	TypedQuery<Long> query = Mockito.mock(TypedQuery.class);
+	Mockito.when(query.getSingleResult()).thenReturn(0L);
 	
 	EntityManager em = Mockito.mock(EntityManager.class);
-	Mockito.when(em.createNamedQuery(PgraphEntity.COUNT_BY_ID_QUERY, Integer.class)).thenReturn(query);
+	Mockito.when(em.createNamedQuery(PgraphEntity.COUNT_BY_ID_QUERY, Long.class)).thenReturn(query);
 	
 	PgraphDaoLocal dao = createPgraphDao(em);
 	

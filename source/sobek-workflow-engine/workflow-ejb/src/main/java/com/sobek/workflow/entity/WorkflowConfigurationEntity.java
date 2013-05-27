@@ -2,10 +2,8 @@ package com.sobek.workflow.entity;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.sobek.common.result.Result;
 import com.sobek.common.util.SystemProperties;
-import com.sobek.pgraph.entity.OperationEntity;
+import com.sobek.pgraph.Operation;
 import com.sobek.workflow.entity.WorkflowEntity;
 
 public class StartOperationResult extends Result{
@@ -27,11 +27,11 @@ public class StartOperationResult extends Result{
 		this.material = material;
 	}
 
-	public void exceptionOccurred(OperationEntity operation) {
+	public void exceptionOccurred(Operation operation) {
 		this.addErrorCode(StartOperationErrorCode.EXCEPTION_THROWN, operation);
 	}
 
-	private void addErrorCode(StartOperationErrorCode code, OperationEntity operation) {
+	private void addErrorCode(StartOperationErrorCode code, Operation operation) {
 		if(operation == null) {
 			throw new IllegalArgumentException(
 					"An invalid operation was passed to the " +

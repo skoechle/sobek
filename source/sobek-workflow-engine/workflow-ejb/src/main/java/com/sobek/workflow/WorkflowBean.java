@@ -11,16 +11,20 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 
-import com.sobek.client.operation.status.CompletionState;
 import com.sobek.client.operation.status.OperationCompletionMessage;
+import com.sobek.client.operation.status.OperationStatus;
 import com.sobek.client.operation.status.OperationStatusMessage;
 import com.sobek.pgraph.InvalidPgraphStructureException;
+import com.sobek.pgraph.NoSuchMaterialException;
+import com.sobek.pgraph.NoSuchOperationException;
+import com.sobek.pgraph.Operation;
+import com.sobek.pgraph.OperationState;
 import com.sobek.pgraph.PgraphManagerLocal;
 import com.sobek.pgraph.PgraphState;
-import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.workflow.entity.WorkflowConfigurationEntity;
 import com.sobek.workflow.entity.WorkflowEntity;
 import com.sobek.workflow.error.CreateWorkflowResult;
+import com.sobek.workflow.error.StartWorkflowResult;
 
 @Stateless
 public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
@@ -81,21 +85,30 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 	}
 
 	@Override
-	public List<OperationEntity> start(WorkflowEntity entity) {
+	public StartWorkflowResult start(WorkflowEntity entity) {
 		logger.log(
 				Level.FINEST,
 				"Starting workflow for data [{0}].",
 				entity);
 
-		List<OperationEntity> list =
-				this.pgraph.start(entity.getPgraphId(), entity.getParameters());
+		StartWorkflowResult returnValue = null;
+
+		List<Operation> list = new ArrayList<Operation>();
+		try {
+			list = this.pgraph.start(entity.getPgraphId(), entity.getParameters());
+			returnValue = new StartWorkflowResult(entity, list);
+		} catch (Exception e) {
+			returnValue = new StartWorkflowResult(entity);
+			returnValue.exceptionOccurred();
+			logger.log(Level.SEVERE, "An exception occured while attempting to start the pgraph.", e);
+		}
 		
 		logger.log(
 				Level.FINEST,
 				"Exiting, returning [{0}].",
-				list);
+				returnValue);
 
-		return list;
+		return returnValue;
 	}
 
 	@Override
@@ -103,7 +116,18 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 		if(status != null) {
 			WorkflowEntity entity = this.dao.getWorkflow(status.getWorkflowId());
 			if(entity != null) {
-				this.pgraph.updateOperation(entity.getPgraphId(), status.getOperationId(), status.getPercentComplete(), status.getStatus().name());
+				OperationStatus operationStatus = status.getStatus();
+				OperationState state = OperationState.valueOf(operationStatus.name());
+				try {
+					this.pgraph.updateOperation(status.getOperationId(), status.getPercentComplete(), state);
+				} catch (NoSuchOperationException e) {
+					logger.log(
+							Level.WARNING,
+							"No operation was found for the operation ID [{0}] that " +
+							"was specified in the status message, ignoring the call.  " +
+							"No status update will be made.",
+							status.getOperationId());
+				}
 			} else {
 				logger.log(
 						Level.WARNING,
@@ -121,24 +145,40 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 	}
 
 	@Override
-	public List<OperationEntity> completeOperation(OperationCompletionMessage completion) {
+	public List<Operation> completeOperation(OperationCompletionMessage completion) {
 		if(completion == null) {
 			throw new IllegalArgumentException(
 					"The given operation competion message was null, no " +
 					"operation will be completed.");
 		}
 
-		List<OperationEntity> returnValue = new ArrayList<OperationEntity>();
+		List<Operation> returnValue = new ArrayList<Operation>();
 		
 		WorkflowEntity entity = this.dao.getWorkflow(completion.getWorkflowId());
 		
 		if(entity != null) {
-			List<OperationEntity> operationList =
-					this.pgraph.completeOperation(
-							entity.getPgraphId(),
-							completion.getOperationId(),
-							completion.getMaterial(),
-							completion.getState().name());
+			List<Operation> operationList = new ArrayList<Operation>();
+
+			try {
+				operationList = this.pgraph.completeOperation(
+						entity.getPgraphId(),
+						completion.getOperationId(),
+						completion.getMaterial());
+			} catch (NoSuchOperationException e) {
+				logger.log(
+						Level.WARNING,
+						"No operation was found for the operation ID [{0}] that " +
+						"was specified in the completion message, ignoring the call.  " +
+						"No operation will be completed.",
+						completion.getOperationId());
+			} catch (NoSuchMaterialException e) {
+				logger.log(
+						Level.WARNING,
+						"The material [{0}] that was specified in the completion " +
+						"message was not recognized for operation ID [{1}], " +
+						"ignoring the call.  No operation will be completed.",
+						new Object[] {completion.getMaterial(), completion.getOperationId()});
+			}
 
 			if(operationList == null || operationList.isEmpty()) {
 				PgraphState pgraphState = this.pgraph.getState(entity.getPgraphId());
@@ -236,10 +276,14 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 	@Override
 	public void failOperation(
 			WorkflowEntity entity,
-			OperationEntity operation,
+			Operation operation,
 			String details)
 	{
-		this.pgraph.failOperation(entity.getPgraphId(), operation.getId(), CompletionState.FAILED.name());
+		try {
+			this.pgraph.failOperation(operation.getId());
+		} catch (NoSuchOperationException e) {
+			logger.log(Level.SEVERE, "An exception was throw while attempting to fail the operation.  The operation does not exist..", e);
+		}
 	}
 
 	@Override

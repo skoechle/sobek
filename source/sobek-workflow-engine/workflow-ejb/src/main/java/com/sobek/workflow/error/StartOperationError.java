@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.sobek.common.result.Message;
 import com.sobek.common.util.SystemProperties;
-import com.sobek.pgraph.entity.OperationEntity;
+import com.sobek.pgraph.Operation;
 import com.sobek.workflow.entity.WorkflowEntity;
 
 public class StartOperationError extends Message {
@@ -18,7 +18,7 @@ public class StartOperationError extends Message {
 	
 	private Map<String, String> substitutionValues = new HashMap<String, String>();
 
-	protected StartOperationError(StartOperationErrorCode code, WorkflowEntity workflow, OperationEntity operation, Serializable material) {
+	protected StartOperationError(StartOperationErrorCode code, WorkflowEntity workflow, Operation operation, Serializable material) {
 		super(code);
 		
 		if(workflow == null || operation == null || material == null) {

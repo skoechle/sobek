@@ -54,12 +54,12 @@ public class GetRawMaterialNodeTest{
         TypedQuery<RawMaterialEntity> query = Mockito.mock(TypedQuery.class);
 	Mockito.when(query.getSingleResult()).thenThrow(NoResultException.class);
 	
-	TypedQuery<Integer> existsQuery = Mockito.mock(TypedQuery.class);
-	Mockito.when(existsQuery.getSingleResult()).thenReturn(0);
+	TypedQuery<Long> existsQuery = Mockito.mock(TypedQuery.class);
+	Mockito.when(existsQuery.getSingleResult()).thenReturn(0L);
 	
 	EntityManager em = Mockito.mock(EntityManager.class);
 	Mockito.when(em.createNamedQuery(PgraphEntity.GET_RAW_MATERIAL_QUERY, RawMaterialEntity.class)).thenReturn(query);
-	Mockito.when(em.createNamedQuery(PgraphEntity.COUNT_BY_ID_QUERY, Integer.class)).thenReturn(existsQuery);
+	Mockito.when(em.createNamedQuery(PgraphEntity.COUNT_BY_ID_QUERY, Long.class)).thenReturn(existsQuery);
 	
 	PgraphDaoLocal dao = createPgraphDao(em);
 
@@ -76,12 +76,12 @@ public class GetRawMaterialNodeTest{
         TypedQuery<RawMaterialEntity> query = Mockito.mock(TypedQuery.class);
 	Mockito.when(query.getSingleResult()).thenThrow(NoResultException.class);
 	
-	TypedQuery<Integer> existsQuery = Mockito.mock(TypedQuery.class);
-	Mockito.when(existsQuery.getSingleResult()).thenReturn(1);
+	TypedQuery<Long> existsQuery = Mockito.mock(TypedQuery.class);
+	Mockito.when(existsQuery.getSingleResult()).thenReturn(1L);
 	
 	EntityManager em = Mockito.mock(EntityManager.class);
 	Mockito.when(em.createNamedQuery(PgraphEntity.GET_RAW_MATERIAL_QUERY, RawMaterialEntity.class)).thenReturn(query);
-	Mockito.when(em.createNamedQuery(PgraphEntity.COUNT_BY_ID_QUERY, Integer.class)).thenReturn(existsQuery);
+	Mockito.when(em.createNamedQuery(PgraphEntity.COUNT_BY_ID_QUERY, Long.class)).thenReturn(existsQuery);
 	
 	PgraphDaoLocal dao = createPgraphDao(em);
 
