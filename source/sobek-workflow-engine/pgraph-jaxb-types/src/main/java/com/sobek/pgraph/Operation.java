@@ -5,37 +5,29 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(namespace = "com.sobek.pgraph")
-public class Operation extends Node{
-    
-    @XmlTransient
-    private static final long serialVersionUID = 1L;
-    
-    @XmlElement(required = true)
-    private OperationState state;
+public class Operation extends Node {
 
-    @XmlElement(required = true)
-	private String name;
-    
-    @SuppressWarnings("unused")
-    private Operation(){
-	// Required by JAXB.
-    }
-    
-    public Operation(long id, String messageQueueName, OperationState state){
-	super(id, messageQueueName);
-	this.state = state;
-    }
-    
-    public final NodeType getNodeType(){
-	return NodeType.OPERATION;
-    }
-    
-    public OperationState getState(){
-	return state;
-    }
+	@XmlTransient
+	private static final long serialVersionUID = 1L;
 
-	public String getName() {
-		// TODO Auto-generated method stub
-		return this.name;
+	@XmlElement(required = true)
+	private String messageQueueName;
+
+	@SuppressWarnings("unused")
+	private Operation() {
+		// Required by JAXB.
+	}
+
+	public Operation(long id, String name, String messageQueueName) {
+		super(id, name);
+		this.messageQueueName = messageQueueName;
+	}
+
+	public final NodeType getNodeType() {
+		return NodeType.OPERATION;
+	}
+
+	public String getMessageQueueName() {
+		return this.messageQueueName;
 	}
 }

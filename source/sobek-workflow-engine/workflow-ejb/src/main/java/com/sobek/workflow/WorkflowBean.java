@@ -21,7 +21,7 @@ import com.sobek.pgraph.Operation;
 import com.sobek.pgraph.OperationState;
 import com.sobek.pgraph.PgraphManagerLocal;
 import com.sobek.pgraph.PgraphState;
-import com.sobek.workflow.entity.WorkflowConfigurationEntity;
+import com.sobek.workflow.entity.WorkflowDefinition;
 import com.sobek.workflow.entity.WorkflowEntity;
 import com.sobek.workflow.error.CreateWorkflowResult;
 import com.sobek.workflow.error.StartWorkflowResult;
@@ -50,13 +50,13 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 
 		try
 		{
-			WorkflowConfigurationEntity configEntity = this.dao.findConfiguration(name);
+			WorkflowDefinition configEntity = this.dao.findConfiguration(name);
 	
 			if(configEntity != null)
 			{
 				long pgraphId = 0;
 				try {
-					pgraphId = this.pgraph.createPgraph(configEntity.getPgraph().getEdges());
+					pgraphId = this.pgraph.createPgraph(configEntity.getPgraph());
 				} catch (InvalidPgraphStructureException e) {
 					logger.log(Level.SEVERE, "An exception was thrown while creating the pgraph.", e);
 					result.invlidConfiguration();
@@ -217,7 +217,7 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 	public boolean registrerWorkflow(WorkflowConfiguration config) {
 		boolean returnValue = false;
 		if(config != null) {
-			WorkflowConfigurationEntity entity = this.dao.findConfiguration(config.getName());
+			WorkflowDefinition entity = this.dao.findConfiguration(config.getName());
 			if(entity == null) {
 				logger.log(
 						Level.FINEST,
@@ -247,7 +247,7 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 	public boolean updateWorkflow(WorkflowConfiguration config) {
 		boolean returnValue = false;
 		if(config != null) {
-			WorkflowConfigurationEntity entity = this.dao.findConfiguration(config.getName());
+			WorkflowDefinition entity = this.dao.findConfiguration(config.getName());
 			if(entity != null) {
 				logger.log(
 						Level.FINEST,
@@ -255,6 +255,7 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 						config.getName());
 				entity.setPgraph(config.getPgraph());
 				this.dao.update(entity);
+				returnValue = true;
 			} else {
 				logger.log(
 						Level.WARNING,

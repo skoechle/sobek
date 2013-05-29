@@ -14,7 +14,7 @@ import javax.ejb.Local;
 @Local
 public interface PgraphManagerLocal extends PgraphManager{
 
-    long createPgraph(List<Edge> edges) throws InvalidPgraphStructureException, IllegalArgumentException;
+    long createPgraph(Pgraph pgraphDefinition) throws InvalidPgraphStructureException, IllegalArgumentException;
     
     /**
      * Returns a list of operations for a P-Graph that have not started and are ready to be started. This

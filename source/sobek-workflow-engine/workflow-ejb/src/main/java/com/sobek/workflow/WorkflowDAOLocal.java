@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.ejb.Local;
 
-import com.sobek.workflow.entity.WorkflowConfigurationEntity;
+import com.sobek.workflow.entity.WorkflowDefinition;
 import com.sobek.workflow.entity.WorkflowEntity;
 
 @Local
@@ -17,9 +17,9 @@ public interface WorkflowDAOLocal {
 
 	void update(WorkflowEntity data);
 
-	WorkflowConfigurationEntity findConfiguration(String name);
+	WorkflowDefinition findConfiguration(String name);
 
-	void update(WorkflowConfigurationEntity entity);
+	void update(WorkflowDefinition entity);
 
 	void create(WorkflowConfiguration config);
 }

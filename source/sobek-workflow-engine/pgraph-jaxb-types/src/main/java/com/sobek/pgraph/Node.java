@@ -16,7 +16,7 @@ public abstract class Node implements Serializable{
     private long id = -1L;
     
     @XmlElement(required = true)
-    private String messageQueueName;
+    private String name;
 
     public abstract NodeType getNodeType();
     
@@ -25,19 +25,19 @@ public abstract class Node implements Serializable{
 	// Required by JAXB
     }
     
-    public Node(long id, String messageQueueName){
-	if(id < 0 || messageQueueName == null || messageQueueName.isEmpty()){
+    public Node(long id, String name){
+	if(id < 0 || name == null || name.isEmpty()){
 	    String message = "An invalid parameter was passed. " + 
 		    "Id cannot be negative and messageQueueName cannot be null or empty. " + 
 		    "Parameters were:\n" + 
 		    "id: " + id + "\n" +
-		    "messageQueueName: '" + messageQueueName + "'";
+		    "messageQueueName: '" + name + "'";
 	    			
 	    throw new IllegalArgumentException(message);
 	}
 	
 	this.id = id;
-	this.messageQueueName = messageQueueName;
+	this.name = name;
     }
 
     /*
@@ -52,7 +52,7 @@ public abstract class Node implements Serializable{
 	return this.id;
     }
     
-    public String getMessageQueueName(){
-	return messageQueueName;
+    public String getName(){
+	return name;
     }
 }

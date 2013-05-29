@@ -7,16 +7,16 @@ import javax.persistence.Table;
 import com.sobek.pgraph.NodeType;
 
 @Entity
-@Table(name="MATERIAL")
+@Table(name = "MATERIAL")
 @DiscriminatorValue("PRODUCT")
-public class ProductEntity extends MaterialEntity{
-    
-    @SuppressWarnings("unused")
-    private ProductEntity(){
-	// Required by JPA
-    }
-    
-    public ProductEntity(long pgraphId, String name){
-	super(pgraphId, NodeType.PRODUCT, name);
-    }
+public class ProductEntity extends MaterialEntity {
+
+	@SuppressWarnings("unused")
+	private ProductEntity() {
+		// Required by JPA
+	}
+
+	public ProductEntity(long pgraphId, String name) {
+		super(pgraphId, name, NodeType.PRODUCT);
+	}
 }

@@ -19,3 +19,7 @@ asadmin create-jms-host --mqhost localhost --mquser admin --mqpassword admin --m
 
 asadmin create-jms-resource --restype javax.jms.Queue --property Name=SobekStatusQueue jms/SobekStatusQueueJNDIName
 
+Create operation queues
+
+> imqcmd.exe -b localhost:7677 -u admin -n ShortRunningOperationQueue -t q create dst
+

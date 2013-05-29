@@ -12,9 +12,9 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.sobek.pgraph.NodeType;
 import com.sobek.pgraph.PgraphDaoBean;
 import com.sobek.pgraph.PgraphDaoLocal;
+import com.sobek.pgraph.entity.IntermediateProductEntity;
 import com.sobek.pgraph.entity.NodeEntity;
 
 public class GetChildNodesTest{
@@ -27,7 +27,7 @@ public class GetChildNodesTest{
         TypedQuery<NodeEntity> query = (TypedQuery<NodeEntity>)Mockito.mock(TypedQuery.class);
         
         List<NodeEntity> resultList = new LinkedList<NodeEntity>();
-        resultList.add(new NodeEntity(1L, NodeType.INTERMEDIATE_PRODUCT, "jndiname"));
+        resultList.add(new IntermediateProductEntity(1L, "jndiname"));
         
         Mockito.when(query.getResultList()).thenReturn(resultList);
 	Mockito.when(em.createNamedQuery(NodeEntity.GET_CHILD_NODES_QUERY, NodeEntity.class)).thenReturn(query);

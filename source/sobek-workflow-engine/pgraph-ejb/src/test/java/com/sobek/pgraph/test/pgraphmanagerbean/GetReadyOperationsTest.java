@@ -77,7 +77,7 @@ public class GetReadyOperationsTest{
 	pgraphDao.addNode(productNode);
 	long productNodeId = productNode.getId();
 	
-	Operation expectedResult = new Operation(operationNodeId, operationNode.getMessageQueueName(), operationNode.getState());
+	Operation expectedResult = new Operation(operationNodeId, operationNode.getName(), operationNode.getMessageQueueName());
 	
 	EdgeEntity edge1 = new EdgeEntity(new EdgePrimaryKey(pgraphId, rootNodeId, operationNodeId));
 	EdgeEntity edge2 = new EdgeEntity(new EdgePrimaryKey(pgraphId, operationNodeId, productNodeId));
@@ -95,9 +95,9 @@ public class GetReadyOperationsTest{
 	
 	Operation result = readyOps.get(0);
 	Assert.assertEquals(expectedResult.getId(), result.getId());
-	Assert.assertEquals(expectedResult.getMessageQueueName(), result.getMessageQueueName());
+	Assert.assertEquals(expectedResult.getName(), result.getName());
 	Assert.assertEquals(expectedResult.getNodeType(), result.getNodeType());
-	Assert.assertEquals(expectedResult.getState(), result.getState());
+	Assert.assertEquals(expectedResult.getMessageQueueName(), result.getMessageQueueName());
     }
       
     private PgraphManagerBean createPgraphManagerBean(PgraphDaoLocal pgraphDao) throws Exception{

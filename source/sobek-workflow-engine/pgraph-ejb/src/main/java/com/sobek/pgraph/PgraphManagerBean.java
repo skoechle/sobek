@@ -1,6 +1,7 @@
 package com.sobek.pgraph;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,10 +15,14 @@ import javax.ejb.Stateless;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sobek.pgraph.entity.EdgeEntity;
+import com.sobek.pgraph.entity.EdgePrimaryKey;
+import com.sobek.pgraph.entity.IntermediateProductEntity;
 import com.sobek.pgraph.entity.MaterialEntity;
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
+import com.sobek.pgraph.entity.ProductEntity;
 import com.sobek.pgraph.entity.RawMaterialEntity;
 
 @Stateless
@@ -29,20 +34,28 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 	private PgraphDaoLocal pgraphDao;
 
 	@Override
-	public long createPgraph(List<Edge> edges)
+	public long createPgraph(Pgraph pgraphDefinition)
 			throws InvalidPgraphStructureException {
+		
+		HashMap<Long, Node> nodeDefinitionsByDefinitionId = new HashMap<Long, Node>();
+		
+		for(Node nodeDefinition : pgraphDefinition.getNodes()) {
+			nodeDefinitionsByDefinitionId.put(nodeDefinition.getId(), nodeDefinition);
+		}
+		
+		List<Edge> edgeDefinitions = pgraphDefinition.getEdges();
 		// --------------------------------------------------
 		// Validate parameters
 		// --------------------------------------------------
-		if (edges == null) {
+		if (edgeDefinitions == null) {
 			String message = "A null paramters was passed. parameters were:\n"
-					+ "edges: " + edges;
+					+ "edges: " + edgeDefinitions;
 
 			logger.error(message);
 			throw new IllegalArgumentException(message);
 		}
 
-		if (edges.contains(null)) {
+		if (edgeDefinitions.contains(null)) {
 			String message = "The edge list contained a null value.";
 
 			logger.error(message);
@@ -53,46 +66,43 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 		// Persist the pgraph
 		// --------------------------------------------------
 		PgraphEntity pgraphEntity = new PgraphEntity();
-		pgraphDao.addPgraph(pgraphEntity);
+		this.pgraphDao.addPgraph(pgraphEntity);
+		
+		long pgraphId = pgraphEntity.getId();
 
-		// HashMap<Node, Long> persistedNodes = new HashMap<Node, Long>();
+		HashMap<Long, NodeEntity> persistedNodesByDefinitionId = new HashMap<Long, NodeEntity>();
 
 		// Add all the edges to the pgraph
-		// for(Edge edge : edges){
-		// Node fromNode = edge.getFromNode();
-		// Node toNode = edge.getToNode();
-		// long fromNodeId = -1L;
-		// long toNodeId = -1L;
-		//
-		// // Persist unique nodes or get persisted node.
-		// if(persistedNodes.containsKey(fromNode)){
-		// fromNodeId = persistedNodes.get(fromNode);
-		// }else{
-		// NodeEntity nodeEntity = new NodeEntity(pgraphEntity.getId(),
-		// fromNode.getNodeType(), fromNode.getJndiName());
-		// pgraphDao.addNode(nodeEntity);
-		//
-		// fromNodeId = nodeEntity.getId();
-		// persistedNodes.put(fromNode, fromNodeId);
-		// }
-		//
-		// if(persistedNodes.containsKey(toNode)){
-		// fromNodeId = persistedNodes.get(toNode);
-		// }else{
-		// NodeEntity nodeEntity = new NodeEntity(pgraphEntity.getId(),
-		// toNode.getNodeType(), toNode.getJndiName());
-		// pgraphDao.addNode(nodeEntity);
-		//
-		// toNodeId = nodeEntity.getId();
-		// persistedNodes.put(toNode, toNodeId);
-		// }
-		//
-		// // Persist the edge
-		// EdgePrimaryKey edgePk = new EdgePrimaryKey(pgraphEntity.getId(),
-		// fromNodeId, toNodeId);
-		// EdgeEntity edgeEntity = new EdgeEntity(edgePk);
-		// pgraphDao.addEdge(edgeEntity);
-		// }
+		for (Edge edge : edgeDefinitions) {
+
+			long fromNodeId = edge.getFromNode();
+			long toNodeId = edge.getToNode();
+			Node fromNodeDefinition = nodeDefinitionsByDefinitionId.get(fromNodeId);
+			Node toNodeDefinition = nodeDefinitionsByDefinitionId.get(toNodeId);
+			NodeEntity fromNodeEntity = null;
+			NodeEntity toNodeEntity = null;
+
+			// Persist unique nodes or get persisted node.
+			if (persistedNodesByDefinitionId.containsKey(fromNodeId)) {
+				fromNodeEntity = persistedNodesByDefinitionId.get(fromNodeId);
+			} else {
+				fromNodeEntity =
+						createNode(pgraphId, fromNodeDefinition, persistedNodesByDefinitionId);
+			}
+
+			if (persistedNodesByDefinitionId.containsKey(toNodeId)) {
+				toNodeEntity = persistedNodesByDefinitionId.get(toNodeId);
+			} else {
+				toNodeEntity =
+						createNode(pgraphId, toNodeDefinition, persistedNodesByDefinitionId);
+			}
+
+			// Persist the edge
+			EdgePrimaryKey edgePk =
+					new EdgePrimaryKey(pgraphEntity.getId(), fromNodeEntity.getId(), toNodeEntity.getId());
+			EdgeEntity edgeEntity = new EdgeEntity(edgePk);
+			this.pgraphDao.addEdge(edgeEntity);
+		}
 
 		// --------------------------------------------------
 		// validate pgraph structure.
@@ -124,6 +134,43 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 		}
 
 		return pgraphEntity.getId();
+	}
+
+	private NodeEntity createNode(
+			long pgraphId,
+			Node nodeDefinition,
+			HashMap<Long, NodeEntity> persistedNodesByDefinitionId)
+	{
+		NodeEntity entityToStore = null;
+
+		switch(nodeDefinition.getNodeType()) {
+		case INTERMEDIATE_PRODUCT:
+			IntermediateProduct intermediateProduct = (IntermediateProduct)nodeDefinition;
+			entityToStore = new IntermediateProductEntity(pgraphId, intermediateProduct.getName());
+			break;
+		case OPERATION:
+			Operation operation = (Operation)nodeDefinition;
+			entityToStore = new OperationEntity(pgraphId, operation.getName(), operation.getMessageQueueName());
+			break;
+		case PRODUCT:
+			Product product = (Product)nodeDefinition;
+			entityToStore = new ProductEntity(pgraphId, product.getName());
+			break;
+		case RAW_MATERIAL:
+			RawMaterial rawMaterial = (RawMaterial)nodeDefinition;
+			entityToStore = new RawMaterialEntity(pgraphId, rawMaterial.getName());
+			break;
+		default:
+			throw new IllegalStateException(
+					"An implementation for node type [" + nodeDefinition.getNodeType() +
+					"] has not been created, the node type cannot be processed.");
+		}
+
+		this.pgraphDao.addNode(entityToStore);
+		
+		persistedNodesByDefinitionId.put(nodeDefinition.getId(), entityToStore);
+
+		return entityToStore;
 	}
 
 	private boolean isConnected(long pgraphId) {
@@ -202,8 +249,8 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 								nodeEntity, pgraphId);
 						Operation operation = new Operation(
 								operationEntity.getId(),
-								operationEntity.getMessageQueueName(),
-								operationEntity.getState());
+								operationEntity.getName(),
+								operationEntity.getMessageQueueName());
 
 						readyOperations.add(operation);
 					}
