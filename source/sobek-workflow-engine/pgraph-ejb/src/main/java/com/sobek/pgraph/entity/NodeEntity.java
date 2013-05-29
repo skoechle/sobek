@@ -5,18 +5,20 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.sobek.pgraph.NodeType;
 
 @NamedQueries({
-		@NamedQuery(name = NodeEntity.GET_CHILD_NODES_QUERY, query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.primaryKey.fromNodeId = :nodeId and n.id = e.primaryKey.toNodeId"),
-		@NamedQuery(name = NodeEntity.GET_PARENT_NODES_QUERY, query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE e.primaryKey.toNodeId = :nodeId and n.id = e.primaryKey.fromNodeId") })
+		@NamedQuery(name = NodeEntity.GET_CHILD_NODES_QUERY, query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE n.id = e.primaryKey.toNodeId and e.primaryKey.fromNodeId = :nodeId"),
+		@NamedQuery(name = NodeEntity.GET_PARENT_NODES_QUERY, query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE n.id = e.primaryKey.fromNodeId and e.primaryKey.toNodeId = :nodeId") })
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
@@ -25,10 +27,14 @@ public class NodeEntity {
 	public static final String GET_CHILD_NODES_QUERY = "NodeEntity.getChildNode";
 	public static final String GET_PARENT_NODES_QUERY = "NodeEntity.getParentNodes";
 
+    @SequenceGenerator(name="NodeIdGenerator",
+            sequenceName="NODE_ID_GENERATOR",
+            allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+         generator="NodeIdGenerator")
 	@Column(name = "ID")
-	@GeneratedValue
 	@Id
-	private long id = -1L;
+	private long id;
 
 	@Column(name = "PGRAPH_ID")
 	private long pgraphId = -1L;

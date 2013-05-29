@@ -8,7 +8,7 @@ import com.sobek.pgraph.NodeType;
 
 @Entity
 @Table(name = "MATERIAL")
-@DiscriminatorValue("INTERMEDIATE_PRODUCT")
+@DiscriminatorValue("RAW_MATERIAL")
 public class RawMaterialEntity extends MaterialEntity {
 
 	@SuppressWarnings("unused")

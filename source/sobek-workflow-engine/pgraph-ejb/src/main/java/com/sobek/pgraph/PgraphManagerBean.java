@@ -141,6 +141,11 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 			Node nodeDefinition,
 			HashMap<Long, NodeEntity> persistedNodesByDefinitionId)
 	{
+		System.out.println("======================================================================");
+		System.out.println("======================================================================");
+		System.out.println("Creating node \n" + nodeDefinition);
+		System.out.println("======================================================================");
+		System.out.println("======================================================================");
 		NodeEntity entityToStore = null;
 
 		switch(nodeDefinition.getNodeType()) {

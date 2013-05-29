@@ -3,9 +3,9 @@
 CREATE TABLE node
  (
     id numeric(18,0) NOT NULL,
+    name character varying(256),
     pgraph_id numeric(18,0) NOT NULL,
     type character varying(64) NOT NULL,
-    message_queue_name character varying NOT NULL,
     CONSTRAINT node_pk PRIMARY KEY (id)
 ) 
 WITH(OIDS=FALSE);

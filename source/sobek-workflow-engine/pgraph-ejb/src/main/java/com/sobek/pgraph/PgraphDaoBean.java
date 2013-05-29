@@ -30,17 +30,20 @@ public class PgraphDaoBean implements PgraphDaoLocal {
 
 	@Override
 	public void addPgraph(PgraphEntity pgraphEntity) {
-		entityManager.persist(pgraphEntity);
+		this.entityManager.persist(pgraphEntity);
+		this.entityManager.flush();
 	}
 
 	@Override
 	public void addNode(NodeEntity nodeEntity) {
-		entityManager.persist(nodeEntity);
+		this.entityManager.persist(nodeEntity);
+		this.entityManager.flush();
 	}
 
 	@Override
 	public void addEdge(EdgeEntity edgeEntity) {
-		entityManager.persist(edgeEntity);
+		this.entityManager.persist(edgeEntity);
+		this.entityManager.flush();
 	}
 
 	@Override
