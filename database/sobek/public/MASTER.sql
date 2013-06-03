@@ -10,7 +10,8 @@
 \i E:/java_work/sobek/database/sobek/public/PGRAPH.sql
 \i E:/java_work/sobek/database/sobek/public/PGRAPH_ID_GENERATOR.sql
 \i E:/java_work/sobek/database/sobek/public/EDGE.sql
-\i E:/java_work/sobek/database/sobek/public/EDGE_MAP.sql
+\i E:/java_work/sobek/database/sobek/public/MATERIAL_TO_OPERATION_MAP.sql
+\i E:/java_work/sobek/database/sobek/public/OPERATION_TO_MATERIAL_MAP.sql
 \i E:/java_work/sobek/database/sobek/public/WORKFLOW.sql
 \i E:/java_work/sobek/database/sobek/public/WORKFLOW_ID_GENERATOR.sql
 \i E:/java_work/sobek/database/sobek/public/WORKFLOW_DEFINITION.sql

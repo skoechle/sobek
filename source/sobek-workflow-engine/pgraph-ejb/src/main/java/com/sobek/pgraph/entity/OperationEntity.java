@@ -12,6 +12,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.sobek.pgraph.NodeType;
@@ -39,17 +40,17 @@ public class OperationEntity extends NodeEntity {
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinTable(
-		name = "EDGE_MAP",
-		joinColumns = {@JoinColumn(referencedColumnName = "ID", name = "TO_NODE_ID")},
-		inverseJoinColumns = {@JoinColumn(referencedColumnName = "ID", name = "FROM_NODE_ID")}
+		name = "MATERIAL_TO_OPERATION_MAP",
+		joinColumns = {@JoinColumn(referencedColumnName = "ID", name = "OPERATION_ID")},
+		inverseJoinColumns = {@JoinColumn(referencedColumnName = "ID", name = "MATERIAL_ID")}
 	)
 	private Set<MaterialEntity> inputMaterials = new HashSet<MaterialEntity>();
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
 	@JoinTable(
-		name = "EDGE_MAP",
-		joinColumns = {@JoinColumn(referencedColumnName = "ID", name = "FROM_NODE_ID")},
-		inverseJoinColumns = {@JoinColumn(referencedColumnName = "ID", name = "TO_NODE_ID")}
+		name = "OPERATION_TO_MATERIAL_MAP",
+		joinColumns = {@JoinColumn(referencedColumnName = "ID", name = "OPERATION_ID")},
+		inverseJoinColumns = {@JoinColumn(referencedColumnName = "ID", name = "MATERIAL_ID")}
 	)
 	private Set<MaterialEntity> outputMaterials = new HashSet<MaterialEntity>();
 
