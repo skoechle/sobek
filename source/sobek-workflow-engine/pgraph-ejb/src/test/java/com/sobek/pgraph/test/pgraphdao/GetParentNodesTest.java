@@ -27,7 +27,7 @@ public class GetParentNodesTest{
         TypedQuery<NodeEntity> query = (TypedQuery<NodeEntity>)Mockito.mock(TypedQuery.class);
         
         List<NodeEntity> resultList = new LinkedList<NodeEntity>();
-        resultList.add(new IntermediateProductEntity(1L, "jndiname"));
+        resultList.add(new IntermediateProductEntity("jndiname"));
         
         Mockito.when(query.getResultList()).thenReturn(resultList);
 	Mockito.when(em.createNamedQuery(NodeEntity.GET_PARENT_NODES_QUERY, NodeEntity.class)).thenReturn(query);

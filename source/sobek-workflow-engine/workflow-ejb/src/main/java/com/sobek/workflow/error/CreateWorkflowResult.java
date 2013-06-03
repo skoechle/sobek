@@ -23,7 +23,7 @@ public class CreateWorkflowResult extends Result{
 		}
 
 		this.name = entity.getName();
-		this.parameters = entity.getParameters();
+		this.parameters = entity.getRawMaterial();
 		this.entity = entity;
 	}
 

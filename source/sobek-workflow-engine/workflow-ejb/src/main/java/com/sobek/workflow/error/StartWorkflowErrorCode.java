@@ -12,4 +12,5 @@ public class StartWorkflowErrorCode extends MessageCode {
 	}
 
 	public static final StartWorkflowErrorCode EXCEPTION_THROWN = new StartWorkflowErrorCode(20000);
+	public static final StartWorkflowErrorCode NO_OPERATIONS = new StartWorkflowErrorCode(20001);
 }

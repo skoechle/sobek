@@ -7,7 +7,6 @@ import com.sobek.pgraph.entity.MaterialEntity;
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
-import com.sobek.pgraph.entity.RawMaterialEntity;
 
 
 public interface PgraphDaoLocal{
@@ -77,18 +76,6 @@ public interface PgraphDaoLocal{
      * @return - The Material or null if none is found.
      */
     MaterialEntity getMaterialEntity(long nodeId);
-
-    /**
-     * Gets the raw material for a P-Graph.
-     * 
-     * @param pgraphId The pgraphId
-     * 
-     * @return The Raw Material of the P-Graph
-     * 
-     * @throws InvalidPgraphStructureException If there is not exactly one raw material found for the P-Graph
-     * @throws NoSuchPgraphException If there is no P-Graph with pgraphId
-     */
-    RawMaterialEntity getRawMaterialNode(long pgraphId) throws InvalidPgraphStructureException, NoSuchPgraphException;
 
     /**
      * Checks if the P-Graph exists.

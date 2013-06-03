@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import com.sobek.pgraph.entity.MaterialEntity;
+
 /**
  * 
  * @author Matt
@@ -20,19 +22,19 @@ public interface PgraphManagerLocal extends PgraphManager{
      * Returns a list of operations for a P-Graph that have not started and are ready to be started. This
      * implies that all resource required to start any given operation are available.
      * 
-     * @param pgraphId The id of the P-Graph
+     * @param material The material
      * @return A list of ready operations.
      * 
      * @throws NoSuchPgraphException If there is no pgraph with pgraphId.
      * @throws InvalidPgraphStructureException If the structure of the pgraph is invalid.
      */
-    List<Operation> getReadyOperations(long pgraphId) throws NoSuchPgraphException, InvalidPgraphStructureException;
+    List<Operation> getReadyOperations(MaterialEntity material) throws NoSuchMaterialException, InvalidPgraphStructureException;
 
-    List<Operation> start(long pGraphId, Serializable rawMaterial) throws InvalidPgraphStructureException, NoSuchPgraphException;
+    List<Operation> start(long pGraphId, Serializable rawMaterial) throws InvalidPgraphStructureException, NoSuchPgraphException, NoSuchMaterialException;
 
-    void updateOperation(long operationId, float percentComplete, OperationState state) throws NoSuchOperationException;
+    void updateOperation(long operationId, int percentComplete, OperationState state) throws NoSuchOperationException;
 
-    List<Operation> completeOperation(long operationId, long materialId, Serializable materialValue) throws NoSuchOperationException, NoSuchMaterialException;
+    List<Operation> completeOperation(long operationId, String materialName, Serializable materialValue) throws NoSuchOperationException, NoSuchMaterialException;
 
     PgraphState getState(long pgraphId);
 

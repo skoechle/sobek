@@ -31,7 +31,7 @@ public class StartWorkflowResult extends Result{
 		}
 
 		this.name = entity.getName();
-		this.parameters = entity.getParameters();
+		this.parameters = entity.getRawMaterial();
 		if(list != null) {
 			this.operations.addAll(list);
 		}
@@ -65,6 +65,10 @@ public class StartWorkflowResult extends Result{
 
 	public void exceptionOccurred() {
 		this.addErrorCode(StartWorkflowErrorCode.EXCEPTION_THROWN);
+	}
+
+	public void noOperationsToRun() {
+		this.addErrorCode(StartWorkflowErrorCode.NO_OPERATIONS);
 	}
 
 	private void addErrorCode(StartWorkflowErrorCode code) {

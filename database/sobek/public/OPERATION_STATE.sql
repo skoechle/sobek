@@ -1,4 +1,4 @@
-﻿-- Table: operation_state
+-- Table: operation_state
 
 CREATE TABLE operation_state
 (

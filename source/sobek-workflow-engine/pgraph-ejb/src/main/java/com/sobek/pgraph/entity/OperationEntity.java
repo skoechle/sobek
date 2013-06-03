@@ -4,13 +4,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import com.sobek.pgraph.NodeType;
@@ -21,11 +22,12 @@ import com.sobek.pgraph.OperationState;
 @DiscriminatorValue("OPERATION")
 public class OperationEntity extends NodeEntity {
 
-	@Column(name = "STATE")
+
+	@Column(name = "OPERATION_STATE")
 	private String state;
 
 	@Column(name = "PERCENT_COMPLETE")
-	private float percentComplete = 0f;
+	private int percentComplete = 0;
 
 	@Column(name = "MESSAGE_QUEUE_NAME")
 	private String messageQueueName;
@@ -35,24 +37,24 @@ public class OperationEntity extends NodeEntity {
 		// Required by JPA.
 	}
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "EDGE", joinColumns = {
-			@JoinColumn(name = "PGRAPH_ID", referencedColumnName = "PGRAPH_ID"),
-			@JoinColumn(name = "TO_NODE_ID", referencedColumnName = "ID"), }, inverseJoinColumns = {
-			@JoinColumn(name = "PGRAPH_ID", referencedColumnName = "PGRAPH_ID"),
-			@JoinColumn(name = "FROM_NODE_ID", referencedColumnName = "ID"), })
+	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+	@JoinTable(
+		name = "EDGE_MAP",
+		joinColumns = {@JoinColumn(referencedColumnName = "ID", name = "TO_NODE_ID")},
+		inverseJoinColumns = {@JoinColumn(referencedColumnName = "ID", name = "FROM_NODE_ID")}
+	)
 	private Set<MaterialEntity> inputMaterials = new HashSet<MaterialEntity>();
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "EDGE", joinColumns = {
-			@JoinColumn(name = "PGRAPH_ID", referencedColumnName = "PGRAPH_ID"),
-			@JoinColumn(name = "FROM_NODE_ID", referencedColumnName = "ID"), }, inverseJoinColumns = {
-			@JoinColumn(name = "PGRAPH_ID", referencedColumnName = "PGRAPH_ID"),
-			@JoinColumn(name = "TO_NODE_ID", referencedColumnName = "ID"), })
+	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+	@JoinTable(
+		name = "EDGE_MAP",
+		joinColumns = {@JoinColumn(referencedColumnName = "ID", name = "FROM_NODE_ID")},
+		inverseJoinColumns = {@JoinColumn(referencedColumnName = "ID", name = "TO_NODE_ID")}
+	)
 	private Set<MaterialEntity> outputMaterials = new HashSet<MaterialEntity>();
 
-	public OperationEntity(long pgraphId, String name, String messageQueueName) {
-		super(pgraphId, name, NodeType.OPERATION);
+	public OperationEntity(String name, String messageQueueName) {
+		super(name, NodeType.OPERATION);
 		this.messageQueueName = messageQueueName;
 		this.state = OperationState.UNEVALUATED.toString();
 	}
@@ -65,7 +67,7 @@ public class OperationEntity extends NodeEntity {
 		this.state = state.toString();
 	}
 
-	public float getPercentComplete() {
+	public int getPercentComplete() {
 		return this.percentComplete;
 	}
 
@@ -73,15 +75,36 @@ public class OperationEntity extends NodeEntity {
 		return this.messageQueueName;
 	}
 
-	public void setPercentComplete(float percentComplete) {
+	public void setPercentComplete(int percentComplete) {
 		this.percentComplete = percentComplete;
 	}
 
 	public Set<MaterialEntity> getInputMaterials() {
 		return Collections.unmodifiableSet(this.inputMaterials);
 	}
+	
+	public void addInputMaterial(MaterialEntity material) {
+		material.getDependencies().add(this);
+		this.inputMaterials.add(material);
+	}
 
 	public Set<MaterialEntity> getOutputMaterials() {
 		return Collections.unmodifiableSet(this.outputMaterials);
+	}
+	
+	public void addOutputMaterial(MaterialEntity material) {
+		material.getOperations().add(this);
+		this.outputMaterials.add(material);
+	}
+
+	public boolean hasAllInputs() {
+		boolean returnValue = true;
+		for(MaterialEntity input : this.inputMaterials) {
+			if(!input.available()) {
+				returnValue = false;
+				break;
+			}
+		}
+		return returnValue;
 	}
 }

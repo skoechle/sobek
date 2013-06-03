@@ -8,13 +8,13 @@ public class OperationStatusMessage extends OperationMessage {
 
 	private static final long serialVersionUID = 1L;
 
-	private float percentComplete = 0;
+	private int percentComplete = 0;
 	private OperationStatus status = OperationStatus.WORKING;
 
 	public OperationStatusMessage(
 			long workflowId,
 			long operationId,
-			float percentComplete)
+			int percentComplete)
 	{
 		this(workflowId, operationId, percentComplete, OperationStatus.WORKING, null);
 	}
@@ -22,7 +22,7 @@ public class OperationStatusMessage extends OperationMessage {
 	public OperationStatusMessage(
 			long workflowId,
 			long operationId,
-			float percentComplete,
+			int percentComplete,
 			String details)
 	{
 		this(workflowId, operationId, percentComplete, OperationStatus.WORKING, details);
@@ -31,7 +31,7 @@ public class OperationStatusMessage extends OperationMessage {
 	public OperationStatusMessage(
 			long workflowId,
 			long operationId,
-			float percentComplete,
+			int percentComplete,
 			OperationStatus status)
 	{
 		this(workflowId, operationId, percentComplete, status, null);
@@ -40,20 +40,20 @@ public class OperationStatusMessage extends OperationMessage {
 	public OperationStatusMessage(
 			long workflowId,
 			long operationId,
-			float percentComplete,
+			int percentComplete,
 			OperationStatus status,
 			String details)
 	{
 		super(workflowId, operationId, details);
 
-		if(percentComplete < 0 || percentComplete > 1
+		if(percentComplete < 0 || percentComplete > 100
 				|| status == null)
 		{
 			throw new IllegalArgumentException(
 					"One or more invalid values were passed to the " +
 					this.getClass().getName() + " constructor.  The given values " +
 					"were:" + SystemProperties.NEW_LINE +
-					"Percent Complete (must be >= 0 and <= 1) :" + percentComplete + SystemProperties.NEW_LINE +
+					"Percent Complete (must be >= 0 and <= 100) :" + percentComplete + SystemProperties.NEW_LINE +
 					"Status (cannot be null) :" + status + SystemProperties.NEW_LINE +
 					"Workflow Id (must be > 0) :" + workflowId + SystemProperties.NEW_LINE);
 		}
@@ -62,7 +62,7 @@ public class OperationStatusMessage extends OperationMessage {
 		this.status = status;
 	}
 	
-	public float getPercentComplete() {
+	public int getPercentComplete() {
 		return percentComplete;
 	}
 	

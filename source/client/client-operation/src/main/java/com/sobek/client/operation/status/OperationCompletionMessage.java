@@ -11,33 +11,54 @@ public class OperationCompletionMessage extends OperationMessage {
 	private static final long serialVersionUID = 1L;
 
 	private CompletionState state;
-	private Serializable material;
-	
+	private String materialName;
+	private Serializable materialValue;
 	public OperationCompletionMessage(
 			long workflowId,
 			long operationId,
-			Serializable material,
+			Serializable materialValue,
+			CompletionState state,
+			String details)
+	{
+		this(workflowId, operationId, "", materialValue, state, details);
+	}
+
+	public OperationCompletionMessage(
+			long workflowId,
+			long operationId,
+			String materialName,
+			Serializable materialValue,
 			CompletionState state,
 			String details)
 	{
 		super(workflowId, operationId, details);
 
-		if(material == null || state == null)
+		if(materialValue == null || state == null)
 		{
 			throw new IllegalArgumentException(
 					"One or more invalid values were passed to the " +
 					this.getClass().getName() + " constructor.  The given values " +
 					"were:" + SystemProperties.NEW_LINE +
-					"Material (cannot be null) :" + material + SystemProperties.NEW_LINE +
+					"Material (cannot be null) :" + materialValue + SystemProperties.NEW_LINE +
 					"State (cannot be null) :" + state + SystemProperties.NEW_LINE);
+		}
+		
+		if(materialName != null && !materialName.isEmpty()) {
+			this.materialName = materialName;
+		} else {
+			this.materialName = materialValue.getClass().getSimpleName();
 		}
 
 		this.state = state;
-		this.material = material;
+		this.materialValue = materialValue;
 	}
 	
-	public Serializable getMaterial() {
-		return this.material;
+	public String getMaterialName() {
+		return this.materialName;
+	}
+
+	public Serializable getMaterialValue() {
+		return this.materialValue;
 	}
 	
 	public CompletionState getState() {

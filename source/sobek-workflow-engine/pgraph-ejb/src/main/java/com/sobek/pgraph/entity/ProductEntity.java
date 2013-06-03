@@ -16,7 +16,7 @@ public class ProductEntity extends MaterialEntity {
 		// Required by JPA
 	}
 
-	public ProductEntity(long pgraphId, String name) {
-		super(pgraphId, name, NodeType.PRODUCT);
+	public ProductEntity(String name) {
+		super(name, NodeType.PRODUCT);
 	}
 }

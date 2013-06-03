@@ -95,7 +95,7 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 
 		List<Operation> list = new ArrayList<Operation>();
 		try {
-			list = this.pgraph.start(entity.getPgraphId(), entity.getParameters());
+			list = this.pgraph.start(entity.getPgraphId(), entity.getRawMaterial());
 			returnValue = new StartWorkflowResult(entity, list);
 		} catch (Exception e) {
 			returnValue = new StartWorkflowResult(entity);
@@ -161,9 +161,9 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 
 			try {
 				operationList = this.pgraph.completeOperation(
-						entity.getPgraphId(),
 						completion.getOperationId(),
-						completion.getMaterial());
+						completion.getMaterialName(),
+						completion.getMaterialValue());
 			} catch (NoSuchOperationException e) {
 				logger.log(
 						Level.WARNING,
@@ -177,7 +177,7 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 						"The material [{0}] that was specified in the completion " +
 						"message was not recognized for operation ID [{1}], " +
 						"ignoring the call.  No operation will be completed.",
-						new Object[] {completion.getMaterial(), completion.getOperationId()});
+						new Object[] {completion.getMaterialValue(), completion.getOperationId()});
 			}
 
 			if(operationList == null || operationList.isEmpty()) {

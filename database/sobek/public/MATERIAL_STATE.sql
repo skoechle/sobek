@@ -1,11 +1,10 @@
-﻿-- Table: materialState
+-- Table: materialState
 
 CREATE TABLE material_state
 (
     id integer NOT NULL,
     name character varying(64) NOT NULL,
-    CONSTRAINT material_state_pk PRIMARY KEY (id),
-    CONSTRAINT material_state_name_uk UNIQUE (name)
+    CONSTRAINT material_state_pk PRIMARY KEY (id)
 )
 WITH(OIDS=FALSE);
 

@@ -18,7 +18,7 @@ public class TestOperationStatusMessageConstructor {
 	public void validValues() {
 		long workflowId = 2342343L;
 		long operationId = 4234234L;
-		float percentComplete = 0.23F;
+		int percentComplete = 23;
 		OperationStatus status = OperationStatus.SUSPENDED;
 		String details = "Some details";
 		
@@ -32,7 +32,7 @@ public class TestOperationStatusMessageConstructor {
 	public void nullStatus() {
 		long workflowId = 2342343L;
 		long operationId = 4234234L;
-		float percentComplete = 0.23F;
+		int percentComplete = 23;
 		OperationStatus status = null;
 		String details = "Some details";
 
@@ -44,7 +44,7 @@ public class TestOperationStatusMessageConstructor {
 	public void emptyDetails() {
 		long workflowId = 2342343L;
 		long operationId = 4234234L;
-		float percentComplete = 0.23F;
+		int percentComplete = 23;
 		OperationStatus status = OperationStatus.SUSPENDED;
 		String details = "";
 		
@@ -58,7 +58,7 @@ public class TestOperationStatusMessageConstructor {
 	public void nullDetails() {
 		long workflowId = 2342343L;
 		long operationId = 4234234L;
-		float percentComplete = 0.23F;
+		int percentComplete = 23;
 		OperationStatus status = OperationStatus.SUSPENDED;
 		String details = null;
 		
@@ -72,7 +72,7 @@ public class TestOperationStatusMessageConstructor {
 	public void minValues() {
 		long workflowId = 1L;
 		long operationId = 1L;
-		float percentComplete = 0F;
+		int percentComplete = 0;
 		OperationStatus status = OperationStatus.SUSPENDED;
 		String details = "a";
 		
@@ -86,7 +86,7 @@ public class TestOperationStatusMessageConstructor {
 	public void maxValues() {
 		long workflowId = Long.MAX_VALUE;
 		long operationId = Long.MAX_VALUE;
-		float percentComplete = 1F;
+		int percentComplete = 100;
 		OperationStatus status = OperationStatus.SUSPENDED;
 		StringBuilder builder = new StringBuilder();
 		for(int i = 0; i < 1024; i++) {
@@ -104,7 +104,7 @@ public class TestOperationStatusMessageConstructor {
 	public void minMinusOnePercentComplete() {
 		long workflowId = 1L;
 		long operationId = 1L;
-		float percentComplete = -.001F;
+		int percentComplete = -1;
 		OperationStatus status = OperationStatus.SUSPENDED;
 		String details = "a";
 		
@@ -116,7 +116,7 @@ public class TestOperationStatusMessageConstructor {
 	public void maxPlusOnePercentComplete() {
 		long workflowId = Long.MAX_VALUE;
 		long operationId = Long.MAX_VALUE;
-		float percentComplete = 1.001F;
+		int percentComplete = 101;
 		OperationStatus status = OperationStatus.SUSPENDED;
 		String details = "a";
 		
@@ -128,7 +128,7 @@ public class TestOperationStatusMessageConstructor {
 	public void maxPlusOneDetails() {
 		long workflowId = Long.MAX_VALUE;
 		long operationId = Long.MAX_VALUE;
-		float percentComplete = 1F;
+		int percentComplete = 100;
 		OperationStatus status = OperationStatus.SUSPENDED;
 		StringBuilder builder = new StringBuilder();
 		for(int i = 0; i < 1025; i++) {

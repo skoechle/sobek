@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
@@ -17,7 +15,6 @@ import com.sobek.pgraph.entity.MaterialEntity;
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
-import com.sobek.pgraph.entity.RawMaterialEntity;
 
 @Stateless
 public class PgraphDaoBean implements PgraphDaoLocal {
@@ -31,24 +28,22 @@ public class PgraphDaoBean implements PgraphDaoLocal {
 	@Override
 	public void addPgraph(PgraphEntity pgraphEntity) {
 		this.entityManager.persist(pgraphEntity);
-		this.entityManager.flush();
 	}
 
 	@Override
 	public void addNode(NodeEntity nodeEntity) {
 		this.entityManager.persist(nodeEntity);
-		this.entityManager.flush();
 	}
 
 	@Override
 	public void addEdge(EdgeEntity edgeEntity) {
 		this.entityManager.persist(edgeEntity);
-		this.entityManager.flush();
 	}
 
 	@Override
 	public PgraphEntity getPgraph(long pgraphId) {
-		return entityManager.find(PgraphEntity.class, pgraphId);
+		PgraphEntity returnValue = entityManager.find(PgraphEntity.class, pgraphId);
+		return returnValue;
 	}
 
 	@Override
@@ -89,42 +84,6 @@ public class PgraphDaoBean implements PgraphDaoLocal {
 	@Override
 	public MaterialEntity getMaterialEntity(long nodeId) {
 		return entityManager.find(MaterialEntity.class, nodeId);
-	}
-
-	@Override
-	public RawMaterialEntity getRawMaterialNode(long pgraphId)
-			throws InvalidPgraphStructureException, NoSuchPgraphException {
-		logger.trace("Getting raw material for pgraphId {}.", pgraphId);
-
-		TypedQuery<RawMaterialEntity> query = entityManager.createNamedQuery(
-				PgraphEntity.GET_RAW_MATERIAL_QUERY, RawMaterialEntity.class);
-		query.setParameter("pgraphId", pgraphId);
-
-		try {
-			RawMaterialEntity node = query.getSingleResult();
-			logger.trace("Returning node with nodeId {} for pgraphId {}.",
-					node.getId(), pgraphId);
-			return node;
-		} catch (NoResultException e) {
-			if (pgraphExists(pgraphId)) {
-				String message = "No raw material node exists for pgraphId "
-						+ pgraphId
-						+ ". There must always be exactly one raw material in a pgraph.";
-				logger.error(message, e);
-				throw new InvalidPgraphStructureException(message);
-			} else {
-				String message = "No pgraph exists for pgraphId " + pgraphId
-						+ ".";
-				logger.error(message, e);
-				throw new NoSuchPgraphException(message);
-			}
-		} catch (NonUniqueResultException e) {
-			String message = "Multiple raw materials were found for "
-					+ pgraphId
-					+ ". There must always be exactly one raw material in a pgraph.";
-			logger.error(message, e);
-			throw new InvalidPgraphStructureException(message);
-		}
 	}
 
 	@Override

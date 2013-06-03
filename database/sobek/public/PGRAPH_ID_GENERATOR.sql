@@ -1,4 +1,4 @@
-﻿-- Sequence: pgraph_id_generator
+-- Sequence: pgraph_id_generator
 
 -- DROP SEQUENCE pgraph_id_generator;
 
@@ -8,5 +8,5 @@ CREATE SEQUENCE pgraph_id_generator
   MAXVALUE 999999999999999999
   START 320
   CACHE 20;
-ALTER TABLE pgraph_id_generator
+ALTER SEQUENCE pgraph_id_generator
   OWNER TO "sobek";

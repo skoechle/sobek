@@ -67,6 +67,6 @@ public class TestOperationCompletionMessageConstructor {
 		assertEquals("The operation identifier passed to the contructor was not returned by the getOperationId() method.", operationId, operationCompletion.getOperationId());
 		assertEquals("The state passed to the contructor was not returned by the getState() method.", state, operationCompletion.getState());
 		assertEquals("The details passed to the contructor were not returned by the getDetails() method.", details, operationCompletion.getDetails());
-		assertEquals("The material passed to the contructor was not returned by the getMaterial() method.", material, operationCompletion.getMaterial());
+		assertEquals("The material passed to the contructor was not returned by the getMaterial() method.", material, operationCompletion.getMaterialValue());
 	}
 }

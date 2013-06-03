@@ -79,7 +79,7 @@ public class OperationClient {
 	}
 	
 	public void sendStatusMessage(
-		float percentComplete,
+		int percentComplete,
 		OperationStatus status,
 		String details)
 	{
@@ -133,6 +133,53 @@ public class OperationClient {
 						status,
 						details);
 		
+		this.sendCompletionMessage(messageToSend);
+	}
+	
+	public void sendCompletionMessage(
+		String materialName,
+		Serializable material)
+	{
+		this.sendCompletionMessage(materialName, material, CompletionState.COMPLETE, null);
+	}
+	
+	public void sendCompletionMessage(
+		String materialName,
+		Serializable material,
+		String details)
+	{
+		this.sendCompletionMessage(materialName, material, CompletionState.COMPLETE, details);
+	}
+	
+	public void sendCompletionMessage(
+		String materialName,
+		Serializable material,
+		CompletionState status)
+	{
+		this.sendCompletionMessage(materialName, material, status, null);
+	}
+
+	public void sendCompletionMessage(
+		String materialName,
+		Serializable material,
+		CompletionState status,
+		String details)
+	{
+		OperationCompletionMessage messageToSend =
+				new OperationCompletionMessage(
+						this.message.getWorkflowId(),
+						this.message.getOperationId(),
+						materialName,
+						material,
+						status,
+						details);
+		
+		this.sendCompletionMessage(messageToSend);
+	}
+
+	private void sendCompletionMessage(OperationCompletionMessage messageToSend)
+	{
+
         try {
 			ObjectMessage objectMessage = session.createObjectMessage(messageToSend);
 			this.messageProducer.send(objectMessage);

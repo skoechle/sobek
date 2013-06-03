@@ -1,4 +1,4 @@
-﻿-- Table: node_type
+-- Table: node_type
 
 CREATE TABLE node_type
 (

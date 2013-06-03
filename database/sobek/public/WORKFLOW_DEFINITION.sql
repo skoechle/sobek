@@ -1,4 +1,4 @@
-﻿-- Table: workflow_definition
+-- Table: workflow_definition
 
 -- DROP TABLE workflow_definition;
 

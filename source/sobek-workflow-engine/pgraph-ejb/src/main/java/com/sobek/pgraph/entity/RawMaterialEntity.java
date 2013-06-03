@@ -16,7 +16,7 @@ public class RawMaterialEntity extends MaterialEntity {
 		// Required by JPA
 	}
 
-	public RawMaterialEntity(long pgraphId, String name) {
-		super(pgraphId, name, NodeType.RAW_MATERIAL);
+	public RawMaterialEntity(String name) {
+		super(name, NodeType.RAW_MATERIAL);
 	}
 }

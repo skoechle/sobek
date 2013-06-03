@@ -7,16 +7,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sobek.pgraph.InvalidPgraphStructureException;
-import com.sobek.pgraph.NoSuchPgraphException;
-import com.sobek.pgraph.NodeType;
 import com.sobek.pgraph.PgraphDaoLocal;
 import com.sobek.pgraph.entity.EdgeEntity;
 import com.sobek.pgraph.entity.MaterialEntity;
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
-import com.sobek.pgraph.entity.RawMaterialEntity;
 
 
 public class MockDao implements PgraphDaoLocal{
@@ -103,18 +99,18 @@ public class MockDao implements PgraphDaoLocal{
 	return childNodes;
     }
 
-    @Override
-    public RawMaterialEntity getRawMaterialNode(long pgraphId) throws InvalidPgraphStructureException, NoSuchPgraphException{
-	RawMaterialEntity rawMaterialNode = null;
-	
-	for(NodeEntity node : nodes){
-	    if(node.getType().equals(NodeType.RAW_MATERIAL)){
-		rawMaterialNode = (RawMaterialEntity)node;
-	    }
-	}
-	
-	return rawMaterialNode;
-    }
+//    @Override
+//    public RawMaterialEntity getRawMaterialNode(long pgraphId) throws InvalidPgraphStructureException, NoSuchPgraphException{
+//	RawMaterialEntity rawMaterialNode = null;
+//	
+//	for(NodeEntity node : nodes){
+//	    if(node.getType().equals(NodeType.RAW_MATERIAL)){
+//		rawMaterialNode = (RawMaterialEntity)node;
+//	    }
+//	}
+//	
+//	return rawMaterialNode;
+//    }
 
     @Override
     public boolean pgraphExists(long pgraphId){
@@ -136,5 +132,5 @@ public class MockDao implements PgraphDaoLocal{
     public MaterialEntity getMaterialEntity(long nodeId){
 	// TODO Auto-generated method stub
 	return null;
-    } 
+    }
 }

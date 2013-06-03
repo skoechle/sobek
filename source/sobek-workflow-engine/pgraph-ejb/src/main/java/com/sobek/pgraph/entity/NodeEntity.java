@@ -21,7 +21,7 @@ import com.sobek.pgraph.NodeType;
 		@NamedQuery(name = NodeEntity.GET_PARENT_NODES_QUERY, query = "SELECT n FROM NodeEntity n, EdgeEntity e WHERE n.id = e.primaryKey.fromNodeId and e.primaryKey.toNodeId = :nodeId") })
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "TYPE", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "NODE_TYPE", discriminatorType = DiscriminatorType.STRING)
 @Table(name = "NODE")
 public class NodeEntity {
 	public static final String GET_CHILD_NODES_QUERY = "NodeEntity.getChildNode";
@@ -36,30 +36,22 @@ public class NodeEntity {
 	@Id
 	private long id;
 
-	@Column(name = "PGRAPH_ID")
-	private long pgraphId = -1L;
-
-	@Column(name = "TYPE")
-	private String type;
-
 	@Column(name = "NAME")
 	private String name;
+
+	@Column(name = "NODE_TYPE")
+	private String type;
 
 	// Required by JPA
 	protected NodeEntity() {}
 
-	protected NodeEntity(long pgraphId, String name, NodeType type) {
-		this.pgraphId = pgraphId;
+	protected NodeEntity(String name, NodeType type) {
 		this.type = type.toString();
 		this.name = name;
 	}
 
 	public long getId() {
 		return this.id;
-	}
-
-	public long getPgraphId() {
-		return this.pgraphId;
 	}
 
 	public NodeType getType() {

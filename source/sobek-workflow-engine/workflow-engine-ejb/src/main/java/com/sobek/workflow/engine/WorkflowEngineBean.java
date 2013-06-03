@@ -21,6 +21,7 @@ import javax.jms.QueueConnectionFactory;
 import javax.jms.Session;
 
 import com.sobek.client.operation.OperationMessage;
+import com.sobek.client.operation.request.OperationRequestMessage;
 import com.sobek.client.operation.status.OperationCompletionMessage;
 import com.sobek.client.operation.status.OperationStatusMessage;
 import com.sobek.common.result.Result;
@@ -100,10 +101,9 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 		if(createResult.successful()) {
 			WorkflowEntity entity = createResult.getEntity();
 			StartWorkflowResult startResult = new StartWorkflowResult(entity);
-			returnValue = startResult;
 
 			try {
-				returnValue = this.workflow.start(entity);
+				startResult = this.workflow.start(entity);
 			} catch (Exception e) {
 				startResult.exceptionOccurred();
 				logger.log(
@@ -114,8 +114,15 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 						e);
 			}
 			
-			if(returnValue.successful()) {
-				returnValue = startOperations(entity, parameters, startResult.getOperations());
+			if(startResult.successful()) {
+				if(startResult.getOperations().size() > 0) {
+					returnValue = startOperations(entity, parameters, startResult.getOperations());
+				} else {
+					startResult.noOperationsToRun();
+					returnValue = startResult;
+				}
+			} else {
+				returnValue = startResult;
 			}
 		}
 
@@ -135,7 +142,7 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 		if(operations != null && !operations.isEmpty()) {
 			logger.log(Level.FINEST, "Ther are new operations to start: [{0}]", operations);
 			WorkflowEntity entity = this.workflow.find(completion.getWorkflowId());
-			this.startOperations(entity, completion.getMaterial(), operations);
+			this.startOperations(entity, completion.getMaterialValue(), operations);
 		}
 	}
 
@@ -160,11 +167,13 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 	private StartOperationResult startOperations(
 			WorkflowEntity workflow,
 			Serializable material,
-			List<Operation> list) {
+			List<Operation> operations) {
+		logger.log(Level.FINEST, "Entering, workflow = [{0}], material = [{1}], operations = [{2}]", new Object[] {workflow, material, operations});
 		StartOperationResult result = new StartOperationResult(workflow, material);
-		for(Operation operation : list) {
+		for(Operation operation : operations) {
+			logger.log(Level.FINEST, "Sending operation message for operation [{0}]", operation);
 			try {
-				this.sendOperationMessage(operation, material);
+				this.sendOperationMessage(workflow, operation, material);
 			} catch (JMSException e) {
 				result.exceptionOccurred(operation);
 				String details =
@@ -186,11 +195,11 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 				}
 			}
 		}
-		
+		logger.log(Level.FINEST, "Exiting, returning [{0}]", result);
 		return result;
 	}
 
-	private void sendOperationMessage(Operation operation, Serializable parameters) throws JMSException {
+	private void sendOperationMessage(WorkflowEntity workflow, Operation operation, Serializable parameters) throws JMSException {
 		if(this.session == null) {
 			// Try to create the JMS objects.
 			this.createJMSObjects();
@@ -202,10 +211,13 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 						"an exception, in this log, related to the initialization failure.");
 			}
 		}
+		
+		OperationRequestMessage request = new OperationRequestMessage(workflow.getId(), operation.getId(), parameters);
 
 		Queue queue = this.session.createQueue(operation.getMessageQueueName());
-		ObjectMessage message = this.session.createObjectMessage(parameters);
+		ObjectMessage message = this.session.createObjectMessage(request);
 		MessageProducer producer = this.session.createProducer(queue);
 		producer.send(message);
+		producer.close();
 	}
 }

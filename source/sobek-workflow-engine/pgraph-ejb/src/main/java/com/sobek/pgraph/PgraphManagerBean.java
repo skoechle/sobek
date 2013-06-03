@@ -2,11 +2,8 @@ package com.sobek.pgraph;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
 import javax.ejb.EJB;
@@ -16,9 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sobek.pgraph.entity.EdgeEntity;
-import com.sobek.pgraph.entity.EdgePrimaryKey;
 import com.sobek.pgraph.entity.IntermediateProductEntity;
 import com.sobek.pgraph.entity.MaterialEntity;
+import com.sobek.pgraph.entity.MaterialValueEntity;
 import com.sobek.pgraph.entity.NodeEntity;
 import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.pgraph.entity.PgraphEntity;
@@ -66,10 +63,9 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 		// Persist the pgraph
 		// --------------------------------------------------
 		PgraphEntity pgraphEntity = new PgraphEntity();
+
 		this.pgraphDao.addPgraph(pgraphEntity);
 		
-		long pgraphId = pgraphEntity.getId();
-
 		HashMap<Long, NodeEntity> persistedNodesByDefinitionId = new HashMap<Long, NodeEntity>();
 
 		// Add all the edges to the pgraph
@@ -87,21 +83,30 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 				fromNodeEntity = persistedNodesByDefinitionId.get(fromNodeId);
 			} else {
 				fromNodeEntity =
-						createNode(pgraphId, fromNodeDefinition, persistedNodesByDefinitionId);
+						createNode(pgraphEntity, fromNodeDefinition, persistedNodesByDefinitionId);
 			}
 
 			if (persistedNodesByDefinitionId.containsKey(toNodeId)) {
 				toNodeEntity = persistedNodesByDefinitionId.get(toNodeId);
 			} else {
 				toNodeEntity =
-						createNode(pgraphId, toNodeDefinition, persistedNodesByDefinitionId);
+						createNode(pgraphEntity, toNodeDefinition, persistedNodesByDefinitionId);
 			}
+			
+			// TODO: Add error handling to code below
+			if(fromNodeEntity instanceof OperationEntity) {
+				OperationEntity operation = (OperationEntity)fromNodeEntity;
+				operation.addOutputMaterial((MaterialEntity)toNodeEntity);
+			} else {
+				OperationEntity operation = (OperationEntity)toNodeEntity;
+				operation.addInputMaterial((MaterialEntity)fromNodeEntity);
+			}
+			
+			this.pgraphDao.addNode(fromNodeEntity);
+			this.pgraphDao.addNode(toNodeEntity);
 
 			// Persist the edge
-			EdgePrimaryKey edgePk =
-					new EdgePrimaryKey(pgraphEntity.getId(), fromNodeEntity.getId(), toNodeEntity.getId());
-			EdgeEntity edgeEntity = new EdgeEntity(edgePk);
-			this.pgraphDao.addEdge(edgeEntity);
+			new EdgeEntity(pgraphEntity, fromNodeEntity, toNodeEntity);
 		}
 
 		// --------------------------------------------------
@@ -137,7 +142,7 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 	}
 
 	private NodeEntity createNode(
-			long pgraphId,
+			PgraphEntity pgraph,
 			Node nodeDefinition,
 			HashMap<Long, NodeEntity> persistedNodesByDefinitionId)
 	{
@@ -151,19 +156,20 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 		switch(nodeDefinition.getNodeType()) {
 		case INTERMEDIATE_PRODUCT:
 			IntermediateProduct intermediateProduct = (IntermediateProduct)nodeDefinition;
-			entityToStore = new IntermediateProductEntity(pgraphId, intermediateProduct.getName());
+			entityToStore = new IntermediateProductEntity(intermediateProduct.getName());
 			break;
 		case OPERATION:
 			Operation operation = (Operation)nodeDefinition;
-			entityToStore = new OperationEntity(pgraphId, operation.getName(), operation.getMessageQueueName());
+			entityToStore = new OperationEntity(operation.getName(), operation.getMessageQueueName());
 			break;
 		case PRODUCT:
 			Product product = (Product)nodeDefinition;
-			entityToStore = new ProductEntity(pgraphId, product.getName());
+			entityToStore = new ProductEntity(product.getName());
 			break;
 		case RAW_MATERIAL:
 			RawMaterial rawMaterial = (RawMaterial)nodeDefinition;
-			entityToStore = new RawMaterialEntity(pgraphId, rawMaterial.getName());
+			entityToStore = new RawMaterialEntity(rawMaterial.getName());
+			pgraph.setRawMaterial((RawMaterialEntity)entityToStore);
 			break;
 		default:
 			throw new IllegalStateException(
@@ -171,8 +177,6 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 					"] has not been created, the node type cannot be processed.");
 		}
 
-		this.pgraphDao.addNode(entityToStore);
-		
 		persistedNodesByDefinitionId.put(nodeDefinition.getId(), entityToStore);
 
 		return entityToStore;
@@ -203,180 +207,46 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 	 * resources are available.
 	 */
 	@Override
-	public List<Operation> getReadyOperations(long pgraphId)
-			throws NoSuchPgraphException, InvalidPgraphStructureException {
-		logger.debug("Getting ready operations for pgraphId {}.", pgraphId);
-
-		// Make sure this graph exists.
-		if (!pgraphDao.pgraphExists(pgraphId)) {
-			String message = "No pgraph exists with pgraphId " + pgraphId + ".";
-			throw new NoSuchPgraphException(message);
-		}
+	public List<Operation> getReadyOperations(MaterialEntity material)
+			throws NoSuchMaterialException, InvalidPgraphStructureException {
+		logger.debug("Getting ready operations for material {}.", material);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("===================================================================================\n");
+		stringBuilder.append("===================================================================================\n");
+		stringBuilder.append("===================================================================================\n");
+		stringBuilder.append("===================================================================================\n");
 
 		// The list of operations that are ready.
 		List<Operation> readyOperations = new LinkedList<Operation>();
 
-		// Keeps track of nodes that need to be visited.
-		Queue<NodeEntity> queuedNodes = new LinkedList<NodeEntity>();
-
-		// Keeps track of nodes that have been visited.
-		HashSet<NodeEntity> visitedNodes = new HashSet<NodeEntity>();
-
 		// Start the search from the root node (raw material).
-		logger.debug("Getting root node for pgraphId {}.", pgraphId);
-		NodeEntity root = pgraphDao.getRawMaterialNode(pgraphId);
-		logger.debug("Got root node {} for pgraphId {}.", root, pgraphId);
-
-		queuedNodes.add(root);
-		visitedNodes.add(root);
-
-		while (!queuedNodes.isEmpty()) {
-			NodeEntity nodeEntity = queuedNodes.remove();
-			logger.trace("Visiting node {} in pgraphId {}.", nodeEntity,
-					pgraphId);
-
-			switch (nodeEntity.getType()) {
-			case OPERATION:
-				logger.trace("Node {} in pgraphId {} is an operation.",
-						nodeEntity, pgraphId);
-				OperationEntity operationEntity = (OperationEntity) nodeEntity;
-				switch (operationEntity.getState()) {
-				case UNEVALUATED: // If the operation is not yet started then
-									// check materials
-					logger.trace("Node {} in pgraphId {} is not started.",
-							nodeEntity, pgraphId);
-
-					if (checkRequiredMaterials(operationEntity)) {
-						// We can start this operation if all required materials
-						// are available.
-						logger.trace(
-								"All materials are available for node {} in pgraphId {}.",
-								nodeEntity, pgraphId);
-						Operation operation = new Operation(
-								operationEntity.getId(),
-								operationEntity.getName(),
-								operationEntity.getMessageQueueName());
-
-						readyOperations.add(operation);
-					}
-
-					break;
-				case COMPLETE: // If this operation is completed then search the
-								// child nodes.
-					logger.trace("Node {} in pgraphId {} is complete.",
-							nodeEntity, pgraphId);
-					addChildNodesToQueue(nodeEntity, queuedNodes, visitedNodes);
-					break;
-				case CANCELED:
-					break;
-				case FAILED:
-					break;
-				case SUSPENDED:
-					break;
-				case UNEXECUTED:
-					break;
-				case WORKING:
-					break;
-				default:
-					break;
-				}
-
-				break;
-			case RAW_MATERIAL:
-			case INTERMEDIATE_PRODUCT:
-			case PRODUCT:
-				logger.trace("Node {} in pgraphId {} is a material.",
-						nodeEntity, pgraphId);
-
-				MaterialEntity materialEntity = (MaterialEntity) nodeEntity;
-
-				// Only add Materials that are available
-				if (MaterialState.AVAILABLE.equals(materialEntity.getState())) {
-					logger.trace(
-							"Material is available for node {} in pgraphId {}.",
-							nodeEntity, pgraphId);
-					addChildNodesToQueue(nodeEntity, queuedNodes, visitedNodes);
-				}
-
-				break;
+		logger.debug("Getting the dependent operations for material {}.", material);
+		Set<OperationEntity> dependentOperations = material.getDependencies();
+		stringBuilder.append("\nmaterial.getDependencies() returned list : " + dependentOperations);
+		stringBuilder.append("\nmaterial.getDependencies().size returned size : " + dependentOperations.size());
+		logger.debug("Number of dependent operations was {}", dependentOperations.size());
+		
+		for(OperationEntity operation : dependentOperations) {
+			stringBuilder.append("\nprocessing operation : " + operation);
+			stringBuilder.append("\noperation.hasAllInputs() returned : " + operation.hasAllInputs());
+			if(operation.hasAllInputs()) {
+				Operation readyOperation = new Operation(operation.getId(), operation.getName(), operation.getMessageQueueName());
+				readyOperations.add(readyOperation);
 			}
-
-			logger.trace("Finished visiting node {} in pgraphId {}.",
-					nodeEntity, pgraphId);
-			logger.trace(
-					"pgraphId {}.\n Queued nodes: {}\n Visited nodes: {}\n Ready operations: {}",
-					pgraphId, queuedNodes, visitedNodes, readyOperations);
 		}
 
-		logger.debug("Returning {} for pgraphId {}.", readyOperations, pgraphId);
+
+		stringBuilder.append("\n===================================================================================\n");
+		stringBuilder.append("===================================================================================\n");
+		stringBuilder.append("===================================================================================\n");
+		stringBuilder.append("===================================================================================\n");
+		System.out.println("\n" + stringBuilder.toString());
+		logger.debug("Returning {} for material {}.", readyOperations, material);
 		return readyOperations;
 	}
 
-	private void addChildNodesToQueue(NodeEntity nodeEntity,
-			Queue<NodeEntity> q, HashSet<NodeEntity> visitedNodes) {
-		logger.trace("Getting child nodes for node {}.", nodeEntity);
-		List<NodeEntity> childNodes = pgraphDao.getChildNodes(nodeEntity
-				.getId());
-		logger.trace("Got child nodes {} for node {}.", childNodes, nodeEntity);
-
-		for (NodeEntity childNodeEntity : childNodes) {
-			if (!visitedNodes.contains(childNodeEntity)) {
-				q.add(childNodeEntity);
-				visitedNodes.add(childNodeEntity);
-			}
-		}
-	}
-
-	private boolean checkRequiredMaterials(OperationEntity operationEntity) {
-		logger.trace("Checking for required materials for node {}.",
-				operationEntity);
-
-		boolean materialsAvailable = true;
-		Set<MaterialEntity> inputMaterials = operationEntity
-				.getInputMaterials();
-
-		if (inputMaterials.isEmpty()) {
-			String message = "Expected to find at least one material that is required for nodeId "
-					+ operationEntity.getId() + ".";
-			logger.error(message);
-			throw new InvalidPgraphStructureException(message);
-		}
-
-		Iterator<MaterialEntity> materialNodeIterator = inputMaterials
-				.iterator();
-
-		logger.trace("Checking materials {} for node {}.", inputMaterials,
-				operationEntity);
-		while (materialNodeIterator.hasNext() && materialsAvailable) {
-			NodeEntity materialNodeEntity = materialNodeIterator.next();
-			logger.trace("Checking material {} for node {}.",
-					materialNodeEntity, operationEntity);
-
-			switch (materialNodeEntity.getType()) {
-			case INTERMEDIATE_PRODUCT:
-			case RAW_MATERIAL:
-
-				materialsAvailable = MaterialState.AVAILABLE
-						.equals(((MaterialEntity) materialNodeEntity)
-								.getState());
-				logger.trace("Available = {} for node {}.", materialsAvailable,
-						operationEntity);
-				break;
-			default:
-				String message = "Expected to find Material nodes while checking for required materials for nodeId "
-						+ operationEntity.getId() + ".";
-				logger.error(message);
-				throw new InvalidPgraphStructureException(message);
-			}
-		}
-
-		logger.trace("Returning materialsAvailable = {} for node {}.",
-				materialsAvailable, operationEntity);
-		return materialsAvailable;
-	}
-
 	@Override
-	public void updateOperation(long operationId, float percentComplete,
+	public void updateOperation(long operationId, int percentComplete,
 			OperationState state) throws NoSuchOperationException {
 		logger.debug(
 				"Operation ID {}, Percent complete {}, Operation state {} - Entering.",
@@ -385,7 +255,7 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 		StringBuilder validationErrors = new StringBuilder();
 		boolean parametersValid = true;
 
-		if (percentComplete < 0f || percentComplete > 1f) {
+		if (percentComplete < 0 || percentComplete > 100) {
 			validationErrors
 					.append("Percent complete must be between 0 and 1 inclusive.\n");
 			parametersValid = false;
@@ -433,7 +303,7 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 
 	@Override
 	public List<Operation> start(long pgraphId, Serializable rawMaterial)
-			throws InvalidPgraphStructureException, NoSuchPgraphException {
+			throws InvalidPgraphStructureException, NoSuchPgraphException, NoSuchMaterialException {
 		logger.debug("Pgraph ID {} - Entering.", pgraphId);
 
 		if (rawMaterial == null) {
@@ -441,15 +311,30 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 			logger.error(message);
 			throw new IllegalArgumentException(message);
 		}
+		
+		PgraphEntity pgraph = this.pgraphDao.getPgraph(pgraphId);
 
 		logger.debug("Pgraph ID {} - Updating Raw Material.", pgraphId);
-		RawMaterialEntity rawMaterialEntity = pgraphDao
-				.getRawMaterialNode(pgraphId);
-		rawMaterialEntity.setState(MaterialState.AVAILABLE);
-		rawMaterialEntity.setValue(rawMaterial);
+		RawMaterialEntity rawMaterialEntity = pgraph.getRawMaterial();
+		new MaterialValueEntity(rawMaterialEntity, rawMaterial);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("===================================================================================\n");
+		stringBuilder.append("===================================================================================\n");
+		stringBuilder.append("===================================================================================\n");
+		stringBuilder.append("===================================================================================\n");
+
+		Set<OperationEntity> dependentOperations = rawMaterialEntity.getDependencies();
+		stringBuilder.append("\nmaterial.getDependencies() returned list : " + dependentOperations);
+		stringBuilder.append("\nmaterial.getDependencies().size returned size : " + dependentOperations.size());
+
+		stringBuilder.append("\n===================================================================================\n");
+		stringBuilder.append("===================================================================================\n");
+		stringBuilder.append("===================================================================================\n");
+		stringBuilder.append("===================================================================================\n");
+		System.out.println("\n" + stringBuilder.toString());
 
 		logger.debug("Pgraph ID {} - Searching for ready operations.", pgraphId);
-		List<Operation> readyOperations = this.getReadyOperations(pgraphId);
+		List<Operation> readyOperations = this.getReadyOperations(rawMaterialEntity);
 		logger.debug("Pgraph ID {} - Found {} ready operations.", pgraphId,
 				readyOperations.size());
 
@@ -457,11 +342,13 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 	}
 
 	@Override
-	public List<Operation> completeOperation(long operationId, long materialId,
+	public List<Operation> completeOperation(
+			long operationId,
+			String materialName,
 			Serializable materialValue) throws NoSuchOperationException,
 			NoSuchMaterialException {
-		logger.debug("Operation ID {}, Material ID {} - Entering.",
-				operationId, materialId);
+		logger.debug("Entering, Operation ID {}, Material Name {}, Material Value {}",
+				operationId, materialName, materialValue);
 
 		if (materialValue == null) {
 			String message = "Material value cannot be null.";
@@ -471,7 +358,7 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 
 		logger.debug(
 				"Operation ID {}, Material ID {} - Retrieving Operation entity.",
-				operationId, materialId);
+				operationId, materialName);
 		OperationEntity operationEntity = pgraphDao.getOperation(operationId);
 
 		if (operationEntity == null) {
@@ -483,54 +370,53 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 
 		logger.debug(
 				"Operation ID {}, Material ID {} - Retrieving Material entity.",
-				operationId, materialId);
-		MaterialEntity materialEntity = pgraphDao.getMaterialEntity(materialId);
+				operationId, materialName);
+		
+		MaterialEntity materialEntity = null;
+
+		for(MaterialEntity tempMaterialEntity : operationEntity.getOutputMaterials()) {
+			if(tempMaterialEntity.getName().equals(materialName)) {
+				materialEntity = tempMaterialEntity;
+				break;
+			}
+		}
 
 		if (materialEntity == null) {
 			String message = "No Material exists with Material ID "
-					+ materialId + ".";
+					+ materialName + ".";
 			logger.error(message);
 			throw new NoSuchMaterialException(message);
 		}
 
-		if (!operationEntity.getOutputMaterials().contains(materialEntity)) {
-			String message = "The Material with ID " + materialId
-					+ " is not an output material of Operation ID "
-					+ operationId;
-			logger.error(message);
-			throw new IllegalArgumentException(message);
-		}
-
 		logger.debug(
 				"Operation ID {}, Material ID {} - Updating Operation entity.",
-				operationId, materialId);
-		operationEntity.setPercentComplete(1.0f);
+				operationId, materialName);
+		operationEntity.setPercentComplete(100);
 		operationEntity.setState(OperationState.COMPLETE);
 
 		logger.debug(
 				"Operation ID {}, Material ID {} - Updating material entity.",
-				operationId, materialId);
-		materialEntity.setValue(materialValue);
-		materialEntity.setState(MaterialState.AVAILABLE);
+				operationId, materialName);
+		
+		new MaterialValueEntity(materialEntity, materialValue);
 
 		logger.debug(
 				"Operation ID {}, Material ID {} - Checking for ready operations.",
-				operationId, materialId);
+				operationId, materialName);
 		List<Operation> readyOperations;
 
 		try {
-			readyOperations = getReadyOperations(operationEntity.getPgraphId());
-		} catch (NoSuchPgraphException e) {
+			readyOperations = getReadyOperations(materialEntity);
+		} catch (NoSuchMaterialException e) {
 			String message = "The Operation with ID " + operationEntity.getId()
-					+ " belongs to Pgraph ID " + operationEntity.getPgraphId()
-					+ ", however, that pgraph does not exist.";
+					+ " does not contain a material with ID " + materialName + ".";
 			logger.error(message);
 			throw new InvalidPgraphStructureException(message);
 		}
 
 		logger.debug(
 				"Operation ID {}, Material ID {} - Found {} ready operations.",
-				operationId, materialId, readyOperations.size());
+				operationId, materialName, readyOperations.size());
 		return readyOperations;
 	}
 

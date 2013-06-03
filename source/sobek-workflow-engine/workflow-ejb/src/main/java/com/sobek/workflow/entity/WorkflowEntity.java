@@ -1,6 +1,12 @@
 package com.sobek.workflow.entity;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,6 +32,7 @@ import com.sobek.workflow.WorkflowState;
 	})
 public class WorkflowEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
+	private static final Logger logger = Logger.getLogger(WorkflowEntity.class.getPackage().getName());
 
 	public static final String GET_WORKFLOW_BY_NAME = "WorkflowEntity.getWorkflowByName";
 	public static final String NAME_PARAMETER = "name";
@@ -51,17 +58,20 @@ public class WorkflowEntity implements Serializable {
 	@Transient
 	private WorkflowState state;
 	
-	@Column(name="PARAMETERS")
+	@Column(name="RAW_MATERIAL")
 	@Lob
-	private Serializable parameters;
+	private byte[] rawMaterialByteArray;
+	
+	@Transient
+	private Serializable rawMaterial;
 
 	@SuppressWarnings("unused")
 	private WorkflowEntity() {
 	}
 	
-	public WorkflowEntity(String name, Serializable parameters, long pgraphId) {
+	public WorkflowEntity(String name, Serializable rawMaterial, long pgraphId) {
 		if(name == null || name.isEmpty()
-				|| parameters == null
+				|| rawMaterial == null
 				|| pgraphId <= 0)
 		{
 			throw new IllegalArgumentException(
@@ -69,11 +79,11 @@ public class WorkflowEntity implements Serializable {
 					this.getClass().getName() + " constructor.  The given values " +
 					"were:" + SystemProperties.NEW_LINE +
 					"Name (cannot be null or empty) : " + name + SystemProperties.NEW_LINE +
-					"Parameters (cannot be null) : " + parameters + SystemProperties.NEW_LINE +
+					"Raw Material (cannot be null) : " + rawMaterial + SystemProperties.NEW_LINE +
 					"Pgraph ID (cannot be <= 0) : " + pgraphId + SystemProperties.NEW_LINE);
 		}
 		this.name = name;
-		this.parameters = parameters;
+		this.rawMaterial = rawMaterial;
 		this.pgraphId = pgraphId;
 		this.state = WorkflowState.NOT_STARTED;
 	}
@@ -98,8 +108,8 @@ public class WorkflowEntity implements Serializable {
 		this.state = status;
 	}
 
-	public Serializable getParameters() {
-		return this.parameters;
+	public Serializable getRawMaterial() {
+		return this.rawMaterial;
 	}
 
 	public void failed() {
@@ -109,10 +119,25 @@ public class WorkflowEntity implements Serializable {
 	@PrePersist
 	private void prePersist() {
 		this.stateString = state.name();
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			ObjectOutputStream stream = new ObjectOutputStream(out );
+			stream.writeObject(this.rawMaterial);
+			this.rawMaterialByteArray = out.toByteArray();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Unable to store the material.", e);
+		}
 	}
 	
 	@PostLoad
 	private void postLoad() {
 		this.state = WorkflowState.valueOf(this.stateString);
+		try {
+			ByteArrayInputStream out = new ByteArrayInputStream(this.rawMaterialByteArray);
+			ObjectInputStream stream = new ObjectInputStream(out );
+			this.rawMaterial = (Serializable)stream.readObject();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Unable to read the material byte array from the database.", e);
+		}
 	}
 }

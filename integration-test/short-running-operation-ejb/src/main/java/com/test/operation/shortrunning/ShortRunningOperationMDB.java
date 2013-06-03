@@ -40,6 +40,8 @@ public class ShortRunningOperationMDB implements MessageListener {
 				Object object = ((ObjectMessage)message).getObject();
 				if(object instanceof OperationRequestMessage) {
 					request = (OperationRequestMessage)object;
+				} else {
+					builder.append("Message did not contain an operation request.  Contained object was : " + object).append(SystemProperties.NEW_LINE);
 				}
 			} catch (JMSException e) {
 				e.printStackTrace();
@@ -54,7 +56,7 @@ public class ShortRunningOperationMDB implements MessageListener {
 		
 		OperationClient client = new OperationClient(request);
 		
-		client.sendStatusMessage(.25F, OperationStatus.WORKING, "Some randome details for 25% complete.");
+		client.sendStatusMessage(25, OperationStatus.WORKING, "Some randome details for 25% complete.");
 		
 		try {
 			Thread.sleep(5000);
@@ -62,7 +64,7 @@ public class ShortRunningOperationMDB implements MessageListener {
 			e.printStackTrace();
 		}
 		
-		client.sendStatusMessage(.5F, OperationStatus.WORKING, "Some randome details for 50% complete.");
+		client.sendStatusMessage(50, OperationStatus.WORKING, "Some randome details for 50% complete.");
 		
 		try {
 			Thread.sleep(5000);
@@ -70,7 +72,7 @@ public class ShortRunningOperationMDB implements MessageListener {
 			e.printStackTrace();
 		}
 		
-		client.sendStatusMessage(.75F, OperationStatus.WORKING, "Some randome details for 75% complete.");
+		client.sendStatusMessage(75, OperationStatus.WORKING, "Some randome details for 75% complete.");
 		
 		try {
 			Thread.sleep(5000);
@@ -78,7 +80,9 @@ public class ShortRunningOperationMDB implements MessageListener {
 			e.printStackTrace();
 		}
 		
-		client.sendCompletionMessage("Returned material... for now just using a string.  Later we will do something cool.", CompletionState.COMPLETE, "Some randome details for 75% complete.");
+		client.sendCompletionMessage("finishedProduct", "Returned material... for now just using a string.  Later we will do something cool.", CompletionState.COMPLETE, "Some randome details for 100% complete.");
+		
+		logger.severe("\n\n\nCOMPLETION MESSAGE SENT\n\n\n");
 	}
 
 }
