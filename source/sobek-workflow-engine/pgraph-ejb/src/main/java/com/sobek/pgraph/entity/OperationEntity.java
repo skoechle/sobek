@@ -38,7 +38,7 @@ public class OperationEntity extends NodeEntity {
 		// Required by JPA.
 	}
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinTable(
 		name = "MATERIAL_TO_OPERATION_MAP",
 		joinColumns = {@JoinColumn(referencedColumnName = "ID", name = "OPERATION_ID")},
@@ -46,7 +46,7 @@ public class OperationEntity extends NodeEntity {
 	)
 	private Set<MaterialEntity> inputMaterials = new HashSet<MaterialEntity>();
 
-	@OneToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinTable(
 		name = "OPERATION_TO_MATERIAL_MAP",
 		joinColumns = {@JoinColumn(referencedColumnName = "ID", name = "OPERATION_ID")},

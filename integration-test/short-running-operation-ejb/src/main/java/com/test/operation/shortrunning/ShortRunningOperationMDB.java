@@ -82,6 +82,8 @@ public class ShortRunningOperationMDB implements MessageListener {
 		
 		client.sendCompletionMessage("finishedProduct", "Returned material... for now just using a string.  Later we will do something cool.", CompletionState.COMPLETE, "Some randome details for 100% complete.");
 		
+		client.close();
+		
 		logger.severe("\n\n\nCOMPLETION MESSAGE SENT\n\n\n");
 	}
 

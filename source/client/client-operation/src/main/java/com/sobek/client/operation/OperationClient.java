@@ -188,4 +188,31 @@ public class OperationClient {
 		}
 
 	}
+
+	public void close() {
+		
+		if(this.messageProducer != null) {
+			try {
+				this.messageProducer.close();
+			} catch (JMSException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(this.session != null) {
+			try {
+				this.session.close();
+			} catch (JMSException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(this.connection != null) {
+			try {
+				this.connection.close();
+			} catch (JMSException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

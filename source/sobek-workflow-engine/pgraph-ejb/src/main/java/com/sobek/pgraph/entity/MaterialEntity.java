@@ -25,10 +25,10 @@ public class MaterialEntity extends NodeEntity {
 	@OneToOne(fetch=FetchType.LAZY, mappedBy="material", cascade=CascadeType.ALL)
 	private MaterialValueEntity value = null;
 
-	@ManyToMany(mappedBy="inputMaterials", fetch=FetchType.EAGER)
+	@ManyToMany(mappedBy="inputMaterials", fetch=FetchType.LAZY)
 	private Set<OperationEntity> dependencies = new HashSet<OperationEntity>();
 
-	@ManyToMany(mappedBy="outputMaterials", fetch=FetchType.EAGER)
+	@ManyToMany(mappedBy="outputMaterials", fetch=FetchType.LAZY)
 	private Set<OperationEntity> operations = new HashSet<OperationEntity>();
 
 	protected MaterialEntity() {

@@ -38,7 +38,7 @@ public class PgraphEntity{
     private long id;
     
     
-    @OneToOne(fetch=FetchType.EAGER, optional=true)
+    @OneToOne(fetch=FetchType.LAZY, optional=true)
     @JoinColumn(name = "RAW_MATERIAL_ID", insertable=false, updatable=false)
     RawMaterialEntity rawMaterial;
     
