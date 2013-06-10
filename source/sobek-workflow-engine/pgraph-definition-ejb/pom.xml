@@ -3,11 +3,11 @@
 	<!-- project management section -->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>sobek</groupId>
-	<artifactId>workflow-ejb</artifactId>
+	<artifactId>pgraph-definition-ejb</artifactId>
 	<packaging>ejb</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<url>blah</url>
-	<description>Builds the Sobek Workflow EJB</description>
+	<description>Builds the Sobek PGraph Definition EJB</description>
 
 	<parent>
 		<groupId>sobek</groupId>
@@ -23,37 +23,13 @@
 		</dependency>
 		<dependency>
 			<groupId>sobek</groupId>
-			<artifactId>pgraph-ejb</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<type>ejb-client</type>
-		</dependency>
-		<dependency>
-			<groupId>sobek</groupId>
-			<artifactId>result-ejb</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<type>ejb-client</type>
-		</dependency>
-		<dependency>
-			<groupId>sobek</groupId>
-			<artifactId>utilities</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>sobek</groupId>
-			<artifactId>pgraph-definition-ejb</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<type>ejb-client</type>
-		</dependency>
-		<dependency>
-			<groupId>sobek</groupId>
 			<artifactId>pgraph-jaxb-types</artifactId>
 			<version>1.0-SNAPSHOT</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>sobek</groupId>
-			<artifactId>workflow-jaxb-types</artifactId>
+			<artifactId>utilities</artifactId>
 			<version>1.0-SNAPSHOT</version>
 			<type>jar</type>
 		</dependency>

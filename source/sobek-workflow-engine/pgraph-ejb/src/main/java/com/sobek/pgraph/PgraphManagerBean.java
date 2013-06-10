@@ -12,6 +12,10 @@ import javax.ejb.Stateless;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sobek.pgraph.definition.entity.EdgeDefinition;
+import com.sobek.pgraph.definition.entity.NodeDefinition;
+import com.sobek.pgraph.definition.entity.OperationDefinition;
+import com.sobek.pgraph.definition.entity.PgraphDefinition;
 import com.sobek.pgraph.entity.EdgeEntity;
 import com.sobek.pgraph.entity.IntermediateProductEntity;
 import com.sobek.pgraph.entity.MaterialEntity;
@@ -31,16 +35,16 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 	private PgraphDaoLocal pgraphDao;
 
 	@Override
-	public long createPgraph(Pgraph pgraphDefinition)
+	public long create(PgraphDefinition definition)
 			throws InvalidPgraphStructureException {
 		
-		HashMap<Long, Node> nodeDefinitionsByDefinitionId = new HashMap<Long, Node>();
+		HashMap<String, NodeDefinition> nodeDefinitionsByDefinitionId = new HashMap<String, NodeDefinition>();
 		
-		for(Node nodeDefinition : pgraphDefinition.getNodes()) {
-			nodeDefinitionsByDefinitionId.put(nodeDefinition.getId(), nodeDefinition);
+		for(NodeDefinition nodeDefinition : definition.getNodes()) {
+			nodeDefinitionsByDefinitionId.put(nodeDefinition.getName(), nodeDefinition);
 		}
 		
-		List<Edge> edgeDefinitions = pgraphDefinition.getEdges();
+		List<EdgeDefinition> edgeDefinitions = definition.getEdges();
 		// --------------------------------------------------
 		// Validate parameters
 		// --------------------------------------------------
@@ -66,31 +70,29 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 
 		this.pgraphDao.addPgraph(pgraphEntity);
 		
-		HashMap<Long, NodeEntity> persistedNodesByDefinitionId = new HashMap<Long, NodeEntity>();
+		HashMap<String, NodeEntity> persistedNodesByDefinitionName = new HashMap<String, NodeEntity>();
 
 		// Add all the edges to the pgraph
-		for (Edge edge : edgeDefinitions) {
+		for (EdgeDefinition edge : edgeDefinitions) {
 
-			long fromNodeId = edge.getFromNode();
-			long toNodeId = edge.getToNode();
-			Node fromNodeDefinition = nodeDefinitionsByDefinitionId.get(fromNodeId);
-			Node toNodeDefinition = nodeDefinitionsByDefinitionId.get(toNodeId);
+			NodeDefinition fromNodeDefinition = edge.getFromNode();
+			NodeDefinition toNodeDefinition = edge.getToNode();
 			NodeEntity fromNodeEntity = null;
 			NodeEntity toNodeEntity = null;
 
 			// Persist unique nodes or get persisted node.
-			if (persistedNodesByDefinitionId.containsKey(fromNodeId)) {
-				fromNodeEntity = persistedNodesByDefinitionId.get(fromNodeId);
+			if (persistedNodesByDefinitionName.containsKey(fromNodeDefinition.getName())) {
+				fromNodeEntity = persistedNodesByDefinitionName.get(fromNodeDefinition.getName());
 			} else {
 				fromNodeEntity =
-						createNode(pgraphEntity, fromNodeDefinition, persistedNodesByDefinitionId);
+						createNode(pgraphEntity, fromNodeDefinition, persistedNodesByDefinitionName);
 			}
 
-			if (persistedNodesByDefinitionId.containsKey(toNodeId)) {
-				toNodeEntity = persistedNodesByDefinitionId.get(toNodeId);
+			if (persistedNodesByDefinitionName.containsKey(toNodeDefinition.getName())) {
+				toNodeEntity = persistedNodesByDefinitionName.get(toNodeDefinition.getName());
 			} else {
 				toNodeEntity =
-						createNode(pgraphEntity, toNodeDefinition, persistedNodesByDefinitionId);
+						createNode(pgraphEntity, toNodeDefinition, persistedNodesByDefinitionName);
 			}
 			
 			// TODO: Add error handling to code below
@@ -143,8 +145,8 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 
 	private NodeEntity createNode(
 			PgraphEntity pgraph,
-			Node nodeDefinition,
-			HashMap<Long, NodeEntity> persistedNodesByDefinitionId)
+			NodeDefinition nodeDefinition,
+			HashMap<String, NodeEntity> persistedNodesByDefinitionName)
 	{
 		System.out.println("======================================================================");
 		System.out.println("======================================================================");
@@ -153,31 +155,28 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 		System.out.println("======================================================================");
 		NodeEntity entityToStore = null;
 
-		switch(nodeDefinition.getNodeType()) {
+		switch(nodeDefinition.getType()) {
 		case INTERMEDIATE_PRODUCT:
-			IntermediateProduct intermediateProduct = (IntermediateProduct)nodeDefinition;
-			entityToStore = new IntermediateProductEntity(intermediateProduct.getName());
+			entityToStore = new IntermediateProductEntity(nodeDefinition.getName());
 			break;
 		case OPERATION:
-			Operation operation = (Operation)nodeDefinition;
-			entityToStore = new OperationEntity(operation.getName(), operation.getMessageQueueName());
+			OperationDefinition operation = (OperationDefinition)nodeDefinition;
+			entityToStore = new OperationEntity(operation.getName(), operation.getQueueName());
 			break;
 		case PRODUCT:
-			Product product = (Product)nodeDefinition;
-			entityToStore = new ProductEntity(product.getName());
+			entityToStore = new ProductEntity(nodeDefinition.getName());
 			break;
 		case RAW_MATERIAL:
-			RawMaterial rawMaterial = (RawMaterial)nodeDefinition;
-			entityToStore = new RawMaterialEntity(rawMaterial.getName());
+			entityToStore = new RawMaterialEntity(nodeDefinition.getName());
 			pgraph.setRawMaterial((RawMaterialEntity)entityToStore);
 			break;
 		default:
 			throw new IllegalStateException(
-					"An implementation for node type [" + nodeDefinition.getNodeType() +
+					"An implementation for node type [" + nodeDefinition.getType() +
 					"] has not been created, the node type cannot be processed.");
 		}
 
-		persistedNodesByDefinitionId.put(nodeDefinition.getId(), entityToStore);
+		persistedNodesByDefinitionName.put(nodeDefinition.getName(), entityToStore);
 
 		return entityToStore;
 	}

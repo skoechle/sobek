@@ -29,9 +29,9 @@ import com.sobek.common.util.SystemProperties;
 import com.sobek.pgraph.Operation;
 import com.sobek.workflow.WorkflowLocal;
 import com.sobek.workflow.entity.WorkflowEntity;
-import com.sobek.workflow.error.CreateWorkflowResult;
-import com.sobek.workflow.error.StartOperationResult;
-import com.sobek.workflow.error.StartWorkflowResult;
+import com.sobek.workflow.result.CreateWorkflowResult;
+import com.sobek.workflow.result.StartOperationResult;
+import com.sobek.workflow.result.StartWorkflowResult;
 
 @Stateless
 public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRemote {

@@ -1,16 +1,13 @@
 package com.sobek.workflow;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
-import com.sobek.workflow.entity.WorkflowDefinition;
 import com.sobek.workflow.entity.WorkflowEntity;
 
 @Stateless
@@ -39,48 +36,7 @@ public class WorkflowDAOBean implements WorkflowDAOLocal {
 	}
 
 	@Override
-	public WorkflowEntity getWorkflow(String name) {
-		WorkflowEntity entity = null;
-		if(name != null) {
-			Query query = this.manager.createNamedQuery(WorkflowEntity.GET_WORKFLOW_BY_NAME);
-			query.setParameter(WorkflowEntity.NAME_PARAMETER, name);
-			@SuppressWarnings("unchecked")
-			List<WorkflowEntity> resultList = (List<WorkflowEntity>)query.getResultList();
-			if(resultList != null && resultList.size() > 0) {
-				entity = resultList.get(0);
-			}
-		}
-		return entity;
-	}
-
-	@Override
 	public void update(WorkflowEntity data) {
 		this.manager.persist(data);
-	}
-
-	@Override
-	public WorkflowDefinition findConfiguration(String name) {
-		WorkflowDefinition returnValue = null;
-		if(name != null) {
-			Query query = this.manager.createNamedQuery(WorkflowDefinition.GET_CONFIG_BY_NAME);
-			query.setParameter(WorkflowDefinition.NAME_PARAMETER, name);
-			@SuppressWarnings("unchecked")
-			List<WorkflowDefinition> resultList = (List<WorkflowDefinition>)query.getResultList();
-			if(resultList != null && resultList.size() > 0) {
-				returnValue = resultList.get(0);
-			}
-		}
-		return returnValue;
-	}
-
-	@Override
-	public void update(WorkflowDefinition entity) {
-		this.manager.persist(entity);
-	}
-
-	@Override
-	public void create(WorkflowConfiguration config) {
-		WorkflowDefinition entity = new WorkflowDefinition(config.getName(), config.getPgraph());
-		this.manager.persist(entity);
 	}
 }

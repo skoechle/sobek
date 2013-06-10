@@ -21,10 +21,11 @@ import com.sobek.pgraph.Operation;
 import com.sobek.pgraph.OperationState;
 import com.sobek.pgraph.PgraphManagerLocal;
 import com.sobek.pgraph.PgraphState;
-import com.sobek.workflow.entity.WorkflowDefinition;
+import com.sobek.pgraph.definition.PgraphDefinitionManagerLocal;
+import com.sobek.pgraph.definition.entity.PgraphDefinition;
 import com.sobek.workflow.entity.WorkflowEntity;
-import com.sobek.workflow.error.CreateWorkflowResult;
-import com.sobek.workflow.error.StartWorkflowResult;
+import com.sobek.workflow.result.CreateWorkflowResult;
+import com.sobek.workflow.result.StartWorkflowResult;
 
 @Stateless
 public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
@@ -34,6 +35,9 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 
 	@EJB
 	private WorkflowDAOLocal dao;
+	
+	@EJB
+	private PgraphDefinitionManagerLocal definitionManager;
 	
 	@EJB
 	private PgraphManagerLocal pgraph;
@@ -50,13 +54,13 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 
 		try
 		{
-			WorkflowDefinition configEntity = this.dao.findConfiguration(name);
+			PgraphDefinition definition = this.definitionManager.find(name);
 	
-			if(configEntity != null)
+			if(definition != null)
 			{
 				long pgraphId = 0;
 				try {
-					pgraphId = this.pgraph.createPgraph(configEntity.getPgraph());
+					pgraphId = this.pgraph.create(definition);
 				} catch (InvalidPgraphStructureException e) {
 					logger.log(Level.SEVERE, "An exception was thrown while creating the pgraph.", e);
 					result.invlidConfiguration();
@@ -209,67 +213,6 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 					"was specified in the completion message, ignoring the call.  " +
 					"No operation will be completed.",
 					completion.getWorkflowId());
-		}
-		return returnValue;
-	}
-
-	@Override
-	public boolean registrerWorkflow(WorkflowConfiguration config) {
-		boolean returnValue = false;
-		if(config != null) {
-			WorkflowDefinition entity = this.dao.findConfiguration(config.getName());
-			if(entity == null) {
-				logger.log(
-						Level.FINEST,
-						"Replacing pgraph for workflow [{0}].",
-						config.getName());
-				this.dao.create(config);
-				returnValue = true;
-			} else {
-				logger.log(
-						Level.WARNING,
-						"An attempt was made to register a configuration " +
-						"object [{0}] that already exists.  The registration " +
-						"request will be ignored.",
-						config);
-			}
-		} else {
-			logger.log(
-					Level.WARNING,
-					"An attempt was made to register a null configuration " +
-					"object [{0}].  The registration request will be ignored.",
-					config);
-		}
-		return returnValue;
-	}
-
-	@Override
-	public boolean updateWorkflow(WorkflowConfiguration config) {
-		boolean returnValue = false;
-		if(config != null) {
-			WorkflowDefinition entity = this.dao.findConfiguration(config.getName());
-			if(entity != null) {
-				logger.log(
-						Level.FINEST,
-						"Replacing pgraph for workflow [{0}].",
-						config.getName());
-				entity.setPgraph(config.getPgraph());
-				this.dao.update(entity);
-				returnValue = true;
-			} else {
-				logger.log(
-						Level.WARNING,
-						"An attempt was made to update a configuration object " +
-						"[{0}] that does not exist.  The update request will " +
-						"be ignored.",
-						config);
-			}
-		} else {
-			logger.log(
-					Level.WARNING,
-					"An attempt was made to update a null configuration " +
-					"object [{0}].  The registration request will be ignored.",
-					config);
 		}
 		return returnValue;
 	}

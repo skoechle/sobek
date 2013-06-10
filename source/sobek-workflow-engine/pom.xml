@@ -17,6 +17,7 @@
   <!-- Modules of the project -->
   <modules>
     <module>pgraph-ejb</module>
+	<module>pgraph-definition-ejb</module>
     <module>pgraph-jaxb-types</module>
     <module>workflow-ejb</module>
     <module>workflow-engine</module>

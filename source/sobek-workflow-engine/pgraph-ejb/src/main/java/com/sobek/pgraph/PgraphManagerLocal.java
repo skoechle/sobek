@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import com.sobek.pgraph.definition.entity.PgraphDefinition;
 import com.sobek.pgraph.entity.MaterialEntity;
 
 /**
@@ -16,7 +17,7 @@ import com.sobek.pgraph.entity.MaterialEntity;
 @Local
 public interface PgraphManagerLocal extends PgraphManager{
 
-    long createPgraph(Pgraph pgraphDefinition) throws InvalidPgraphStructureException, IllegalArgumentException;
+    long create(PgraphDefinition definition) throws InvalidPgraphStructureException, IllegalArgumentException;
     
     /**
      * Returns a list of operations for a P-Graph that have not started and are ready to be started. This

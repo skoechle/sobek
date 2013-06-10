@@ -9,8 +9,8 @@ import com.sobek.client.operation.status.OperationCompletionMessage;
 import com.sobek.client.operation.status.OperationStatusMessage;
 import com.sobek.pgraph.Operation;
 import com.sobek.workflow.entity.WorkflowEntity;
-import com.sobek.workflow.error.CreateWorkflowResult;
-import com.sobek.workflow.error.StartWorkflowResult;
+import com.sobek.workflow.result.CreateWorkflowResult;
+import com.sobek.workflow.result.StartWorkflowResult;
 
 @Local
 public interface WorkflowLocal extends Workflow {

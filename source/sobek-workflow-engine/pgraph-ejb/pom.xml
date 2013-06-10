@@ -20,8 +20,15 @@
         <!-- Compile -->
         <dependency>
             <groupId>sobek</groupId>
+            <artifactId>pgraph-definition-ejb</artifactId>
+            <version>1.0-SNAPSHOT</version>
+			<type>ejb-client</type>
+        </dependency>
+        <dependency>
+            <groupId>sobek</groupId>
             <artifactId>pgraph-jaxb-types</artifactId>
             <version>1.0-SNAPSHOT</version>
+			<type>jar</type>
         </dependency>
 		<dependency>
 			<groupId>sobek</groupId>

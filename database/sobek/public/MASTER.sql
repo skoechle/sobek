@@ -1,17 +1,23 @@
 \i E:/java_work/sobek/database/sobek/public/NODE_TYPE.sql
 \i E:/java_work/sobek/database/sobek/public/NODE.sql
+\i E:/java_work/sobek/database/sobek/public/NODE_DEFINITION.sql
 \i E:/java_work/sobek/database/sobek/public/NODE_ID_GENERATOR.sql
 \i E:/java_work/sobek/database/sobek/public/MATERIAL_STATE.sql
 \i E:/java_work/sobek/database/sobek/public/MATERIAL.sql
+\i E:/java_work/sobek/database/sobek/public/MATERIAL_DEFINITION.sql
 \i E:/java_work/sobek/database/sobek/public/MATERIAL_VALUE.sql
 \i E:/java_work/sobek/database/sobek/public/MATERIAL_VALUE_ID_GENERATOR.sql
 \i E:/java_work/sobek/database/sobek/public/OPERATION_STATE.sql
 \i E:/java_work/sobek/database/sobek/public/OPERATION.sql
+\i E:/java_work/sobek/database/sobek/public/OPERATION_DEFINITION.sql
 \i E:/java_work/sobek/database/sobek/public/PGRAPH.sql
 \i E:/java_work/sobek/database/sobek/public/PGRAPH_ID_GENERATOR.sql
 \i E:/java_work/sobek/database/sobek/public/EDGE.sql
+\i E:/java_work/sobek/database/sobek/public/EDGE_DEFINITION.sql
 \i E:/java_work/sobek/database/sobek/public/MATERIAL_TO_OPERATION_MAP.sql
 \i E:/java_work/sobek/database/sobek/public/OPERATION_TO_MATERIAL_MAP.sql
 \i E:/java_work/sobek/database/sobek/public/WORKFLOW.sql
 \i E:/java_work/sobek/database/sobek/public/WORKFLOW_ID_GENERATOR.sql
-\i E:/java_work/sobek/database/sobek/public/WORKFLOW_DEFINITION.sql
+\i E:/java_work/sobek/database/sobek/public/PGRAPH_DEFINITION.sql
+\i E:/java_work/sobek/database/sobek/public/PGRAPH_TO_NODE_DEF_MAP.sql
+
