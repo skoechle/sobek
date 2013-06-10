@@ -206,7 +206,7 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 	 * resources are available.
 	 */
 	@Override
-	public List<Operation> getReadyOperations(MaterialEntity material)
+	public List<OperationEntity> getReadyOperations(MaterialEntity material)
 			throws NoSuchMaterialException, InvalidPgraphStructureException {
 		logger.debug("Getting ready operations for material {}.", material);
 		StringBuilder stringBuilder = new StringBuilder();
@@ -216,7 +216,7 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 		stringBuilder.append("===================================================================================\n");
 
 		// The list of operations that are ready.
-		List<Operation> readyOperations = new LinkedList<Operation>();
+		List<OperationEntity> readyOperations = new LinkedList<OperationEntity>();
 
 		// Start the search from the root node (raw material).
 		logger.debug("Getting the dependent operations for material {}.", material);
@@ -229,8 +229,7 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 			stringBuilder.append("\nprocessing operation : " + operation);
 			stringBuilder.append("\noperation.hasAllInputs() returned : " + operation.hasAllInputs());
 			if(operation.hasAllInputs()) {
-				Operation readyOperation = new Operation(operation.getId(), operation.getName(), operation.getMessageQueueName());
-				readyOperations.add(readyOperation);
+				readyOperations.add(operation);
 			}
 		}
 
@@ -301,7 +300,7 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 	}
 
 	@Override
-	public List<Operation> start(long pgraphId, Serializable rawMaterial)
+	public List<OperationEntity> start(long pgraphId, Serializable rawMaterial)
 			throws InvalidPgraphStructureException, NoSuchPgraphException, NoSuchMaterialException {
 		logger.debug("Pgraph ID {} - Entering.", pgraphId);
 
@@ -333,7 +332,7 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 		System.out.println("\n" + stringBuilder.toString());
 
 		logger.debug("Pgraph ID {} - Searching for ready operations.", pgraphId);
-		List<Operation> readyOperations = this.getReadyOperations(rawMaterialEntity);
+		List<OperationEntity> readyOperations = this.getReadyOperations(rawMaterialEntity);
 		logger.debug("Pgraph ID {} - Found {} ready operations.", pgraphId,
 				readyOperations.size());
 
@@ -341,7 +340,7 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 	}
 
 	@Override
-	public List<Operation> completeOperation(
+	public List<OperationEntity> completeOperation(
 			long operationId,
 			String materialName,
 			Serializable materialValue) throws NoSuchOperationException,
@@ -402,7 +401,7 @@ public class PgraphManagerBean implements PgraphManagerLocal {
 		logger.debug(
 				"Operation ID {}, Material ID {} - Checking for ready operations.",
 				operationId, materialName);
-		List<Operation> readyOperations;
+		List<OperationEntity> readyOperations;
 
 		try {
 			readyOperations = getReadyOperations(materialEntity);

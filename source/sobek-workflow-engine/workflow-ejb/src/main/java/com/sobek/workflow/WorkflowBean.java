@@ -17,12 +17,12 @@ import com.sobek.client.operation.status.OperationStatusMessage;
 import com.sobek.pgraph.InvalidPgraphStructureException;
 import com.sobek.pgraph.NoSuchMaterialException;
 import com.sobek.pgraph.NoSuchOperationException;
-import com.sobek.pgraph.Operation;
 import com.sobek.pgraph.OperationState;
 import com.sobek.pgraph.PgraphManagerLocal;
 import com.sobek.pgraph.PgraphState;
 import com.sobek.pgraph.definition.PgraphDefinitionManagerLocal;
 import com.sobek.pgraph.definition.entity.PgraphDefinition;
+import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.workflow.entity.WorkflowEntity;
 import com.sobek.workflow.result.CreateWorkflowResult;
 import com.sobek.workflow.result.StartWorkflowResult;
@@ -97,7 +97,7 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 
 		StartWorkflowResult returnValue = null;
 
-		List<Operation> list = new ArrayList<Operation>();
+		List<OperationEntity> list = new ArrayList<OperationEntity>();
 		try {
 			list = this.pgraph.start(entity.getPgraphId(), entity.getRawMaterial());
 			returnValue = new StartWorkflowResult(entity, list);
@@ -149,19 +149,19 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 	}
 
 	@Override
-	public List<Operation> completeOperation(OperationCompletionMessage completion) {
+	public List<OperationEntity> completeOperation(OperationCompletionMessage completion) {
 		if(completion == null) {
 			throw new IllegalArgumentException(
 					"The given operation competion message was null, no " +
 					"operation will be completed.");
 		}
 
-		List<Operation> returnValue = new ArrayList<Operation>();
+		List<OperationEntity> returnValue = new ArrayList<OperationEntity>();
 		
 		WorkflowEntity entity = this.dao.getWorkflow(completion.getWorkflowId());
 		
 		if(entity != null) {
-			List<Operation> operationList = new ArrayList<Operation>();
+			List<OperationEntity> operationList = new ArrayList<OperationEntity>();
 
 			try {
 				operationList = this.pgraph.completeOperation(
@@ -220,7 +220,7 @@ public class WorkflowBean implements WorkflowLocal, WorkflowRemote {
 	@Override
 	public void failOperation(
 			WorkflowEntity entity,
-			Operation operation,
+			OperationEntity operation,
 			String details)
 	{
 		try {

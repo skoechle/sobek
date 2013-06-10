@@ -7,6 +7,7 @@ import javax.ejb.Local;
 
 import com.sobek.pgraph.definition.entity.PgraphDefinition;
 import com.sobek.pgraph.entity.MaterialEntity;
+import com.sobek.pgraph.entity.OperationEntity;
 
 /**
  * 
@@ -29,13 +30,13 @@ public interface PgraphManagerLocal extends PgraphManager{
      * @throws NoSuchPgraphException If there is no pgraph with pgraphId.
      * @throws InvalidPgraphStructureException If the structure of the pgraph is invalid.
      */
-    List<Operation> getReadyOperations(MaterialEntity material) throws NoSuchMaterialException, InvalidPgraphStructureException;
+    List<OperationEntity> getReadyOperations(MaterialEntity material) throws NoSuchMaterialException, InvalidPgraphStructureException;
 
-    List<Operation> start(long pGraphId, Serializable rawMaterial) throws InvalidPgraphStructureException, NoSuchPgraphException, NoSuchMaterialException;
+    List<OperationEntity> start(long pGraphId, Serializable rawMaterial) throws InvalidPgraphStructureException, NoSuchPgraphException, NoSuchMaterialException;
 
     void updateOperation(long operationId, int percentComplete, OperationState state) throws NoSuchOperationException;
 
-    List<Operation> completeOperation(long operationId, String materialName, Serializable materialValue) throws NoSuchOperationException, NoSuchMaterialException;
+    List<OperationEntity> completeOperation(long operationId, String materialName, Serializable materialValue) throws NoSuchOperationException, NoSuchMaterialException;
 
     PgraphState getState(long pgraphId);
 

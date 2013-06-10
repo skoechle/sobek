@@ -26,7 +26,7 @@ import com.sobek.client.operation.status.OperationCompletionMessage;
 import com.sobek.client.operation.status.OperationStatusMessage;
 import com.sobek.common.result.Result;
 import com.sobek.common.util.SystemProperties;
-import com.sobek.pgraph.Operation;
+import com.sobek.pgraph.entity.OperationEntity;
 import com.sobek.workflow.WorkflowLocal;
 import com.sobek.workflow.entity.WorkflowEntity;
 import com.sobek.workflow.result.CreateWorkflowResult;
@@ -138,7 +138,7 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 	@Override
 	public void receiveOperationCompletion(OperationCompletionMessage completion) {
 		logger.log(Level.INFO, "Handling completion message: [{0}]", completion);
-		List<Operation> operations = this.workflow.completeOperation(completion);
+		List<OperationEntity> operations = this.workflow.completeOperation(completion);
 		if(operations != null && !operations.isEmpty()) {
 			logger.log(Level.FINEST, "Ther are new operations to start: [{0}]", operations);
 			WorkflowEntity entity = this.workflow.find(completion.getWorkflowId());
@@ -167,10 +167,10 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 	private StartOperationResult startOperations(
 			WorkflowEntity workflow,
 			Serializable material,
-			List<Operation> operations) {
+			List<OperationEntity> operations) {
 		logger.log(Level.FINEST, "Entering, workflow = [{0}], material = [{1}], operations = [{2}]", new Object[] {workflow, material, operations});
 		StartOperationResult result = new StartOperationResult(workflow, material);
-		for(Operation operation : operations) {
+		for(OperationEntity operation : operations) {
 			logger.log(Level.FINEST, "Sending operation message for operation [{0}]", operation);
 			try {
 				this.sendOperationMessage(workflow, operation, material);
@@ -199,7 +199,7 @@ public class WorkflowEngineBean implements WorkflowEngineLocal, WorkflowEngineRe
 		return result;
 	}
 
-	private void sendOperationMessage(WorkflowEntity workflow, Operation operation, Serializable parameters) throws JMSException {
+	private void sendOperationMessage(WorkflowEntity workflow, OperationEntity operation, Serializable parameters) throws JMSException {
 		if(this.session == null) {
 			// Try to create the JMS objects.
 			this.createJMSObjects();
